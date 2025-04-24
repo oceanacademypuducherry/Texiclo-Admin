@@ -1,11 +1,11 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #171717;
+  --color-primary: #feeb9d;
   --color-text: #ffffff;
 }
 
-body {
+/* body {
   background-color: var(--color-primary);
   color: var(--color-text);
-}
+} */
