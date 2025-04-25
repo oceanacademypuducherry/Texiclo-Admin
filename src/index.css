@@ -3,6 +3,7 @@
 @theme {
   --color-primary: #feeb9d;
   --color-text: #ffffff;
+  --color-secondary: black;
 }
 
 /* body {
