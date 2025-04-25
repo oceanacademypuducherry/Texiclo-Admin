@@ -1,5 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import { BannerPage, Discounts, HomePage, ProductPage } from "../features";
+import { Checking } from "../features/Checking";
 
 export const router = createBrowserRouter([
   {
@@ -8,7 +9,7 @@ export const router = createBrowserRouter([
   },
   {
     path: "/products",
-    element:<ProductPage/>,
+    element: <ProductPage />,
   },
   {
     path: "/discount",
@@ -16,6 +17,10 @@ export const router = createBrowserRouter([
   },
   {
     path: "/banner",
-    element: <BannerPage/>,
+    element: <BannerPage />,
+  },
+  {
+    path: "/checking",
+    element: <Checking />,
   },
 ]);

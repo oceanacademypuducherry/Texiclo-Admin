@@ -10,7 +10,12 @@ export const NavBar = () => {
     <div className="bg-primary flex h-screen w-[250px] flex-col justify-between p-4 text-black shadow-lg">
       {/* Logo */}
       <div className="mb-6 flex items-center justify-center">
-        <img src={LOGO} alt="Logo" className="h-auto w-32" />
+        <img
+          src={LOGO}
+          alt="Logo"
+          className="h-auto w-32"
+          draggable="false"
+        ></img>
       </div>
 
       {/* Navigation Items */}
