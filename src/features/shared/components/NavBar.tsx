@@ -4,6 +4,7 @@ import { BsBoxSeam } from "react-icons/bs";
 import { TbRosetteDiscountFilled } from "react-icons/tb";
 import { FaRegImages } from "react-icons/fa";
 import { LogoutBtn } from "./LogoutBtn";
+import { MdCollections } from "react-icons/md";
 
 export const NavBar = () => {
   return (
@@ -21,7 +22,7 @@ export const NavBar = () => {
       {/* Navigation Items */}
       <div className="flex flex-col gap-4">
         <NavLink
-          to="/products"
+          to="/category"
           className={({ isActive }) =>
             `flex cursor-pointer items-center gap-3 rounded-lg p-3 transition ${
               isActive
@@ -31,7 +32,7 @@ export const NavBar = () => {
           }
         >
           <BsBoxSeam className="text-xl" />
-          <span className="text-base font-medium">Products</span>
+          <span className="text-base font-medium">Categories</span>
         </NavLink>
 
         <NavLink
@@ -60,6 +61,19 @@ export const NavBar = () => {
         >
           <FaRegImages className="text-xl" />
           <span className="text-base font-medium">Banner</span>
+        </NavLink>
+        <NavLink
+          to="/collectiontype"
+          className={({ isActive }) =>
+            `flex cursor-pointer items-center gap-3 rounded-lg p-3 transition ${
+              isActive
+                ? "text-primary bg-black font-semibold"
+                : "text-black hover:bg-white/10"
+            }`
+          }
+        >
+          <MdCollections className="text-xl" />
+          <span className="text-base font-medium">Collection Type</span>
         </NavLink>
       </div>
 

@@ -7,6 +7,7 @@ import {
   ProductPage,
 } from "../features";
 import { Checking } from "../features/Checking";
+import { CollectionTypePage } from "../features/collectiontype/page";
 
 export const router = createBrowserRouter([
   {
@@ -18,7 +19,7 @@ export const router = createBrowserRouter([
     element: <Login />,
   },
   {
-    path: "/products",
+    path: "/category",
     element: <ProductPage />,
   },
   {
@@ -32,5 +33,9 @@ export const router = createBrowserRouter([
   {
     path: "/checking",
     element: <Checking />,
+  },
+  {
+    path: "/collectiontype",
+    element: <CollectionTypePage/>,
   },
 ]);
