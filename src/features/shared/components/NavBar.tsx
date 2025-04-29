@@ -4,7 +4,8 @@ import { BsBoxSeam } from "react-icons/bs";
 import { TbRosetteDiscountFilled } from "react-icons/tb";
 import { FaRegImages } from "react-icons/fa";
 import { LogoutBtn } from "./LogoutBtn";
-import { MdCollections } from "react-icons/md";
+import { AiFillProduct } from "react-icons/ai";
+import { VscTypeHierarchy } from "react-icons/vsc";
 
 export const NavBar = () => {
   return (
@@ -21,6 +22,20 @@ export const NavBar = () => {
 
       {/* Navigation Items */}
       <div className="flex flex-col gap-4">
+        <NavLink
+          to="/products"
+          className={({ isActive }) =>
+            `flex cursor-pointer items-center gap-3 rounded-lg p-3 transition ${
+              isActive
+                ? "text-primary bg-black font-semibold"
+                : "text-black hover:bg-white/10"
+            }`
+          }
+        >
+          <AiFillProduct className="text-xl" />
+          <span className="text-base font-medium">Products</span>
+        </NavLink>
+
         <NavLink
           to="/category"
           className={({ isActive }) =>
@@ -72,7 +87,7 @@ export const NavBar = () => {
             }`
           }
         >
-          <MdCollections className="text-xl" />
+          <VscTypeHierarchy className="text-xl" />
           <span className="text-base font-medium">Collection Type</span>
         </NavLink>
       </div>

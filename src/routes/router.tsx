@@ -1,13 +1,14 @@
 import { createBrowserRouter } from "react-router-dom";
 import {
   BannerPage,
+  CategoryPage,
+  CollectionTypePage,
   Discounts,
   HomePage,
   Login,
-  ProductPage,
 } from "../features";
 import { Checking } from "../features/Checking";
-import { CollectionTypePage } from "../features/collectiontype/page";
+import { ProductPage } from "../features/products";
 
 export const router = createBrowserRouter([
   {
@@ -20,7 +21,7 @@ export const router = createBrowserRouter([
   },
   {
     path: "/category",
-    element: <ProductPage />,
+    element: <CategoryPage />,
   },
   {
     path: "/discount",
@@ -30,12 +31,17 @@ export const router = createBrowserRouter([
     path: "/banner",
     element: <BannerPage />,
   },
+
+  {
+    path: "/collectiontype",
+    element: <CollectionTypePage />,
+  },
+  {
+    path: "/products",
+    element: <ProductPage/>,
+  },
   {
     path: "/checking",
     element: <Checking />,
-  },
-  {
-    path: "/collectiontype",
-    element: <CollectionTypePage/>,
   },
 ]);

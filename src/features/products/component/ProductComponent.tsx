@@ -1,44 +1,34 @@
 import { FC } from "react";
-import { HiPencilAlt } from "react-icons/hi";
-import { MdDelete } from "react-icons/md";
 
-type ProductProps = {
+interface ProductProps {
   image: string;
   title: string;
-  onUpdate: () => void;
-  onDelete: () => void;
-};
+  price: number;
+  discount: number;
+}
 
-export const ProductComponent: FC<ProductProps> = ({ image, title, onUpdate, onDelete }) => {
+export const ProductComponent: FC<ProductProps> = ({
+  image,
+  title,
+  price,
+  discount,
+}) => {
   return (
-    <div className="relative flex w-[300px] flex-col items-center rounded-lg bg-white p-4 shadow-lg hover:shadow-2xl transition-all duration-300">
-      <div className="mb-4">
+    <div className="flex w-full max-w-xs flex-col items-center rounded-xl p-4 shadow-md sm:w-64">
+      <div className="h-[220px] w-[220px]">
         <img
           src={image}
           alt={title}
-          className="h-48 w-48 rounded-md object-cover"
+          className="h-full w-full rounded-md object-cover"
         />
       </div>
-      <div className="flex flex-col items-center text-center">
-        <span className="mb-2 text-lg font-semibold">{title}</span>
-      </div>
 
-      {/* Hidden buttons, shown on hover */}
-      <div className="absolute inset-0 flex items-center justify-center gap-3 opacity-0 transition-opacity duration-300 hover:opacity-100 bg-white/80">
-        <button
-          onClick={onUpdate}
-          className="flex items-center gap-2 rounded-md bg-blue-600 p-2 font-medium text-white hover:bg-blue-500"
-        >
-          <HiPencilAlt />
-          Update
-        </button>
-        <button
-          onClick={onDelete}
-          className="flex items-center gap-2 rounded-md bg-red-600 p-2 font-medium text-white hover:bg-red-500"
-        >
-          <MdDelete />
-          Delete
-        </button>
+      <div className="mt-3 space-y-1 text-center">
+        <h2 className="text-base font-semibold text-gray-800 capitalize">
+          {title}
+        </h2>
+        <p className="text-sm text-gray-700">₹ {price}</p>
+        <p className="text-sm text-green-600">Discount {discount}%</p>
       </div>
     </div>
   );
