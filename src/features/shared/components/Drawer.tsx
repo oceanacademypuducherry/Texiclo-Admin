@@ -30,7 +30,7 @@ export const Drawer: FC<DrawerProps> = ({ isDrawer, setIsDrawer }) => {
   return (
     <main
       ref={drawerRef}
-      className={`fixed top-0 transition-all duration-300 min-[770px]:hidden ${
+      className={`fixed top-0 z-[99] transition-all duration-300 min-[770px]:hidden ${
         isDrawer ? "left-0" : "-left-full"
       } h-screen w-full max-w-[250px]`}
     >

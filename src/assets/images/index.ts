@@ -1,5 +1,7 @@
 import LOGO from "./logo.svg";
 import BANNER1 from "./banner.svg";
 import PRODUCT1 from "./product.svg";
+import COLLECTION from "./collection.svg"
 
-export { LOGO, BANNER1, PRODUCT1 };
+
+export { LOGO, BANNER1, PRODUCT1,COLLECTION };

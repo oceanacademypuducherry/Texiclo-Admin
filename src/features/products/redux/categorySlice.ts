@@ -8,10 +8,16 @@ interface ModelData {
   category?: CategoryData;
 }
 export interface CategoryData {
-  id: string;
+  id?: string;
   name: string;
   image: string | File | null;
 }
+
+export interface AddCategoryData {
+  name: string;
+  image: string | File | null;
+}
+
 
 const initialState: ModelData = {
   isAdd: false,
@@ -35,14 +41,19 @@ const CategorySlice = createSlice({
     setCategoryId: (state, action: PayloadAction<string>) => {
       state._id = action.payload;
     },
-    setCategory: (state, action: PayloadAction<CategoryData | null >) => {
-      if(action.payload!=null){
+    setCategory: (state, action: PayloadAction<CategoryData | null>) => {
+      if (action.payload != null) {
         state.category = action.payload;
       }
     },
   },
 });
-export const { setIsUpdate, setIsAdd, setIsDelete, setCategoryId,setCategory} =
-  CategorySlice.actions;
+export const {
+  setIsUpdate,
+  setIsAdd,
+  setIsDelete,
+  setCategoryId,
+  setCategory,
+} = CategorySlice.actions;
 
 export const CategoryReducer = CategorySlice.reducer;

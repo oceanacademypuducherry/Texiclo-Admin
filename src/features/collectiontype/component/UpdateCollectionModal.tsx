@@ -1,19 +1,23 @@
-import { MdClose } from "react-icons/md";
-import { IoMdCloseCircle } from "react-icons/io";
-import { useDropzone } from "react-dropzone";
-import { AppDispatch, RootState } from "../../../app/store";
-import { useDispatch, useSelector } from "react-redux";
-import { CategoryData, setCategory, setIsUpdate } from "../redux";
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../../app/store";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { updateCategoryValidation } from "../validation";
+import {
+  CollectionsData,
+  setCollection,
+  setCollectionUpdateMode,
+} from "../redux";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { updateCollectionValidation } from "../validation";
+import { useDropzone } from "react-dropzone";
+import { IoMdCloseCircle } from "react-icons/io";
+import { MdClose } from "react-icons/md";
 
-export const UpdateCategoryModal = () => {
+export const UpdateCollectionModal = () => {
   const dispatch = useDispatch<AppDispatch>();
   const [_uploadedFile, setUploadedFile] = useState<File | null>(null);
-  const { isUpdate, category } = useSelector(
-    (state: RootState) => state.categories,
+  const { isUpdate, collection } = useSelector(
+    (state: RootState) => state.collections,
   );
 
   const {
@@ -22,30 +26,32 @@ export const UpdateCategoryModal = () => {
     setValue,
     handleSubmit,
     reset,
-  } = useForm<CategoryData>({
-    resolver: yupResolver(updateCategoryValidation),
+  } = useForm<CollectionsData>({
+    resolver: yupResolver(updateCollectionValidation),
     defaultValues: {
-      name: category?.name,
-      image: category?.image,
+      name: collection?.name,
+      image: collection?.image,
     },
   });
 
   const handleClose = () => {
-    dispatch(setIsUpdate(false));
+    dispatch(setCollectionUpdateMode(false));
     reset(); // Reset form on close
   };
 
-  const handleUpdate: SubmitHandler<CategoryData> = (newData) => {
+  const handleUpdate: SubmitHandler<CollectionsData> = (newData) => {
     console.log("updated", newData);
-    console.log(category);
+    console.log(collection);
     // You can dispatch updateCategoryThunk or similar here
   };
 
   const onDrop = (acceptedFiles: File[]) => {
     const myImage = acceptedFiles[0];
     setUploadedFile(myImage);
-    if (!category) return;
-    dispatch(setCategory({ ...category, image: URL.createObjectURL(myImage) }));
+    if (!collection) return;
+    dispatch(
+      setCollection({ ...collection, image: URL.createObjectURL(myImage) }),
+    );
     setValue("image", myImage);
   };
 
@@ -72,21 +78,25 @@ export const UpdateCategoryModal = () => {
           <IoMdCloseCircle />
         </button>
 
-        <h3 className="mb-4 text-center text-lg font-bold">Update Category</h3>
+        <h3 className="mb-4 text-center text-lg font-bold">
+          Update Collection
+        </h3>
 
         {/* Category Name */}
         <div className="mt-4">
           <div className="mb-4">
-            <label className="block text-sm font-medium">Category Name</label>
+            <label className="block text-sm font-medium">Collection Name</label>
             <input
               type="text"
               {...register("name")}
-              defaultValue={category?.name}
+              defaultValue={collection?.name}
               className="mt-3 w-full rounded-md border p-2"
               placeholder="Enter category name"
               onChange={(e) => {
-                if (category) {
-                  dispatch(setCategory({ ...category, name: e.target.value }));
+                if (collection) {
+                  dispatch(
+                    setCollection({ ...collection, name: e.target.value }),
+                  );
                 }
                 setValue("name", e.target.value);
               }}
@@ -101,7 +111,7 @@ export const UpdateCategoryModal = () => {
           {/* Category Image Upload */}
           <div className="mb-4">
             <label className="mb-3 block text-sm font-medium">
-              Category Image
+              Collection Image
             </label>
 
             <div
@@ -109,7 +119,7 @@ export const UpdateCategoryModal = () => {
               className="hover:border-primary flex w-full cursor-pointer flex-col items-center justify-center rounded-md border-2 border-dashed border-gray-400 p-4"
             >
               <input {...getInputProps()} />
-              {!category?.image ? (
+              {!collection?.image ? (
                 <div className="text-center text-gray-500">
                   <p>Drag & drop an image here, or click to select an image</p>
                   <p className="mt-2 text-sm text-gray-400">
@@ -120,9 +130,9 @@ export const UpdateCategoryModal = () => {
                 <div className="relative h-40 w-full">
                   <img
                     src={
-                      typeof category.image === "string"
-                        ? category.image
-                        : URL.createObjectURL(category.image)
+                      typeof collection.image === "string"
+                        ? collection.image
+                        : URL.createObjectURL(collection.image)
                     }
                     alt="Preview"
                     className="h-full w-full rounded-md object-cover"
@@ -132,7 +142,7 @@ export const UpdateCategoryModal = () => {
                     type="button"
                     onClick={() => {
                       {
-                        dispatch(setCategory({ ...category, image: "" }));
+                        dispatch(setCollection({ ...collection, image: "" }));
                         setUploadedFile(null);
                         setValue("image", "");
                       }
