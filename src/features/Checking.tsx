@@ -1,11 +1,14 @@
 import { BANNER1 } from "../assets";
 import { Banner } from "./banners";
+import { ProductAddPage } from "./products";
+ 
 
 export const Checking = () => {
   return (
     <div>
-      <Banner image={BANNER1} title="banner1" />
+      {/* <Banner image={BANNER1} title="banner1" /> */}
       {/* <Login /> */}
+      <ProductAddPage />
     </div>
   );
 };
