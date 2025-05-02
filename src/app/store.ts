@@ -1,10 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { CategoryReducer, CollectionReducer } from "../features";
+import { BannerReducer, CategoryReducer, CollectionReducer } from "../features";
 
 export const store = configureStore({
   reducer: {
     categories: CategoryReducer,
     collections: CollectionReducer,
+    banners: BannerReducer,
   },
 });
 

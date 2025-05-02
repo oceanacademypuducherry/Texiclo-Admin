@@ -1,30 +1,24 @@
-import { HiPencilAlt } from "react-icons/hi";
 import { MdDelete } from "react-icons/md";
 import { FC } from "react";
 
-interface  BannerProps  {
-  image: string,
-  title:string
+interface BannerProps {
+  image: string;
+  title: string;
+  onDelete: () => void;
 }
 
-
-export const Banner:FC<BannerProps> = ({image,title}) => {
+export const Banner: FC<BannerProps> = ({ image, title, onDelete }) => {
   return (
     <div className="group relative w-full p-2">
-      <div className="relative h-[300px] w-full overflow-hidden rounded-md">
-        <img
-          src={image}
-          alt={title}
-          className="h-full w-full object-cover"
-        />
+      <div className="relative h-[200px] w-full overflow-hidden rounded-md">
+        <img src={image} alt={title} className="h-full w-full object-cover" />
 
         {/* Hover buttons with backdrop blur */}
         <div className="absolute inset-0 flex items-center justify-center gap-4 bg-black/30 opacity-0 backdrop-blur-sm transition-opacity duration-300 group-hover:opacity-100">
-          <button className="bg-primary text-secondary flex items-center gap-2 rounded-md p-2 font-medium hover:bg-blue-500 hover:text-white">
-            <HiPencilAlt />
-            Update
-          </button>
-          <button className="flex items-center gap-2 rounded-md bg-white p-2 font-medium text-black hover:bg-red-600 hover:text-white">
+          <button
+            className="bg-primary flex items-center gap-2 rounded-md p-2 font-medium text-black hover:bg-red-600 hover:text-white"
+            onClick={onDelete}
+          >
             <MdDelete />
             Delete
           </button>

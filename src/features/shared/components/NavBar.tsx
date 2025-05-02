@@ -75,7 +75,7 @@ export const NavBar = () => {
           }
         >
           <FaRegImages className="text-xl" />
-          <span className="text-base font-medium">Banner</span>
+          <span className="text-base font-medium">Banners</span>
         </NavLink>
         <NavLink
           to="/collectiontype"
