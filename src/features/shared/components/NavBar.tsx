@@ -50,7 +50,7 @@ export const NavBar = () => {
           <span className="text-base font-medium">Categories</span>
         </NavLink>
 
-        <NavLink
+        {/* <NavLink
           to="/discount"
           className={({ isActive }) =>
             `flex cursor-pointer items-center gap-3 rounded-lg p-3 transition ${
@@ -62,7 +62,7 @@ export const NavBar = () => {
         >
           <TbRosetteDiscountFilled className="text-xl" />
           <span className="text-base font-medium">Discount</span>
-        </NavLink>
+        </NavLink> */}
 
         <NavLink
           to="/banner"

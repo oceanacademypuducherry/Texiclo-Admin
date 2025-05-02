@@ -1,39 +1,44 @@
-import { PRODUCT2 } from "../../../assets";
+import { TSHIRT } from "../../../assets";
 
 export const ProductsData = [
   {
     id: "1",
-    image: PRODUCT2,
-    name: "Polo",
+    image: TSHIRT,
+    name: "Polo(Red,sleeveless)",
     price: 300,
+    discountPrice: 200,
     discount: 2,
   },
   {
     id: "2",
-    image: PRODUCT2,
-    name: "T-Shirts",
+    image: TSHIRT,
+    name: "T-Shirts(Red,sleeveless)",
     price: 300,
+    discountPrice: 200,
     discount: 2,
   },
   {
     id: "3",
-    image: PRODUCT2,
-    name: "Jeans",
+    image: TSHIRT,
+    name: "Jeans(Red,sleeveless)",
     price: 300,
+    discountPrice: 200,
     discount: 2,
   },
   {
     id: "4",
-    image: PRODUCT2,
-    name: "Jackets",
+    image: TSHIRT,
+    name: "Jackets(Red,sleeveless)",
     price: 300,
+    discountPrice: 200,
     discount: 2,
   },
   {
     id: "5",
-    image: PRODUCT2,
-    name: "Shoes",
+    image: TSHIRT,
+    name: "Shoes(Red,sleeveless)",
     price: 300,
+    discountPrice: 200,
     discount: 2,
   },
 ];

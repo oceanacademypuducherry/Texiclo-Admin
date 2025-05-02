@@ -1,18 +1,31 @@
-import { PRODUCT2 } from "../../../assets";
 import { PlaceHolder } from "../../shared";
-import { ProductComponent } from "../component";
+import {
+  FilterComponent,
+  ProductComponent,
+  SearchComponent,
+} from "../component";
+import { ProductsData } from "../data/productData";
 
 export const ProductPage = () => {
   return (
     <PlaceHolder>
-      <div>
-        {/* product Page */}
-        <ProductComponent
-          image={PRODUCT2}
-          title="t-shirts"
-          price={200}
-          discount={2}
-        />
+      <div className="mt-[50px] flex gap-20 p-3">
+        <FilterComponent />
+        <div className="flex flex-col">
+          <SearchComponent />
+          <div className="grid justify-center gap-6 p-6 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+            {ProductsData.map((product) => (
+              <ProductComponent
+                key={product.id}
+                image={product.image}
+                title={product.name}
+                price={product.price}
+                discount={product.discount}
+                discountprice={product.discountPrice}
+              />
+            ))}
+          </div>
+        </div>
       </div>
     </PlaceHolder>
   );
