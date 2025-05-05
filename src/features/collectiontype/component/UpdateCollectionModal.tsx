@@ -6,6 +6,7 @@ import {
   CollectionsData,
   setCollection,
   setCollectionUpdateMode,
+  updateCollection,
 } from "../redux";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { updateCollectionValidation } from "../validation";
@@ -40,19 +41,23 @@ export const UpdateCollectionModal = () => {
   };
 
   const handleUpdate: SubmitHandler<CollectionsData> = (newData) => {
-    console.log("updated", newData);
-    console.log(collection);
-    // You can dispatch updateCategoryThunk or similar here
+    const updatedData = {
+      ...newData,
+      image: _uploadedFile ? URL.createObjectURL(_uploadedFile) : newData.image,
+    };
+    dispatch(updateCollection(updatedData));
+    console.log("updated", updatedData);
   };
 
   const onDrop = (acceptedFiles: File[]) => {
     const myImage = acceptedFiles[0];
     setUploadedFile(myImage);
     if (!collection) return;
-    dispatch(
-      setCollection({ ...collection, image: URL.createObjectURL(myImage) }),
-    );
-    setValue("image", myImage);
+
+    // Store only the URL of the image in the state
+    const imageUrl = URL.createObjectURL(myImage);
+    dispatch(setCollection({ ...collection, image: imageUrl }));
+    setValue("image", imageUrl); // Update form with image URL
   };
 
   const { getRootProps, getInputProps } = useDropzone({

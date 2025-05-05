@@ -1,17 +1,22 @@
 import { IoMdCloseCircle } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../app/store";
-import { setIsDelete } from "../redux";
+import { deleteCategory, setIsDelete } from "../redux";
 
 export const DeleteConfirmationModal = ({}) => {
   const dispatch = useDispatch<AppDispatch>();
-  const { isDelete } = useSelector((state: RootState) => state.categories);
+  const { isDelete ,id} = useSelector((state: RootState) => state.categories);
 
   const handleClose = () => {
     dispatch(setIsDelete(false));
   };
   const handleConfirm = () => {
-    console.log("deleted");
+    console.log("Collection ID to delete:", id);
+        if (id) {
+          dispatch(deleteCategory(id));
+          dispatch(setIsDelete(false));
+          console.log("deleted..");
+        }
   };
 
 

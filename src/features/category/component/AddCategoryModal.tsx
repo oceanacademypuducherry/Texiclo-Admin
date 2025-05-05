@@ -4,7 +4,7 @@ import { useDropzone } from "react-dropzone"; // Import react-dropzone
 import { IoMdCloseCircle } from "react-icons/io";
 import { AppDispatch, RootState } from "../../../app/store";
 import { useDispatch, useSelector } from "react-redux";
-import { CategoryData, setCategory, setIsAdd } from "../redux";
+import { addCategory, CategoryData, setCategory, setIsAdd } from "../redux";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { addCategoryValidation } from "../validation";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -23,6 +23,13 @@ export const AddCategoryModal = () => {
 
   const handleAdd: SubmitHandler<CategoryData> = (newData) => {
     console.log(newData);
+    const categoryToAdd = {
+      id: newData.id,
+      name: newData.name,
+      image:image?URL.createObjectURL(image):"",
+    }
+    dispatch(addCategory(categoryToAdd))
+    handleClose()
   };
   const handleClose = () => {
     dispatch(setIsAdd(false));

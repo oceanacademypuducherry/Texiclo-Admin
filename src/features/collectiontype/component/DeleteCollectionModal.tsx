@@ -1,18 +1,24 @@
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../app/store";
 
-import { setCollectionDeleteMode } from "../redux";
+import { deleteCollection, setCollectionDeleteMode } from "../redux";
 import { IoMdCloseCircle } from "react-icons/io";
 
 export const DeleteCollectionModal = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { isDelete } = useSelector((state: RootState) => state.collections);
+  const { isDelete, id } = useSelector((state: RootState) => state.collections);
 
   const handleClose = () => {
     dispatch(setCollectionDeleteMode(false));
   };
+
   const handleConfirm = () => {
-    console.log("deleted");
+    console.log("Collection ID to delete:", id);
+    if (id) {
+      dispatch(deleteCollection(id));
+      dispatch(setCollectionDeleteMode(false));
+      console.log("deleted..");
+    }
   };
 
   if (!isDelete) return null;

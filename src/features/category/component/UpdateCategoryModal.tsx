@@ -3,7 +3,7 @@ import { IoMdCloseCircle } from "react-icons/io";
 import { useDropzone } from "react-dropzone";
 import { AppDispatch, RootState } from "../../../app/store";
 import { useDispatch, useSelector } from "react-redux";
-import { CategoryData, setCategory, setIsUpdate } from "../redux";
+import { CategoryData, setCategory, setIsUpdate, updateCategory } from "../redux";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { updateCategoryValidation } from "../validation";
@@ -36,15 +36,19 @@ export const UpdateCategoryModal = () => {
   };
 
   const handleUpdate: SubmitHandler<CategoryData> = (newData) => {
-    console.log("updated", newData);
-    console.log(category);
-    // You can dispatch updateCategoryThunk or similar here
+    const updatedData = {
+          ...newData,
+          image: _uploadedFile ? URL.createObjectURL(_uploadedFile) : newData.image,
+        };
+        dispatch(updateCategory(updatedData));
+        console.log("updated", updatedData);
   };
 
   const onDrop = (acceptedFiles: File[]) => {
     const myImage = acceptedFiles[0];
     setUploadedFile(myImage);
     if (!category) return;
+    
     dispatch(setCategory({ ...category, image: URL.createObjectURL(myImage) }));
     setValue("image", myImage);
   };

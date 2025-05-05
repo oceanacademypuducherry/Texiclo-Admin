@@ -20,8 +20,9 @@ import { CollectionData } from "../data/CollectionData";
 export const CollectionTypePage = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { isAdd } = useSelector((state: RootState) => state.collections);
-  console.log("sdfsad");
+  // console.log("sdfsad");
   const handleDelete = (id: string) => {
+    console.log(id, "id");
     dispatch(setCollectionDeleteMode(true));
     dispatch(setCollectionId(id));
   };
