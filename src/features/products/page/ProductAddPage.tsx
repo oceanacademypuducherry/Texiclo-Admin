@@ -14,8 +14,8 @@ export type ProductFormInputs = {
   previewImage: File[];
   productImage: File[];
   color: string;
-  gsm: string;
-  size: string;
+  gsm: string[];
+  size: string[];
   price: number;
   discount: number;
 };
@@ -26,6 +26,7 @@ export const ProductAddPage = () => {
     handleSubmit,
     setValue,
     watch,
+    control,
     formState: { errors },
   } = useForm<ProductFormInputs>({
     resolver: yupResolver(productSchema),
@@ -136,6 +137,7 @@ export const ProductAddPage = () => {
           errors={errors}
           setValue={setValue}
           watch={watch}
+          control={control}
         />
 
         <div className="mt-4 flex flex-col items-center gap-2">

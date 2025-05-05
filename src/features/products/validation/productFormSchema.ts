@@ -19,8 +19,17 @@ export const productSchema = yup.object({
     .notOneOf([null, undefined], "Product image is required"),
 
   color: yup.string().required("Color is required"),
-  gsm: yup.string().required("GSM is required"),
-  size: yup.string().required("Size is required"),
+  gsm: yup
+    .array()
+    .of(yup.string())
+    .min(1, "Select at least one GSM value")
+    .required("GSM is required"),
+
+  size: yup
+    .array()
+    .of(yup.string())
+    .min(1, "Select at least one Size")
+    .required("Size is required"),
 
   price: yup
     .number()
@@ -29,6 +38,6 @@ export const productSchema = yup.object({
 
   discount: yup
     .number()
-    .typeError("Discount must be a number")
-    .required("Discount is required"),
+    .required("Discount is required")
+    .typeError("Discount must be a number"),
 });

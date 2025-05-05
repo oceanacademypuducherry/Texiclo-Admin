@@ -1,20 +1,42 @@
 import React from "react";
-import { UseFormRegister, FieldErrors, UseFormWatch } from "react-hook-form";
 import { useDropzone } from "react-dropzone";
+import {
+  Controller,
+  FieldErrors,
+  UseFormRegister,
+  UseFormSetValue,
+  UseFormWatch,
+  Control,
+} from "react-hook-form";
+import Select from "react-select";
 import { ProductFormInputs } from "../page";
 
 interface Props {
   register: UseFormRegister<ProductFormInputs>;
   errors: FieldErrors<ProductFormInputs>;
-  setValue: any;
+  setValue: UseFormSetValue<ProductFormInputs>;
   watch: UseFormWatch<ProductFormInputs>;
+  control: Control<ProductFormInputs>;
 }
+
+const gsmOptions = [
+  { value: "120", label: "120" },
+  { value: "150", label: "150" },
+  { value: "180", label: "180" },
+];
+
+const sizeOptions = [
+  { value: "S", label: "S" },
+  { value: "M", label: "M" },
+  { value: "L", label: "L" },
+];
 
 export const ProductAddForm: React.FC<Props> = ({
   register,
   errors,
   setValue,
   watch,
+  control,
 }) => {
   const onProductDrop = (acceptedFiles: File[]) => {
     setValue("productImage", acceptedFiles, { shouldValidate: true });
@@ -72,24 +94,46 @@ export const ProductAddForm: React.FC<Props> = ({
         </div>
 
         <div>
-          <label>GSM:</label>
-          <select {...register("gsm")} className="w-full rounded border p-2">
-            <option value="">Select GSM</option>
-            <option value="120">120</option>
-            <option value="150">150</option>
-            <option value="180">180</option>
-          </select>
+          <label>GSM (Multiple):</label>
+          <Controller
+            name="gsm"
+            control={control}
+            render={({ field }) => (
+              <Select
+                isMulti
+                options={gsmOptions}
+                value={field.value?.map((val: string) =>
+                  gsmOptions.find((opt) => opt.value === val),
+                )}
+                onChange={(selected) =>
+                  field.onChange(selected.map((opt) => opt.value))
+                }
+                className="text-sm"
+              />
+            )}
+          />
           <p className="text-sm text-red-500">{errors.gsm?.message}</p>
         </div>
 
         <div>
-          <label>Size:</label>
-          <select {...register("size")} className="w-full rounded border p-2">
-            <option value="">Select size</option>
-            <option value="S">S</option>
-            <option value="M">M</option>
-            <option value="L">L</option>
-          </select>
+          <label>Size (Multiple):</label>
+          <Controller
+            name="size"
+            control={control}
+            render={({ field }) => (
+              <Select
+                isMulti
+                options={sizeOptions}
+                value={field.value?.map((val: string) =>
+                  sizeOptions.find((opt) => opt.value === val),
+                )}
+                onChange={(selected) =>
+                  field.onChange(selected.map((opt) => opt.value))
+                }
+                className="text-sm"
+              />
+            )}
+          />
           <p className="text-sm text-red-500">{errors.size?.message}</p>
         </div>
 
