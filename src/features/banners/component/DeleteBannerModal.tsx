@@ -1,18 +1,23 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../../app/store';
-import { setBannerDelete } from '../redux';
+import { deleteBanner, setBannerDelete } from '../redux';
 import { IoMdCloseCircle } from 'react-icons/io';
 
 export const DeleteBannerModal = () => {
   
    const dispatch = useDispatch<AppDispatch>();
-  const { isDelete } = useSelector((state: RootState) => state.banners);
+  const { isDelete ,id} = useSelector((state: RootState) => state.banners);
 
   const handleClose = () => {
     dispatch(setBannerDelete(false));
   };
   const handleConfirm = () => {
-    console.log("deleted");
+    console.log("banner ID to delete:", id);
+    if(id){
+      dispatch(deleteBanner(id))
+      dispatch(setBannerDelete(false));
+      console.log("deleted...")
+    }
   };
 
   if (!isDelete) return null;

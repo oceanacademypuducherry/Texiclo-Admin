@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { CollectionsData } from "../../collectiontype";
+
 
 interface ModelData {
   isUpdate: boolean;
@@ -7,7 +7,7 @@ interface ModelData {
   isDelete: boolean;
   id?: string;
   category?: CategoryData;
-  categorys?:CollectionsData[]
+  categorys?:CategoryData[]
 }
 export interface CategoryData {
   id?: string;

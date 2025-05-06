@@ -12,7 +12,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 export const AddCategoryModal = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { isAdd } = useSelector((state: RootState) => state.categories);
-  const [image, setImage] = useState<File | null>(null);
+  const [image, setImage] = useState<File|string | null>(null);
 
   const {
     register,
@@ -39,7 +39,7 @@ export const AddCategoryModal = () => {
   // Handle image upload with react-dropzone
   const onDrop = (acceptedFiles: File[]) => {
     const myImage = acceptedFiles[0];
-    setImage(myImage); // store File locally
+    setImage(URL.createObjectURL(myImage)); // store File locally
     setValue("image", myImage);
   };
 

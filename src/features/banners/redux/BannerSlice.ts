@@ -11,16 +11,16 @@ export interface BannersData {
 interface BannerState {
   isAdd: boolean;
   isDelete: boolean;
-  _id?: string;
+  id?: string;
+  banner?: BannersData;
   banners: BannersData[];
-  currentBanner?: BannersData;
+
 }
 
 const initialState: BannerState = {
   isAdd: false,
   isDelete: false,
   banners: [],
-  currentBanner: undefined,
 };
 
 const bannerSlice = createSlice({
@@ -37,24 +37,22 @@ const bannerSlice = createSlice({
     },
     // Set the ID for deletion
     setBannerId: (state, action: PayloadAction<string>) => {
-      state._id = action.payload;
+      state.id = action.payload;
     },
     setBanner: (state, action: PayloadAction<BannersData>) => {
-      state.currentBanner = action.payload;
+      state.banner = action.payload;
     },
     // Add new banner
     addBanner: (state, action: PayloadAction<BannersData>) => {
-      const newId = (state.banners.length + 1).toString();
-      state.banners.push({ ...action.payload, id: newId });
-    },
-    // Delete banner by ID
-    deleteBanner: (state) => {
-      if (state._id) {
-        state.banners = state.banners.filter(
-          (banner) => banner.id !== state._id,
-        );
-        state._id = undefined;
+      const exists = state.banners.some((col) => col.id === action.payload.id);
+      if (!exists) {
+        state.banners.push(action.payload);
       }
+    },
+    
+    // Delete banner by ID
+    deleteBanner: (state, action: PayloadAction<BannersData>) => {
+      state.banners = state.banners.filter((col) => col.id !== action.payload.id);
     },
   },
 });

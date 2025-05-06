@@ -11,8 +11,8 @@ import { MdClose } from "react-icons/md";
 
 export const AddBannerModal = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { isAdd } = useSelector((state: RootState) => state.banners);
-  const [image, setImage] = useState<File | null>(null);
+  const { isAdd,banner } = useSelector((state: RootState) => state.banners);
+  const [image, setImage] = useState<File |string| null>(null);
 
   const {
     register,
@@ -25,7 +25,12 @@ export const AddBannerModal = () => {
 
   const handleAdd: SubmitHandler<BannersData> = (newData) => {
     console.log(newData);
-    dispatch(addBanner(newData));
+    const bannerToAdd = {
+      id: newData.id,
+      position:newData.position,
+      image:image,
+    }
+    dispatch(addBanner(bannerToAdd));
     handleClose();
   };
   const handleClose = () => {
@@ -36,8 +41,9 @@ export const AddBannerModal = () => {
   // Handle image upload with react-dropzone
   const onDrop = (acceptedFiles: File[]) => {
     const myImage = acceptedFiles[0];
-    setImage(myImage); // store File locally
+    setImage(URL.createObjectURL(myImage)); // store File locally
     setValue("image", myImage);
+    
   };
 
   const { getRootProps, getInputProps } = useDropzone({
