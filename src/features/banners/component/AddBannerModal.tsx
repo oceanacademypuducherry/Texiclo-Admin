@@ -11,8 +11,8 @@ import { MdClose } from "react-icons/md";
 
 export const AddBannerModal = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { isAdd,banner } = useSelector((state: RootState) => state.banners);
-  const [image, setImage] = useState<File |string| null>(null);
+  const { isAdd, banner } = useSelector((state: RootState) => state.banners);
+  const [image, setImage] = useState<File | string | null>(null);
 
   const {
     register,
@@ -27,9 +27,9 @@ export const AddBannerModal = () => {
     console.log(newData);
     const bannerToAdd = {
       id: newData.id,
-      position:newData.position,
-      image:image,
-    }
+      position: newData.position,
+      image: typeof image === "string" ? image : URL.createObjectURL(image),
+    };
     dispatch(addBanner(bannerToAdd));
     handleClose();
   };
@@ -43,7 +43,6 @@ export const AddBannerModal = () => {
     const myImage = acceptedFiles[0];
     setImage(URL.createObjectURL(myImage)); // store File locally
     setValue("image", myImage);
-    
   };
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -112,7 +111,7 @@ export const AddBannerModal = () => {
               ) : (
                 <div className="relative h-40 w-full">
                   <img
-                    src={URL.createObjectURL(image)}
+                    src={image}
                     alt="Preview"
                     className="h-full w-full rounded-md object-cover"
                   />
