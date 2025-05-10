@@ -2,11 +2,12 @@ import { useState } from "react";
 import { PlaceHolder } from "../../shared";
 import {
   FilterComponent,
+  MobileFilterSidebar,
   ProductComponent,
   SearchComponent,
 } from "../component";
 import { ProductsData } from "../data/productData";
-import { MobileFilterSidebar } from "../component/MobileFilterSidebar";
+
 
 export const ProductPage = () => {
   const [showFilter, setShowFilter] = useState(false);
