@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import {
   Controller,
@@ -10,6 +10,7 @@ import {
 } from "react-hook-form";
 import Select from "react-select";
 import { ProductFormInputs } from "../page";
+import { MdOutlineCancel } from "react-icons/md";
 
 interface Props {
   register: UseFormRegister<ProductFormInputs>;
@@ -17,6 +18,8 @@ interface Props {
   setValue: UseFormSetValue<ProductFormInputs>;
   watch: UseFormWatch<ProductFormInputs>;
   control: Control<ProductFormInputs>;
+  index: number;
+  onRemove: () => void;
 }
 
 const gsmOptions = [
@@ -37,21 +40,37 @@ export const ProductAddForm: React.FC<Props> = ({
   setValue,
   watch,
   control,
+  index,
+  onRemove,
 }) => {
-  const onProductDrop = (acceptedFiles: File[]) => {
-    setValue("productImage", acceptedFiles, { shouldValidate: true });
-  };
-
+  const onProductDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      setValue(`products.${index}.productImage`, acceptedFiles, {
+        shouldValidate: true,
+      });
+    },
+    [index, setValue],
+  );
   const {
     getRootProps: getProductRootProps,
     getInputProps: getProductInputProps,
     isDragActive: isProductDragActive,
   } = useDropzone({ onDrop: onProductDrop, multiple: true });
 
-  const productImage = watch("productImage");
+  const productImage = watch(`products.${index}.productImage`);
 
   return (
-    <div className="rounded-md bg-[#F0F0F0] p-4">
+    <div className="relative rounded-md bg-[#F0F0F0] p-4">
+      {index > 0 && (
+        <div
+          onClick={onRemove}
+          className="absolute top-2 right-2 text-xl text-red-500 hover:text-red-700"
+          title="Remove Product"
+        >
+          <MdOutlineCancel />
+        </div>
+      )}
+
       <div>
         <label className="mb-1 block font-semibold">Product Image:</label>
         <div
@@ -78,25 +97,32 @@ export const ProductAddForm: React.FC<Props> = ({
             </p>
           )}
         </div>
-        <p className="text-sm text-red-500">{errors.productImage?.message}</p>
+        <p className="text-sm text-red-500">
+          {errors?.products?.[index]?.productImage?.message}
+        </p>
       </div>
 
       <div className="mt-4 flex flex-col gap-4">
         <div>
           <label>Color:</label>
-          <select {...register("color")} className="w-full rounded border p-2">
+          <select
+            {...register(`products.${index}.color`)}
+            className="w-full rounded border p-2"
+          >
             <option value="">Select color</option>
             <option value="Green">Green</option>
             <option value="Red">Red</option>
             <option value="Blue">Blue</option>
           </select>
-          <p className="text-sm text-red-500">{errors.color?.message}</p>
+          <p className="text-sm text-red-500">
+            {errors?.products?.[index]?.color?.message}
+          </p>
         </div>
 
         <div>
           <label>GSM (Multiple):</label>
           <Controller
-            name="gsm"
+            name={`products.${index}.gsm`}
             control={control}
             render={({ field }) => (
               <Select
@@ -112,13 +138,16 @@ export const ProductAddForm: React.FC<Props> = ({
               />
             )}
           />
-          <p className="text-sm text-red-500">{errors.gsm?.message}</p>
+          <p className="text-sm text-red-500">
+            {" "}
+            {errors?.products?.[index]?.gsm?.message}
+          </p>
         </div>
 
         <div>
           <label>Size (Multiple):</label>
           <Controller
-            name="size"
+            name={`products.${index}.size`}
             control={control}
             render={({ field }) => (
               <Select
@@ -134,7 +163,9 @@ export const ProductAddForm: React.FC<Props> = ({
               />
             )}
           />
-          <p className="text-sm text-red-500">{errors.size?.message}</p>
+          <p className="text-sm text-red-500">
+            {errors?.products?.[index]?.size?.message}
+          </p>
         </div>
 
         <div>
@@ -142,11 +173,14 @@ export const ProductAddForm: React.FC<Props> = ({
           <input
             type="number"
             step="0.01"
-            {...register("price")}
+            {...register(`products.${index}.price`)}
             className="w-full rounded border p-2"
             placeholder="Enter price"
           />
-          <p className="text-sm text-red-500">{errors.price?.message}</p>
+          <p className="text-sm text-red-500">
+            {" "}
+            {errors?.products?.[index]?.price?.message}
+          </p>
         </div>
 
         <div>
@@ -154,11 +188,14 @@ export const ProductAddForm: React.FC<Props> = ({
           <input
             type="number"
             step="0.01"
-            {...register("discount")}
+            {...register(`products.${index}.discount`)}
             className="w-full rounded border p-2"
             placeholder="Enter discount"
           />
-          <p className="text-sm text-red-500">{errors.discount?.message}</p>
+          <p className="text-sm text-red-500">
+            {" "}
+            {errors?.products?.[index]?.discount?.message}
+          </p>
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useDropzone } from "react-dropzone";
 import { IoMdAddCircle } from "react-icons/io";
@@ -12,12 +12,14 @@ export type ProductFormInputs = {
   category: string;
   description: string;
   previewImage: File[];
-  productImage: File[];
-  color: string;
-  gsm: string[];
-  size: string[];
-  price: number;
-  discount: number;
+  products: {
+    productImage: File[];
+    color: string;
+    gsm: string[];
+    size: string[];
+    price: number;
+    discount: number;
+  }[];
 };
 
 export const ProductAddPage = () => {
@@ -30,6 +32,14 @@ export const ProductAddPage = () => {
     formState: { errors },
   } = useForm<ProductFormInputs>({
     resolver: yupResolver(productSchema),
+    defaultValues: {
+      products: [{}],
+    },
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "products",
   });
 
   const onSubmit = (data: ProductFormInputs) => {
@@ -132,18 +142,27 @@ export const ProductAddPage = () => {
         </div>
 
         {/* Reusable Product Form Fields */}
-        <ProductAddForm
-          register={register}
-          errors={errors}
-          setValue={setValue}
-          watch={watch}
-          control={control}
-        />
+
+        {fields.map((field, index) => (
+          <ProductAddForm
+            key={field.id}
+            register={register}
+            errors={errors}
+            setValue={setValue}
+            watch={watch}
+            control={control}
+            index={index}
+            onRemove={() => {
+              if (fields.length > 1) remove(index);
+            }}
+          />
+        ))}
 
         <div className="mt-4 flex flex-col items-center gap-2">
           <IoMdAddCircle
             size={28}
             className="text-secondary hover:text-primary"
+            onClick={() => append({})}
           />
           <button
             type="submit"
