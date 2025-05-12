@@ -26,7 +26,7 @@ export const BannerPage = () => {
 
   const handleAdd = () => {
     dispatch(setBannerAdd(true));
-    const newPosition = BannerData.length + 1; // or any other logic to generate the position
+    const newPosition = BannerData.length + 1; 
     dispatch(setBanner({ id: "", image: null, position: newPosition }));
   };
 

@@ -8,7 +8,11 @@ import {
   Login,
 } from "../features";
 import { Checking } from "../features/Checking";
-import { ProductAddPage, ProductPage } from "../features/products";
+import {
+  ProductAddPage,
+  ProductPage,
+  ProductUpdatePage,
+} from "../features/products";
 
 export const router = createBrowserRouter([
   {
@@ -43,6 +47,10 @@ export const router = createBrowserRouter([
   {
     path: "/addproduct",
     element: <ProductAddPage />,
+  },
+  {
+    path: "/updateproduct",
+    element: <ProductUpdatePage />,
   },
   {
     path: "/checking",

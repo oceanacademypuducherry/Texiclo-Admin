@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { PlaceHolder } from "../../shared";
 import {
+  AddProductBtn,
   FilterComponent,
   MobileFilterSidebar,
   ProductComponent,
   SearchComponent,
 } from "../component";
 import { ProductsData } from "../data/productData";
-
+import { TbAdjustmentsAlt } from "react-icons/tb";
 
 export const ProductPage = () => {
   const [showFilter, setShowFilter] = useState(false);
@@ -15,18 +16,22 @@ export const ProductPage = () => {
   return (
     <PlaceHolder>
       {/* Filter button for small screens */}
-      <div className="flex justify-start px-4 md:hidden">
+      <div className="mt-10 flex items-center justify-between px-4 lg:hidden">
         <button
-          className="bg-primary tetx-secondary hover:text-primary hover:bg-secondary mt-4 mb-2 rounded px-4 py-2 font-medium"
+          className="bg-primary text-secondary hover:text-primary hover:bg-secondary flex items-center gap-1 rounded px-4 py-2 font-medium"
           onClick={() => setShowFilter(true)}
         >
+          <TbAdjustmentsAlt />
           Filter
         </button>
+        <div>
+          <AddProductBtn />
+        </div>
       </div>
 
       {/* Main layout */}
       <div className="md:mt[50px] mt-[10px] flex gap-20 p-3 md:gap-10">
-        <div className="hidden md:block">
+        <div className="mt-4 hidden lg:block">
           <FilterComponent />
         </div>
 

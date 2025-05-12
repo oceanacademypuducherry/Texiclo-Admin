@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { MdClose } from "react-icons/md"; // Cancel icon
-import { useDropzone } from "react-dropzone"; // Import react-dropzone
+import { MdClose } from "react-icons/md"; 
+import { useDropzone } from "react-dropzone"; 
 import { IoMdCloseCircle } from "react-icons/io";
 import { AppDispatch, RootState } from "../../../app/store";
 import { useDispatch, useSelector } from "react-redux";
@@ -36,10 +36,10 @@ export const AddCategoryModal = () => {
     dispatch(setCategory(null));
     setImage(null);
   };
-  // Handle image upload with react-dropzone
+  
   const onDrop = (acceptedFiles: File[]) => {
     const myImage = acceptedFiles[0];
-    setImage(URL.createObjectURL(myImage)); // store File locally
+    setImage(URL.createObjectURL(myImage)); 
     setValue("image", myImage);
   };
 

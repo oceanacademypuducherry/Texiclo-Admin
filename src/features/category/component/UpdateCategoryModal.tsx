@@ -32,7 +32,7 @@ export const UpdateCategoryModal = () => {
 
   const handleClose = () => {
     dispatch(setIsUpdate(false));
-    reset(); // Reset form on close
+    reset(); 
   };
 
   const handleUpdate: SubmitHandler<CategoryData> = (newData) => {

@@ -44,8 +44,8 @@ export const Login = () => {
     e: React.ChangeEvent<HTMLInputElement>,
     idx: number,
   ) => {
-    const value = e.target.value.replace(/\D/, ""); // Ensure only numbers are entered
-    if (value.length > 1) return; // Prevent entering more than one character
+    const value = e.target.value.replace(/\D/, ""); 
+    if (value.length > 1) return; 
 
     const updatedOtp = [...otp];
     updatedOtp[idx] = value;
@@ -67,7 +67,6 @@ export const Login = () => {
     }
   };
 
-  // Disable submit button until OTP is complete
   const isOtpComplete = otp.every((digit) => digit !== "");
 
   return (
