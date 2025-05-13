@@ -10,6 +10,7 @@ import {
 import { Checking } from "../features/Checking";
 import {
   ProductAddPage,
+  ProductDetailsPage,
   ProductPage,
   ProductUpdatePage,
 } from "../features/products";
@@ -45,11 +46,15 @@ export const router = createBrowserRouter([
     element: <ProductPage />,
   },
   {
+    path: "/products/:id",
+    element: <ProductDetailsPage />,
+  },
+  {
     path: "/addproduct",
     element: <ProductAddPage />,
   },
   {
-    path: "/updateproduct",
+    path: "/updateproduct/:id",
     element: <ProductUpdatePage />,
   },
   {

@@ -6,3 +6,5 @@ export * from "./MobileFilterSidebar";
 export * from "./AddProductBtn";
 export * from "./DeleteModal";
 export * from "./ProductForm.tsx";
+export * from "./ProductDetailComponent";
+export * from "./BackBtn";

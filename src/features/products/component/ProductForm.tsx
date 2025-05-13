@@ -2,19 +2,17 @@ import { useFieldArray, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useDropzone } from "react-dropzone";
 import { IoMdAddCircle } from "react-icons/io";
-import { productSchema } from "../validation"; 
-import { ProductAddForm } from "../component"; 
-
-
+import { productSchema } from "../validation";
+import { ProductAddForm } from "../component";
 
 export type ProductFormInputs = {
   productName: string;
   collectionType: string;
   category: string;
   description: string;
-  previewImage: File[];
+  previewImage: (File | string)[];
   products: {
-    productImage: File[];
+    productImage: (File | string)[];
     color: string;
     gsm: string[];
     size: string[];
@@ -23,17 +21,16 @@ export type ProductFormInputs = {
   }[];
 };
 
-
 type ProductFormProps = {
-  existingProductData?: ProductFormInputs; 
-  onSubmit: (data: ProductFormInputs) => void; 
+  existingProductData?: ProductFormInputs;
+  onSubmit: (data: ProductFormInputs) => void;
 };
 
 export const ProductForm = ({
   existingProductData,
   onSubmit,
 }: ProductFormProps) => {
-  const isUpdate = !!existingProductData; 
+  const isUpdate = !!existingProductData;
 
   const {
     register,
@@ -44,7 +41,7 @@ export const ProductForm = ({
     formState: { errors },
   } = useForm<ProductFormInputs>({
     resolver: yupResolver(productSchema),
-    defaultValues: existingProductData || { products: [{}] }, 
+    defaultValues: existingProductData || { products: [{}] },
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -63,7 +60,6 @@ export const ProductForm = ({
   } = useDropzone({ onDrop: onPreviewDrop, multiple: true });
 
   const previewImage = watch("previewImage");
-
 
   return (
     <div className="mx-auto max-w-3xl rounded-lg bg-white p-6 shadow-md">
@@ -127,14 +123,18 @@ export const ProductForm = ({
             <input {...getPreviewInputProps()} />
             {previewImage && previewImage.length > 0 ? (
               <div className="flex flex-wrap justify-center gap-4">
-                {previewImage.map((file, index) => (
-                  <img
-                    key={index}
-                    src={URL.createObjectURL(file)}
-                    alt={`Preview ${index + 1}`}
-                    className="h-24 w-24 rounded object-cover"
-                  />
-                ))}
+                {previewImage.map((file, index) => {
+                  const imageUrl =
+                    typeof file === "string" ? file : URL.createObjectURL(file);
+                  return (
+                    <img
+                      key={index}
+                      src={imageUrl}
+                      alt={`Preview ${index + 1}`}
+                      className="h-24 w-24 rounded object-cover"
+                    />
+                  );
+                })}
               </div>
             ) : (
               <p>

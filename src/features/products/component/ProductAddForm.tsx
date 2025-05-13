@@ -58,6 +58,12 @@ export const ProductAddForm: React.FC<Props> = ({
   } = useDropzone({ onDrop: onProductDrop, multiple: true });
 
   const productImage = watch(`products.${index}.productImage`);
+  const makeOptions = (data: string[] = []) => {
+    return data.map((e) => {
+      const option = { value: e, label: e };
+      return option;
+    });
+  };
 
   return (
     <div className="relative rounded-md bg-[#F0F0F0] p-4">
@@ -80,14 +86,18 @@ export const ProductAddForm: React.FC<Props> = ({
           <input {...getProductInputProps()} />
           {productImage && productImage.length > 0 ? (
             <div className="flex flex-wrap justify-center gap-4">
-              {productImage.map((file, index) => (
-                <img
-                  key={index}
-                  src={URL.createObjectURL(file)}
-                  alt={`Product ${index + 1}`}
-                  className="h-24 w-24 rounded object-cover"
-                />
-              ))}
+              {productImage.map((file, index) => {
+                const imageUrl =
+                  typeof file === "string" ? file : URL.createObjectURL(file); // Check if file is a string
+                return (
+                  <img
+                    key={index}
+                    src={imageUrl}
+                    alt={`Product ${index + 1}`}
+                    className="h-24 w-24 rounded object-cover"
+                  />
+                );
+              })}
             </div>
           ) : (
             <p>
@@ -128,9 +138,7 @@ export const ProductAddForm: React.FC<Props> = ({
               <Select
                 isMulti
                 options={gsmOptions}
-                value={field.value?.map((val: string) =>
-                  gsmOptions.find((opt) => opt.value === val),
-                )}
+                defaultValue={makeOptions(field.value || [])}
                 onChange={(selected) =>
                   field.onChange(selected.map((opt) => opt.value))
                 }
@@ -153,9 +161,11 @@ export const ProductAddForm: React.FC<Props> = ({
               <Select
                 isMulti
                 options={sizeOptions}
-                value={field.value?.map((val: string) =>
-                  sizeOptions.find((opt) => opt.value === val),
-                )}
+                value={
+                  field.value?.map((val: string) =>
+                    sizeOptions.find((opt) => opt.value === val),
+                  ) || []
+                }
                 onChange={(selected) =>
                   field.onChange(selected.map((opt) => opt.value))
                 }

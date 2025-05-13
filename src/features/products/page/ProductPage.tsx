@@ -32,7 +32,7 @@ export const ProductPage = () => {
       {/* Main layout */}
       <div className="md:mt[50px] mt-[10px] flex gap-20 p-3 md:gap-10">
         <div className="mt-4 hidden lg:block">
-          <FilterComponent />
+          <FilterComponent isVisible={ false} isSidenav={false} />
         </div>
 
         <div className="flex w-full flex-col">
@@ -40,6 +40,7 @@ export const ProductPage = () => {
           <div className="grid justify-center gap-6 p-6 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {ProductsData.map((product) => (
               <ProductComponent
+                id={product.id}
                 key={product.id}
                 image={product.image}
                 title={product.name}
