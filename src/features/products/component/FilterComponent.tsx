@@ -2,6 +2,10 @@ import { TbAdjustmentsAlt } from "react-icons/tb";
 import { CategoriesData } from "../../category/data/CategoriesData";
 import { CollectionData } from "../../collectiontype/data/CollectionData";
 import { FC, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../../app/store";
+import { resetFilters, setFilterCategory, setFilterCollection } from "../redux";
+import { Tooltip } from "react-tooltip";
 
 export const FilterComponent: FC<{
   isVisible: boolean;
@@ -9,10 +13,30 @@ export const FilterComponent: FC<{
 }> = ({ isVisible = false, isSidenav }) => {
   const [isFiltervisible, setIsFilterVisisble] = useState(isVisible);
 
+  const dispatch = useDispatch();
+  const selectedCategories = useSelector(
+    (state: RootState) => state.filter.selectedCategories,
+  );
+  const selectedCollections = useSelector(
+    (state: RootState) => state.filter.selectedCollections,
+  );
+
   const toggleFilter = () => {
     setIsFilterVisisble(!isFiltervisible);
   };
 
+  const handleCategoryChange = (category: string) => {
+    dispatch(setFilterCategory(category));
+    console.log("Selected Category:", category);
+  };
+
+  const handleCollectionChange = (collection: string) => {
+    dispatch(setFilterCollection(collection));
+    console.log("Selected Collections:", collection);
+  };
+  const handleReset = () => {
+    dispatch(resetFilters());
+  };
   return (
     <div className="w-[170px]">
       <button
@@ -35,7 +59,12 @@ export const FilterComponent: FC<{
                   key={category.id}
                   className="flex items-center gap-2 pl-2"
                 >
-                  <input type="checkbox" /> {category.name}
+                  <input
+                    type="checkbox"
+                    checked={selectedCategories.includes(category.name)}
+                    onChange={() => handleCategoryChange(category.name)}
+                  />{" "}
+                  {category.name}
                 </label>
               ))}
             </div>
@@ -50,13 +79,33 @@ export const FilterComponent: FC<{
                   key={collection.id}
                   className="flex items-center gap-2 pl-2"
                 >
-                  <input type="checkbox" /> {collection.name}
+                  <input
+                    type="checkbox"
+                    checked={selectedCollections.includes(collection.name)}
+                    onChange={() => handleCollectionChange(collection.name)}
+                  />{" "}
+                  {collection.name}
                 </label>
               ))}
             </div>
           </div>
         </div>
       )}
+      {/* Reset Filters Button */}
+      {(selectedCategories.length > 0 || selectedCollections.length > 0) && (
+        <button
+          onClick={handleReset}
+          disabled={
+            selectedCategories.length === 0 && selectedCollections.length === 0
+          }
+          data-tooltip-id="reset-tooltip"
+          data-tooltip-content="Clear all selected filters"
+          className="mt-2 rounded bg-red-500 px-3 py-1 text-white hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-gray-400"
+        >
+          Reset Filters
+        </button>
+      )}
+      <Tooltip id="reset-tooltip" />
     </div>
   );
 };

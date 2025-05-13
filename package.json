@@ -21,6 +21,7 @@
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.5.1",
     "react-select": "^5.10.1",
+    "react-tooltip": "^5.28.1",
     "texiclo-admin": "file:",
     "yup": "^1.6.1"
   },
