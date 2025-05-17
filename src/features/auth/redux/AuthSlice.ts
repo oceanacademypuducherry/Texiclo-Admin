@@ -1,18 +1,18 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-
 interface AuthState {
   email: string;
   isOtpVerified: boolean;
   isAuthenticated: boolean;
+  token: string | undefined;
 }
 
 const initialState: AuthState = {
   email: "",
+  token: undefined,
   isOtpVerified: false,
   isAuthenticated: false,
 };
-
 
 const authSlice = createSlice({
   name: "auth",
@@ -27,6 +27,7 @@ const authSlice = createSlice({
     authenticate(state) {
       if (state.isOtpVerified && state.email) {
         state.isAuthenticated = true;
+        state.token = "sa6f575sdsg5q7ew5t";
       }
     },
     logout(state) {
@@ -37,6 +38,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { setEmail, verifyOtp, authenticate, logout } = authSlice.actions
+export const { setEmail, verifyOtp, authenticate, logout } = authSlice.actions;
 
-export const AuthReducer=authSlice.reducer
+export const AuthReducer = authSlice.reducer;
