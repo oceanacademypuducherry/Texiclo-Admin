@@ -3,6 +3,7 @@ import { PlaceHolder } from "../../shared";
 import {
   AddCollectionModal,
   CollectionComponent,
+  CollectionSkeleton,
   DeleteCollectionModal,
   UpdateCollectionModal,
 } from "../component";
@@ -16,11 +17,20 @@ import {
   setCollectionUpdateMode,
 } from "../redux";
 import { CollectionData } from "../data/CollectionData";
+import { useEffect } from "react";
+import { GET_COLLECTIONTYPE } from "../service";
 
 export const CollectionTypePage = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { isAdd } = useSelector((state: RootState) => state.collections);
+  const { isAdd, collections, isLoading } = useSelector(
+    (state: RootState) => state.collections,
+  );
   // console.log("sdfsad");
+
+  useEffect(() => {
+    dispatch(GET_COLLECTIONTYPE());
+  }, [dispatch]);
+
   const handleDelete = (id: string) => {
     console.log(id, "id");
     dispatch(setCollectionDeleteMode(true));
@@ -59,17 +69,34 @@ export const CollectionTypePage = () => {
         </button>
       </div>
       {/* collection list */}
-      <div className="grid justify-center gap-6 p-6 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-        {CollectionData.map((collection) => (
-          <CollectionComponent
-            key={collection.id}
-            image={collection.image}
-            title={collection.name}
-            onDelete={() => handleDelete(collection.id)}
-            onUpdate={() => handleUpdate(collection)}
-          />
-        ))}
-      </div>
+      {isLoading ? (
+        // <p className="text-center">loading.....</p>
+        <div className="grid justify-center gap-6 p-6 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+          {Array.from({ length: 6 }).map((_, idx) => (
+            <CollectionSkeleton key={idx} />
+          ))}
+        </div>
+      ) : (
+        <div className="grid justify-center gap-6 p-6 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+          {collections && collections?.length > 0 ? (
+            collections.map((collection) => (
+              <CollectionComponent
+                key={collection.id}
+                image={collection.image}
+                title={collection.name}
+                onDelete={() => {
+                  if (collection.id) handleDelete(collection.id);
+                }}
+                onUpdate={() => handleUpdate(collection)}
+              />
+            ))
+          ) : (
+            <p className="col-span-full text-center text-gray-500">
+              No collections found.
+            </p>
+          )}
+        </div>
+      )}
     </PlaceHolder>
   );
 };

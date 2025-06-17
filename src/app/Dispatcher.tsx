@@ -47,7 +47,7 @@ export const Dispatcher: FC<DispatcherProps> = ({ children }) => {
     const handleVisibilityChange = () => {
       console.log("Visibility changed:", document.visibilityState);
       if (document.visibilityState === "visible") {
-        checkAuth();
+        // checkAuth();
       }
     };
 

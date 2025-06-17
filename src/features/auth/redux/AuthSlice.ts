@@ -11,7 +11,7 @@ const initialState: AuthState = {
   email: "",
   token: undefined,
   isOtpVerified: false,
-  isAuthenticated: false,
+  isAuthenticated: true,
 };
 
 const authSlice = createSlice({

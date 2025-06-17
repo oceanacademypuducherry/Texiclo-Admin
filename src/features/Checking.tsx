@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { DeleteModal, ProductFormInputs } from "./products";
 import { ProductForm } from "./products/component/ProductForm";
+import { Pagination } from "./shared";
 
 export const Checking = () => {
   const existingProductData = {
@@ -28,12 +30,17 @@ export const Checking = () => {
 
     console.log("Update Product:", data);
   };
+  const [page, setPage] = useState(1);
 
   return (
     <div>
+      <Pagination current={1} onChange={setPage} total={10} />
       {/* <DeleteModal /> */}
       {/* <ProductForm onSubmit={handleAddProduct} /> */}
-      <ProductForm onSubmit={handleUpdateProduct} existingProductData={existingProductData}/>
+      <ProductForm
+        onSubmit={handleUpdateProduct}
+        existingProductData={existingProductData}
+      />
     </div>
   );
 };

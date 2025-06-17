@@ -1,23 +1,29 @@
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../app/store";
 
-import { deleteCollection, setCollectionDeleteMode } from "../redux";
+import { setCollectionDeleteMode } from "../redux";
 import { IoMdCloseCircle } from "react-icons/io";
+import { DELETE_COLLECTION } from "../service";
 
 export const DeleteCollectionModal = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { isDelete, id } = useSelector((state: RootState) => state.collections);
+  const { isDelete, id, isLoading } = useSelector(
+    (state: RootState) => state.collections,
+  );
 
   const handleClose = () => {
     dispatch(setCollectionDeleteMode(false));
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     console.log("Collection ID to delete:", id);
     if (id) {
-      dispatch(deleteCollection(id));
-      dispatch(setCollectionDeleteMode(false));
-      console.log("deleted..");
+      try {
+        await dispatch(DELETE_COLLECTION(id)).unwrap();
+        handleClose();
+      } catch (error) {
+        console.error("Failed to delete collection:", error);
+      }
     }
   };
 
@@ -29,6 +35,7 @@ export const DeleteCollectionModal = () => {
         <button
           onClick={handleClose}
           className="hover:text-secondary absolute top-2 right-2 text-xl text-red-500"
+          disabled={isLoading}
         >
           <IoMdCloseCircle />
         </button>
@@ -40,12 +47,14 @@ export const DeleteCollectionModal = () => {
         <div className="flex flex-col justify-center gap-4 sm:flex-row">
           <button
             onClick={handleConfirm}
+            disabled={isLoading}
             className="bg-primary text-secondary hover:text-primary hover:bg-secondary w-full rounded-md px-6 py-3 font-medium sm:w-auto"
           >
             Yes
           </button>
           <button
             onClick={handleClose}
+            disabled={isLoading}
             className="bg-primary text-secondary hover:text-primary hover:bg-secondary w-full rounded-md px-6 py-3 font-medium sm:w-auto"
           >
             No

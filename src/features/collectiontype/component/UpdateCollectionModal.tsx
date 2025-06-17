@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../app/store";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -6,18 +6,22 @@ import {
   CollectionsData,
   setCollection,
   setCollectionUpdateMode,
-  updateCollection,
 } from "../redux";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { updateCollectionValidation } from "../validation";
 import { useDropzone } from "react-dropzone";
 import { IoMdCloseCircle } from "react-icons/io";
 import { MdClose } from "react-icons/md";
+import { UPDATE_COLLECTION } from "../service";
 
+interface UpdateCollectionFormData {
+  name: string;
+  image?: File | string | undefined;
+}
 export const UpdateCollectionModal = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const [_uploadedFile, setUploadedFile] = useState<File | null>(null);
-  const { isUpdate, collection } = useSelector(
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const { isUpdate, collection, isLoading } = useSelector(
     (state: RootState) => state.collections,
   );
 
@@ -27,37 +31,59 @@ export const UpdateCollectionModal = () => {
     setValue,
     handleSubmit,
     reset,
-  } = useForm<CollectionsData>({
+  } = useForm<UpdateCollectionFormData>({
     resolver: yupResolver(updateCollectionValidation),
-    defaultValues: {
-      name: collection?.name,
-      image: collection?.image,
-    },
   });
+
+  useEffect(() => {
+    if (collection) {
+      reset({ name: collection.name || "", image: collection?.image });
+      setUploadedFile(null);
+    }
+  }, [collection, reset]);
 
   const handleClose = () => {
     dispatch(setCollectionUpdateMode(false));
-    reset(); // Reset form on close
+    dispatch(setCollection({ id: "", name: "", image: null }));
+    setUploadedFile(null);
+    reset();
   };
 
-  const handleUpdate: SubmitHandler<CollectionsData> = (newData) => {
-    const updatedData = {
-      ...newData,
-      image: _uploadedFile ? URL.createObjectURL(_uploadedFile) : newData.image,
-    };
-    dispatch(updateCollection(updatedData));
-    console.log("updated", updatedData);
+  const handleUpdate: SubmitHandler<UpdateCollectionFormData> = async (
+    data,
+  ) => {
+    if (!collection?.id) return;
+
+    try {
+      const formData = new FormData();
+      formData.append("name", data.name);
+      if (uploadedFile) {
+        formData.append("image", uploadedFile);
+      }
+
+      await dispatch(
+        UPDATE_COLLECTION({
+          id: collection.id,
+          name: data.name,
+          image: uploadedFile || data.image,
+        }),
+      ).unwrap();
+
+      handleClose();
+    } catch (error) {
+      console.error("Failed to update collection:", error);
+    }
   };
 
   const onDrop = (acceptedFiles: File[]) => {
-    const myImage = acceptedFiles[0];
-    setUploadedFile(myImage);
-    if (!collection) return;
-
-    // Store only the URL of the image in the state
-    const imageUrl = URL.createObjectURL(myImage);
-    dispatch(setCollection({ ...collection, image: imageUrl }));
-    setValue("image", imageUrl); // Update form with image URL
+    const selectedFile = acceptedFiles[0];
+    if (selectedFile) {
+      setUploadedFile(selectedFile);
+      setValue("image", selectedFile);
+      // if (collection) {
+      //   dispatch(setCollection({...collection,image:selectedFile}))
+      // }
+    }
   };
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -66,7 +92,28 @@ export const UpdateCollectionModal = () => {
     maxFiles: 1,
   });
 
-  if (!isUpdate) return null;
+  const removeImage = () => {
+    setUploadedFile(null);
+    setValue("image", undefined);
+    // if (collection) {
+    //   dispatch(setCollection({ ...collection, image: null }));
+    // }
+  };
+
+  const getImageSrc = () => {
+    if (uploadedFile) {
+      return URL.createObjectURL(uploadedFile);
+    }
+    if (collection?.image && typeof collection.image === "string") {
+      return collection.image;
+    }
+    // if (collection?.image instanceof File) {
+    //   return URL.createObjectURL(collection.image);
+    // }
+    // return null;
+  };
+
+  if (!isUpdate || !collection) return null;
 
   return (
     <div className="bg-opacity-30 fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
@@ -78,6 +125,7 @@ export const UpdateCollectionModal = () => {
         <button
           type="button"
           onClick={handleClose}
+          disabled={isLoading}
           className="hover:text-secondary absolute top-2 right-2 text-xl text-red-400"
         >
           <IoMdCloseCircle />
@@ -94,17 +142,18 @@ export const UpdateCollectionModal = () => {
             <input
               type="text"
               {...register("name")}
-              defaultValue={collection?.name}
+              // defaultValue={collection?.name}
               className="mt-3 w-full rounded-md border p-2"
               placeholder="Enter category name"
-              onChange={(e) => {
-                if (collection) {
-                  dispatch(
-                    setCollection({ ...collection, name: e.target.value }),
-                  );
-                }
-                setValue("name", e.target.value);
-              }}
+              disabled={isLoading}
+              // onChange={(e) => {
+              //   if (collection) {
+              //     dispatch(
+              //       setCollection({ ...collection, name: e.target.value }),
+              //     );
+              //   }
+              //   setValue("name", e.target.value);
+              // }}
             />
             {errors.name && (
               <p className="text-left text-xs text-red-500">
@@ -123,8 +172,8 @@ export const UpdateCollectionModal = () => {
               {...getRootProps()}
               className="hover:border-primary flex w-full cursor-pointer flex-col items-center justify-center rounded-md border-2 border-dashed border-gray-400 p-4"
             >
-              <input {...getInputProps()} />
-              {!collection?.image ? (
+              <input {...getInputProps()} disabled={isLoading} />
+              {!getImageSrc() ? (
                 <div className="text-center text-gray-500">
                   <p>Drag & drop an image here, or click to select an image</p>
                   <p className="mt-2 text-sm text-gray-400">
@@ -135,9 +184,10 @@ export const UpdateCollectionModal = () => {
                 <div className="relative h-40 w-full">
                   <img
                     src={
-                      typeof collection.image === "string"
-                        ? collection.image
-                        : URL.createObjectURL(collection.image)
+                      getImageSrc()!
+                      // typeof collection.image === "string"
+                      //   ? collection.image
+                      //   : URL.createObjectURL(collection.image)
                     }
                     alt="Preview"
                     className="h-full w-full rounded-md object-cover"
@@ -145,14 +195,16 @@ export const UpdateCollectionModal = () => {
                   {/* Remove Uploaded Image */}
                   <button
                     type="button"
-                    onClick={() => {
-                      {
-                        dispatch(setCollection({ ...collection, image: "" }));
-                        setUploadedFile(null);
-                        setValue("image", "");
-                      }
-                    }}
+                    // onClick={() => {
+                    //   {
+                    //     dispatch(setCollection({ ...collection, image: "" }));
+                    //     setUploadedFile(null);
+                    //     setValue("image", "");
+                    //   }
+                    // }}
+                    onClick={removeImage}
                     className="absolute top-2 right-2 rounded-full bg-red-500 p-1 text-white"
+                    disabled={isLoading}
                   >
                     <MdClose />
                   </button>
@@ -172,8 +224,9 @@ export const UpdateCollectionModal = () => {
           <button
             type="submit"
             className="bg-primary text-secondary hover:bg-secondary hover:text-primary w-full rounded-md px-6 py-3 font-medium sm:w-auto"
+            disabled={isLoading}
           >
-            Update
+            {isLoading ? "Updating..." : "Update"}
           </button>
           <button
             type="button"

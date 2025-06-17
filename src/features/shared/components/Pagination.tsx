@@ -1,17 +1,30 @@
-import { MdOutlineKeyboardDoubleArrowRight } from "react-icons/md";
+import { MdOutlineKeyboardDoubleArrowRight as Arrow } from "react-icons/md";
 
-export const Pagination = () => {
+interface Props {
+  current: number;
+  total: number;
+  onChange: (page: number) => void;
+}
+
+export const Pagination = ({ current, total, onChange }: Props) => {
+  const nums = Array.from({ length: total }, (_, i) => i + 1);
+
   return (
     <div className="flex flex-wrap items-center justify-center gap-2 p-4">
-      {[1, 2, 3, 4].map((num) => (
-        <div
-          key={num}
-          className="bg-secondary flex h-[30px] min-w-[30px] items-center justify-center rounded-2xl px-2 text-sm text-white"
+      {nums.map((n) => (
+        <button
+          key={n}
+          onClick={() => onChange(n)}
+          className={`flex h-[30px] min-w-[30px] items-center justify-center rounded-2xl px-2 text-sm ${n === current ? "bg-primary text-white" : "bg-secondary text-white/70"}`}
         >
-          {num}
-        </div>
+          {n}
+        </button>
       ))}
-      <MdOutlineKeyboardDoubleArrowRight size={24} className="text-secondary" />
+      <Arrow
+        size={24}
+        className={`text-secondary cursor-pointer ${current === total && "opacity-40"}`}
+        onClick={() => current < total && onChange(current + 1)}
+      />
     </div>
   );
 };
