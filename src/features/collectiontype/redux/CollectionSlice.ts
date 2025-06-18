@@ -5,7 +5,6 @@ import {
   GET_COLLECTIONTYPE,
   UPDATE_COLLECTION,
 } from "../service";
-import { act } from "react";
 
 export interface CollectionsData {
   id?: string;
@@ -24,6 +23,10 @@ interface CollectionState {
   message: string;
   isError: boolean;
   success: boolean;
+  pagination: {
+    totalPages: number
+    currentPage:number
+  }
 }
 
 const initialState: CollectionState = {
@@ -37,6 +40,10 @@ const initialState: CollectionState = {
   message: "",
   isError: false,
   success: false,
+  pagination: {
+    totalPages: 1,
+    currentPage:1
+  }
 };
 
 const CollectionSlice = createSlice({
@@ -58,23 +65,7 @@ const CollectionSlice = createSlice({
     setCollection: (state, action: PayloadAction<CollectionsData | null>) => {
       state.collection = action.payload;
     },
-    // addCollection: (state, action: PayloadAction<CollectionsData>) => {
-    //   state.collections?.push(action.payload);
-    // },
-    // updateCollection: (state, action: PayloadAction<CollectionsData>) => {
-    //   const index = state.collections.findIndex(
-    //     (col) => col.id === action.payload.id,
-    //   );
-    //   if (index !== -1) {
-    //     state.collections[index] = action.payload;
-    //   }
-    // },
-
-    // deleteCollection: (state, action: PayloadAction<string>) => {
-    //   state.collections = state.collections.filter(
-    //     (col) => col.id !== action.payload,
-    //   );
-    // },
+    
     resetCollectionState: (state) => {
       state.isError = false;
       state.message = "";
@@ -93,6 +84,10 @@ const CollectionSlice = createSlice({
         state.isError = false;
         state.message = action.payload.message;
         state.collections = action.payload.data;
+        state.pagination = {
+          totalPages: action.payload.pagination.totalPages,
+          currentPage:action.payload.pagination.currentPage
+        }
       })
       .addCase(GET_COLLECTIONTYPE.rejected, (state, action) => {
         state.isLoading = false;
@@ -111,7 +106,6 @@ const CollectionSlice = createSlice({
         state.isLoading = false;
         state.success = true;
         state.isAdd = false;
-        // Add the new collection to the list
         state.collections.push(action.payload.data);
         state.message = action.payload.message;
       })
@@ -174,9 +168,6 @@ export const {
   setCollectionDeleteMode,
   setCollectionId,
   setCollection,
-  // addCollection,
-  // updateCollection,
-  // deleteCollection,
   resetCollectionState,
 } = CollectionSlice.actions;
 

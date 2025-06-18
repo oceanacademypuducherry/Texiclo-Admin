@@ -1,5 +1,13 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { ADD_CATEGORY, DELETE_CATEGORY, GET_CATEGORY, UPDATE_CATEGORY } from "../service";
 
+
+
+export interface CategoryData {
+  id?: string;
+  name: string;
+  image: string | File | null;
+}
 
 interface ModelData {
   isUpdate: boolean;
@@ -7,25 +15,24 @@ interface ModelData {
   isDelete: boolean;
   id?: string;
   category?: CategoryData;
-  categorys?:CategoryData[]
+  categorys: CategoryData[];
+  isLoading: boolean;
+  message: string;
+  isError: boolean;
+  success:boolean
 }
-export interface CategoryData {
-  id?: string;
-  name: string;
-  image: string | File | null;
-}
-
-export interface AddCategoryData {
-  name: string;
-  image: string | File | null;
-}
-
 
 const initialState: ModelData = {
+  categorys: [],
+  category:undefined,
   isAdd: false,
   isDelete: false,
   isUpdate: false,
-  categorys:[]
+  isLoading: false,
+  message: "",
+  isError: false,
+  success:false
+  
 };
 
 const CategorySlice = createSlice({
@@ -45,32 +52,93 @@ const CategorySlice = createSlice({
       state.id = action.payload;
     },
     setCategory: (state, action: PayloadAction<CategoryData | null>) => {
-      if (action.payload != null) {
-        state.category = action.payload;
-      }
+      
+      state.category = action.payload??undefined;
+     
     },
-    addCategory: (state, action: PayloadAction<CategoryData>) => {
-      if (state.categorys) {
-        state.categorys ==
-          state.categorys.map((col) =>
-            col.id === action.payload.id ? action.payload : col,
-          );
-      }
-    },
-    updateCategory: (state, action: PayloadAction<CategoryData>) => {
-      if (state.categorys) {
-        state.categorys = state.categorys.map((col) =>
-          col.id === action.payload.id ? action.payload : col,
-        );
-      }
-    },
+    resetCategoryState: (state) => {
+      state.isError = false
+      state.message = ""
+      state.success=false
+    }
 
-    deleteCategory: (state, action: PayloadAction<string>) => {
-      state.categorys = state.categorys?.filter(
-        (col) => col.id !== action.payload,
-      );
-    },
   },
+  extraReducers: (builder) => {
+    builder
+      .addCase(GET_CATEGORY.pending, (state) => {
+        state.isLoading = true;
+        state.isError = false;
+      })
+      .addCase(GET_CATEGORY.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.success = true;
+        state.categorys = action.payload.data;
+        state.message = action.payload.message;
+      })
+      .addCase(GET_CATEGORY.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = (action.payload as any)?.message || "Failed to fetch";
+      })
+
+      .addCase(ADD_CATEGORY.pending, (state) => {
+        state.isLoading = true;
+        state.isError = false;
+      })
+      .addCase(ADD_CATEGORY.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.success = true;
+        state.isAdd = false;
+        state.categorys.push(action.payload.data);
+        state.message = action.payload.message;
+      })
+      .addCase(ADD_CATEGORY.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = (action.payload as any)?.message || "Failed to add";
+      })
+
+      .addCase(UPDATE_CATEGORY.pending, (state) => {
+        state.isLoading = true;
+        state.isError = false;
+      })
+      .addCase(UPDATE_CATEGORY.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.success = true;
+        const index = state.categorys.findIndex(
+          (cat) => cat.id === action.payload.data.id,
+        );
+        if (index !== -1) {
+          state.categorys[index] = action.payload.data;
+        }
+        state.message = "Category updated successfully!";
+      })
+      .addCase(UPDATE_CATEGORY.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message =
+          (action.payload as any)?.message || "Failed to update category";
+      })
+
+      .addCase(DELETE_CATEGORY.pending, (state) => {
+        state.isLoading = true;
+        state.isError = false;
+      })
+      .addCase(DELETE_CATEGORY.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.success = true;
+        state.categorys = state.categorys.filter(
+          (cat) => cat.id !== action.meta.arg,
+        );
+        state.message = action.payload.message;
+      })
+      .addCase(DELETE_CATEGORY.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message =
+          (action.payload as any)?.message || "Failed to delete category";
+      });
+  }
 });
 export const {
   setIsUpdate,
@@ -78,9 +146,6 @@ export const {
   setIsDelete,
   setCategoryId,
   setCategory,
-  addCategory,
-  updateCategory,
-  deleteCategory
 } = CategorySlice.actions;
 
 export const CategoryReducer = CategorySlice.reducer;

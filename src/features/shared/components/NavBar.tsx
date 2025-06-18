@@ -9,7 +9,7 @@ import { VscTypeHierarchy } from "react-icons/vsc";
 
 export const NavBar = () => {
   return (
-    <div className="bg-primary flex h-screen w-[250px] flex-col justify-between p-4 text-black shadow-lg">
+    <div className="bg-primary sticky top-0 flex h-screen w-[250px] flex-col justify-between p-4 text-black shadow-lg">
       {/* Logo */}
       <div className="mb-6 flex items-center justify-center">
         <img

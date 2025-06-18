@@ -8,7 +8,7 @@ import { useDropzone } from "react-dropzone";
 import { IoMdCloseCircle } from "react-icons/io";
 import { MdClose } from "react-icons/md";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { ADD_COLLECTION } from "../service";
+import { ADD_COLLECTION, GET_COLLECTIONTYPE } from "../service";
 
 interface AddCollectionFormData {
   name: string;
@@ -17,7 +17,7 @@ interface AddCollectionFormData {
 
 export const AddCollectionModal = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { isAdd ,isLoading} = useSelector((state: RootState) => state.collections);
+  const { isAdd ,isLoading,pagination} = useSelector((state: RootState) => state.collections);
   const [image, setImage] = useState<File | null>(null);
 
   const {
@@ -40,6 +40,7 @@ export const AddCollectionModal = () => {
           image: image,
         }),
       ).unwrap();
+      await dispatch(GET_COLLECTIONTYPE(pagination.totalPages))
       handleClose();
     } catch (error) {
       console.error("Failed to add collection:", error);

@@ -1,72 +1,42 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { AdminAPI } from "../../../services";
 
-// export const GET_COLLECTIONTYPE = createAsyncThunk(
-//   "collectionType-get",
-//   async (_, thunkAPI) => {
-//     try {
-//       const response = await AdminAPI.get("collectionType/get/");
-//       const rawList = response.data.data ?? []
-//       const formattedData = rawList.data.map((item: any) => ({
-//         id: item._id,
-//         image: item.imageUrl, // match your component prop
-//         name: item.name,
-//       }));
 
-//       return { data: formattedData, message: "Fetched successfully" };
-//     } catch (error: any) {
-//       console.error(error);
-//       return thunkAPI.rejectWithValue(
-//         error.response?.data || { message: "Fetch failed" },
-//       );
-//     }
-//   },
-// );
-
-// export const ADD_COLLECTION = createAsyncThunk(
-//     "add-collection",
-//     async (img: File, thunkAPI) => {
-//         const formData = new FormData()
-//         formData.append("image", img)
-
-//         try {
-//             const response = await AdminAPI.post("collectionType/create/", formData,{
-//                 headers: {
-//                     "Content-Type": "multipart/form-data",
-//                   },
-//             });
-//             return response.data
-
-//         }  catch (error: any) {
-//             console.error(error);
-//             return thunkAPI.rejectWithValue(error.response?.data || error.message);
-//           }
-//     }
-// )
-export const GET_COLLECTIONTYPE = createAsyncThunk(
-  "collectionType/get",
-  async (_, thunkAPI) => {
-    try {
-      const response = await AdminAPI.get("collectionType/get/");
-      const rawData = response.data.data || [];
-
-      const formattedData = rawData.map((item: any) => ({
-        id: item._id,
-        image: item.imageUrl,
-        name: item.name,
-      }));
-
-      return {
-        data: formattedData,
-        message: "Collections fetched successfully",
-      };
-    } catch (error: any) {
-      return thunkAPI.rejectWithValue(
-        error.response?.data || { message: "Failed to fetch collections" },
-      );
-    }
+export const GET_COLLECTIONTYPE = createAsyncThunk<
+  {
+    data: any[];
+    pagination: {
+      currentPage: number;
+      totalPages: number;
+      totalResults: number;
+      hasMore: boolean;
+    };
+    message: string;
   },
-);
+  number, 
+  { rejectValue: { message: string } }
+>("collectionType/get", async (page = 1, thunkAPI) => {
+  try {
+    const response = await AdminAPI.get(`collectionType/get/?page=${page}`);
+    const rawData = response.data.data || [];
+
+    const formattedData = rawData.map((item: any) => ({
+      id: item._id,
+      image: item.imageUrl,
+      name: item.name,
+    }));
+
+    return {
+      data: formattedData,
+      pagination: response.data.pagination,
+      message: "Collections fetched successfully",
+    };
+  } catch (error: any) {
+    return thunkAPI.rejectWithValue(
+      error.response?.data || { message: "Failed to fetch collections" },
+    );
+  }
+});
 
 export const ADD_COLLECTION = createAsyncThunk(
   "collectionType/add",

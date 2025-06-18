@@ -3,16 +3,24 @@ import { IoMdCloseCircle } from "react-icons/io";
 import { useDropzone } from "react-dropzone";
 import { AppDispatch, RootState } from "../../../app/store";
 import { useDispatch, useSelector } from "react-redux";
-import { CategoryData, setCategory, setIsUpdate, updateCategory } from "../redux";
-import { useState } from "react";
+import { CategoryData, setCategory, setIsUpdate } from "../redux";
+import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { updateCategoryValidation } from "../validation";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { UPDATE_CATEGORY } from "../service";
+
+interface UpdateCategoryFormData {
+  name: string;
+  image?: File | string | undefined;
+}
+
+
 
 export const UpdateCategoryModal = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const [_uploadedFile, setUploadedFile] = useState<File | null>(null);
-  const { isUpdate, category } = useSelector(
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const { isUpdate, category ,isLoading} = useSelector(
     (state: RootState) => state.categories,
   );
 
@@ -24,33 +32,52 @@ export const UpdateCategoryModal = () => {
     reset,
   } = useForm<CategoryData>({
     resolver: yupResolver(updateCategoryValidation),
-    defaultValues: {
-      name: category?.name,
-      image: category?.image,
-    },
+    
   });
+
+
+  useEffect(() => {
+    if (category) {
+      reset({ name: category.name || "", image: category?.image });
+      setUploadedFile(null);
+    }
+  }, [category, reset]);
 
   const handleClose = () => {
     dispatch(setIsUpdate(false));
+    dispatch(setCategory({ id: "", name: "", image: null }));
     reset(); 
   };
 
-  const handleUpdate: SubmitHandler<CategoryData> = (newData) => {
-    const updatedData = {
-          ...newData,
-          image: _uploadedFile ? URL.createObjectURL(_uploadedFile) : newData.image,
-        };
-        dispatch(updateCategory(updatedData));
-        console.log("updated", updatedData);
+  const handleUpdate: SubmitHandler<UpdateCategoryFormData> = async(data) => {
+    if (!category?.id) return
+    
+    try {
+      const formData = new FormData()
+      formData.append("name", data.name)
+      if (uploadedFile) {
+        formData.append("image",uploadedFile)
+      }
+      await dispatch(
+        UPDATE_CATEGORY({
+          id: category.id,
+          name: data.name,
+          image:uploadedFile ||data.image
+        })
+      ).unwrap()
+      handleClose()
+    } catch (error) {
+      console.error("failed to update category",error)
+    }
   };
 
   const onDrop = (acceptedFiles: File[]) => {
     const myImage = acceptedFiles[0];
-    setUploadedFile(myImage);
-    if (!category) return;
+    if (myImage) {
+      setUploadedFile(myImage);
+      setValue("image", myImage);
+    }
     
-    dispatch(setCategory({ ...category, image: URL.createObjectURL(myImage) }));
-    setValue("image", myImage);
   };
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -58,6 +85,21 @@ export const UpdateCategoryModal = () => {
     accept: { "image/*": [] },
     maxFiles: 1,
   });
+
+  const removeImage = () => {
+    setUploadedFile(null);
+    setValue("image", undefined);
+    
+  };
+  const getImageSrc = () => {
+    if (uploadedFile) {
+      return URL.createObjectURL(uploadedFile);
+    }
+    if (category?.image && typeof category.image === "string") {
+      return category.image;
+    }
+    
+  };
 
   if (!isUpdate) return null;
 
@@ -71,6 +113,7 @@ export const UpdateCategoryModal = () => {
         <button
           type="button"
           onClick={handleClose}
+          disabled={isLoading}
           className="hover:text-secondary absolute top-2 right-2 text-xl text-red-400"
         >
           <IoMdCloseCircle />
@@ -85,15 +128,16 @@ export const UpdateCategoryModal = () => {
             <input
               type="text"
               {...register("name")}
-              defaultValue={category?.name}
+              // defaultValue={category?.name}
               className="mt-3 w-full rounded-md border p-2"
               placeholder="Enter category name"
-              onChange={(e) => {
-                if (category) {
-                  dispatch(setCategory({ ...category, name: e.target.value }));
-                }
-                setValue("name", e.target.value);
-              }}
+              disabled={isLoading}
+              // onChange={(e) => {
+              //   if (category) {
+              //     dispatch(setCategory({ ...category, name: e.target.value }));
+              //   }
+              //   setValue("name", e.target.value);
+              // }}
             />
             {errors.name && (
               <p className="text-left text-xs text-red-500">
@@ -112,7 +156,7 @@ export const UpdateCategoryModal = () => {
               {...getRootProps()}
               className="hover:border-primary flex w-full cursor-pointer flex-col items-center justify-center rounded-md border-2 border-dashed border-gray-400 p-4"
             >
-              <input {...getInputProps()} />
+              <input {...getInputProps()} disabled={isLoading} />
               {!category?.image ? (
                 <div className="text-center text-gray-500">
                   <p>Drag & drop an image here, or click to select an image</p>
@@ -124,9 +168,10 @@ export const UpdateCategoryModal = () => {
                 <div className="relative h-40 w-full">
                   <img
                     src={
-                      typeof category.image === "string"
-                        ? category.image
-                        : URL.createObjectURL(category.image)
+                      getImageSrc()!
+                      // typeof category.image === "string"
+                      //   ? category.image
+                      //   : URL.createObjectURL(category.image)
                     }
                     alt="Preview"
                     className="h-full w-full rounded-md object-cover"
@@ -134,13 +179,8 @@ export const UpdateCategoryModal = () => {
                   {/* Remove Uploaded Image */}
                   <button
                     type="button"
-                    onClick={() => {
-                      {
-                        dispatch(setCategory({ ...category, image: "" }));
-                        setUploadedFile(null);
-                        setValue("image", "");
-                      }
-                    }}
+                    onClick={removeImage}
+                    disabled={isLoading}
                     className="absolute top-2 right-2 rounded-full bg-red-500 p-1 text-white"
                   >
                     <MdClose />
@@ -160,9 +200,10 @@ export const UpdateCategoryModal = () => {
         <div className="mt-4 flex justify-center gap-4">
           <button
             type="submit"
+            disabled={isLoading}
             className="bg-primary text-secondary hover:bg-secondary hover:text-primary w-full rounded-md px-6 py-3 font-medium sm:w-auto"
           >
-            Update
+            {isLoading ? "Updating..." : "Update"}
           </button>
           <button
             type="button"

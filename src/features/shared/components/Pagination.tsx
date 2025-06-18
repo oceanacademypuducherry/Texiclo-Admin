@@ -15,14 +15,16 @@ export const Pagination = ({ current, total, onChange }: Props) => {
         <button
           key={n}
           onClick={() => onChange(n)}
-          className={`flex h-[30px] min-w-[30px] items-center justify-center rounded-2xl px-2 text-sm ${n === current ? "bg-primary text-white" : "bg-secondary text-white/70"}`}
+          className={`text-medium flex h-[30px] min-w-[30px] items-center justify-center rounded-2xl px-2 ${n === current ? "bg-secondary text-primary" : "text-secondary"}`}
         >
           {n}
         </button>
       ))}
       <Arrow
         size={24}
-        className={`text-secondary cursor-pointer ${current === total && "opacity-40"}`}
+        className={`text-secondary ${
+          current === total ? "cursor-not-allowed opacity-40" : "cursor-pointer"
+        }`}
         onClick={() => current < total && onChange(current + 1)}
       />
     </div>

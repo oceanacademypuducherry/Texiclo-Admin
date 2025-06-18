@@ -1,21 +1,25 @@
 import { IoMdCloseCircle } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../app/store";
-import { deleteCategory, setIsDelete } from "../redux";
+import { setIsDelete } from "../redux";
+import { DELETE_CATEGORY } from "../service";
 
 export const DeleteConfirmationModal = ({}) => {
   const dispatch = useDispatch<AppDispatch>();
-  const { isDelete ,id} = useSelector((state: RootState) => state.categories);
+  const { isDelete ,id,isLoading} = useSelector((state: RootState) => state.categories);
 
   const handleClose = () => {
     dispatch(setIsDelete(false));
   };
-  const handleConfirm = () => {
-    console.log("Collection ID to delete:", id);
+  const handleConfirm = async() => {
+    console.log("Category ID to delete:", id);
         if (id) {
-          dispatch(deleteCategory(id));
-          dispatch(setIsDelete(false));
-          console.log("deleted..");
+          try {
+            await dispatch(DELETE_CATEGORY(id)).unwrap()
+            handleClose()
+          } catch (error) {
+            console.error("failed to delete category",error)
+          }
         }
   };
 
@@ -40,12 +44,14 @@ export const DeleteConfirmationModal = ({}) => {
         <div className="flex flex-col justify-center gap-4 sm:flex-row">
           <button
             onClick={handleConfirm}
+            disabled={isLoading}
             className="bg-primary text-secondary hover:text-primary hover:bg-secondary w-full rounded-md px-6 py-3 font-medium sm:w-auto"
           >
             Yes
           </button>
           <button
             onClick={handleClose}
+            disabled={isLoading}
             className="bg-primary text-secondary hover:text-primary hover:bg-secondary w-full rounded-md px-6 py-3 font-medium sm:w-auto"
           >
             No

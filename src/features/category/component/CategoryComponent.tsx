@@ -15,11 +15,21 @@ export const CategoryComponent: FC<CategoryProps> = ({
   onUpdate,
   onDelete,
 }) => {
+  const getImageSrc = () => {
+    if (typeof image === "string") {
+      return image;
+    }
+    if (image instanceof File) {
+      return URL.createObjectURL(image);
+    }
+    return "/placeholder-image.jpg"; // Fallback image
+  };
+
   return (
     <div className="relative flex w-[300px] flex-col items-center rounded-lg bg-white p-4 shadow-lg transition-all duration-300 hover:shadow-2xl">
       <div className="mb-4">
         <img
-          src={image}
+          src={getImageSrc()}
           alt={title}
           className="h-48 w-48 rounded-md object-cover"
         />

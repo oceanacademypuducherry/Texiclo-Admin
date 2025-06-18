@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { PlaceHolder } from "../../shared";
+import { Pagination, PlaceHolder } from "../../shared";
 import {
   AddCollectionModal,
   CollectionComponent,
@@ -16,23 +16,26 @@ import {
   setCollectionId,
   setCollectionUpdateMode,
 } from "../redux";
-import { CollectionData } from "../data/CollectionData";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { GET_COLLECTIONTYPE } from "../service";
 
 export const CollectionTypePage = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { isAdd, collections, isLoading } = useSelector(
+  const { isAdd, collections, isLoading, pagination } = useSelector(
     (state: RootState) => state.collections,
   );
-  // console.log("sdfsad");
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
-    dispatch(GET_COLLECTIONTYPE());
-  }, [dispatch]);
+    dispatch(GET_COLLECTIONTYPE(currentPage));
+  }, [dispatch, currentPage]);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   const handleDelete = (id: string) => {
-    console.log(id, "id");
+    // console.log(id, "id");
     dispatch(setCollectionDeleteMode(true));
     dispatch(setCollectionId(id));
   };
@@ -63,7 +66,7 @@ export const CollectionTypePage = () => {
       <div className="mb-4 flex w-full justify-end">
         <button
           onClick={handleAdd}
-          className="bg-primary hover:bg-secondary hover:text-primary rounded-xl px-6 py-3 text-sm font-medium sm:text-base lg:text-lg"
+          className="bg-primary hover:bg-secondary hover:text-primary mr-4 rounded-xl px-6 py-3 text-sm font-medium sm:text-base lg:text-lg"
         >
           Add Collection
         </button>
@@ -71,31 +74,43 @@ export const CollectionTypePage = () => {
       {/* collection list */}
       {isLoading ? (
         // <p className="text-center">loading.....</p>
-        <div className="grid justify-center gap-6 p-6 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+        <div className="grid justify-items-center gap-6 p-6 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3">
           {Array.from({ length: 6 }).map((_, idx) => (
             <CollectionSkeleton key={idx} />
           ))}
         </div>
       ) : (
-        <div className="grid justify-center gap-6 p-6 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-          {collections && collections?.length > 0 ? (
-            collections.map((collection) => (
-              <CollectionComponent
-                key={collection.id}
-                image={collection.image}
-                title={collection.name}
-                onDelete={() => {
-                  if (collection.id) handleDelete(collection.id);
-                }}
-                onUpdate={() => handleUpdate(collection)}
+        <>
+          <div className="grid justify-items-center gap-6 p-6 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3">
+            {collections && collections?.length > 0 ? (
+              collections.map((collection) => (
+                <CollectionComponent
+                  key={collection.id}
+                  image={collection.image}
+                  title={collection.name}
+                  onDelete={() => {
+                    if (collection.id) handleDelete(collection.id);
+                  }}
+                  onUpdate={() => handleUpdate(collection)}
+                />
+              ))
+            ) : (
+              <p className="col-span-full text-center text-gray-500">
+                No collections found.
+              </p>
+            )}
+          </div>
+
+          <div className="fixed bottom-0 left-0 z-40 w-full p-3">
+            <div className="mx-auto flex max-w-screen-md justify-center">
+              <Pagination
+                current={pagination.currentPage}
+                total={pagination.totalPages}
+                onChange={handlePageChange}
               />
-            ))
-          ) : (
-            <p className="col-span-full text-center text-gray-500">
-              No collections found.
-            </p>
-          )}
-        </div>
+            </div>
+          </div>
+        </>
       )}
     </PlaceHolder>
   );

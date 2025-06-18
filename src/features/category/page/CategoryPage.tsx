@@ -5,7 +5,6 @@ import {
   AddCategoryModal,
   CategoryComponent,
 } from "../component";
-import { CategoriesData } from "../data/CategoriesData";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../app/store";
 import {
@@ -16,10 +15,20 @@ import {
   setIsDelete,
   setIsUpdate,
 } from "../redux";
+import { useEffect } from "react";
+import { GET_CATEGORY } from "../service";
+import { CollectionSkeleton } from "../../collectiontype";
 
 export const CategoryPage = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { isAdd } = useSelector((state: RootState) => state.categories);
+  const { isAdd, isLoading, categorys } = useSelector(
+    (state: RootState) => state.categories,
+  );
+
+  useEffect(() => {
+    dispatch(GET_CATEGORY());
+  }, [dispatch]);
+
   const handleDelete = (id: string) => {
     dispatch(setIsDelete(true));
     dispatch(setCategoryId(id));
@@ -51,24 +60,38 @@ export const CategoryPage = () => {
       <div className="mb-4 flex w-full justify-end">
         <button
           onClick={handleAdd}
-          className="bg-primary hover:bg-secondary hover:text-primary rounded-xl px-6 py-3 text-sm font-medium sm:text-base lg:text-lg"
+          className="bg-primary hover:bg-secondary hover:text-primary mr-4 rounded-xl px-6 py-3 text-sm font-medium sm:text-base lg:text-lg"
         >
           Add Category
         </button>
       </div>
 
       {/* Product List */}
-      <div className="grid justify-center gap-6 p-6 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-        {CategoriesData.map((category) => (
-          <CategoryComponent
-            key={category.id}
-            image={category.image}
-            title={category.name}
-            onDelete={() => handleDelete(category.id)}
-            onUpdate={() => handleUpdate(category)}
-          />
-        ))}
-      </div>
+      {isLoading ? (
+        <div className="grid justify-items-center gap-6 p-6 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, idx) => (
+            <CollectionSkeleton key={idx} />
+          ))}
+        </div>
+      ) : (
+        <div className="grid justify-items-center gap-6 p-6 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3">
+          {categorys && categorys.length > 0 ? (
+            categorys.map((category) => (
+              <CategoryComponent
+                key={category.id}
+                image={category.image}
+                title={category.name}
+                onDelete={() => category.id && handleDelete(category.id)}
+                onUpdate={() => handleUpdate(category)}
+              />
+            ))
+          ) : (
+            <p className="col-span-full text-center text-gray-500">
+              No category found.
+            </p>
+          )}
+        </div>
+      )}
     </PlaceHolder>
   );
 };

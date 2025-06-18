@@ -4,14 +4,22 @@ import { useDropzone } from "react-dropzone";
 import { IoMdCloseCircle } from "react-icons/io";
 import { AppDispatch, RootState } from "../../../app/store";
 import { useDispatch, useSelector } from "react-redux";
-import { addCategory, CategoryData, setCategory, setIsAdd } from "../redux";
+import {  CategoryData, setCategory, setIsAdd } from "../redux";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { addCategoryValidation } from "../validation";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { ADD_CATEGORY } from "../service";
+
+interface AddCategoryFormData {
+  name: string;
+  image: File;
+}
+
+
 
 export const AddCategoryModal = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { isAdd } = useSelector((state: RootState) => state.categories);
+  const { isAdd ,isLoading} = useSelector((state: RootState) => state.categories);
   const [image, setImage] = useState<File|string | null>(null);
 
   const {
@@ -19,27 +27,35 @@ export const AddCategoryModal = () => {
     formState: { errors },
     setValue,
     handleSubmit,
-  } = useForm<CategoryData>({ resolver: yupResolver(addCategoryValidation) });
+    reset
+  } = useForm<AddCategoryFormData>({
+    resolver: yupResolver(addCategoryValidation),
+  });
 
-  const handleAdd: SubmitHandler<CategoryData> = (newData) => {
-    console.log(newData);
-    const categoryToAdd = {
-      id: newData.id,
-      name: newData.name,
-      image:image?URL.createObjectURL(image):"",
+  const handleAdd: SubmitHandler<AddCategoryFormData> = async (formData) => {
+    if (!image) return;
+    try {
+      await dispatch(
+        ADD_CATEGORY({
+          name: formData.name,
+          image: image,
+        })
+      ).unwrap()
+      handleClose()
+    } catch (error) {
+      console.error("failed to add category",error)
     }
-    dispatch(addCategory(categoryToAdd))
-    handleClose()
   };
   const handleClose = () => {
     dispatch(setIsAdd(false));
     dispatch(setCategory(null));
     setImage(null);
+    reset()
   };
   
   const onDrop = (acceptedFiles: File[]) => {
     const myImage = acceptedFiles[0];
-    setImage(URL.createObjectURL(myImage)); 
+    setImage(myImage); 
     setValue("image", myImage);
   };
 
@@ -61,6 +77,7 @@ export const AddCategoryModal = () => {
         {/* Cancel Icon */}
         <button
           onClick={handleClose}
+          disabled={isLoading}
           type="button"
           className="hover:text-secondary absolute top-2 right-2 text-xl text-red-400"
         >
@@ -96,7 +113,7 @@ export const AddCategoryModal = () => {
               {...getRootProps()}
               className="hover:border-primary flex w-full cursor-pointer flex-col items-center justify-center rounded-md border-2 border-dashed border-gray-400 p-4"
             >
-              <input {...getInputProps()} />
+              <input {...getInputProps()} disabled={isLoading} />
               {!image ? (
                 <div className="text-center text-gray-500">
                   <p>Drag & drop an image here, or click to select an image</p>
@@ -112,7 +129,10 @@ export const AddCategoryModal = () => {
                     className="h-full w-full rounded-md object-cover"
                   />
                   <button
-                    onClick={() => setImage(null)} // Clear image preview
+                    onClick={() => {
+                      setImage(null);
+                      setValue("image", undefined as any);
+                    }} // Clear image preview
                     className="absolute top-2 right-2 rounded-full bg-red-500 p-1 text-white"
                   >
                     <MdClose />
@@ -131,12 +151,14 @@ export const AddCategoryModal = () => {
         <div className="mt-4 flex justify-center gap-4">
           <button
             type="submit"
+            disabled={isLoading}
             className="bg-primary text-secondary hover:bg-secondary hover:text-primary w-full rounded-md px-6 py-3 font-medium sm:w-auto"
           >
-            Add
+            {isLoading ? "Adding..." : "Add"}
           </button>
           <button
             onClick={handleClose}
+            disabled={isLoading}
             type="button"
             className="bg-primary text-secondary hover:bg-secondary hover:text-primary w-full rounded-md px-6 py-3 font-medium sm:w-auto"
           >
