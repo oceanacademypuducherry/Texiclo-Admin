@@ -1,66 +1,82 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../app/store";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { addBanner, BannersData, setBanner, setBannerAdd } from "../redux";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { addBannerValidation } from "../validation";
 import { useDropzone } from "react-dropzone";
 import { IoMdCloseCircle } from "react-icons/io";
 import { MdClose } from "react-icons/md";
 
-export const AddBannerModal = () => {
+import {
+  updateBanner,
+  setBannerUpdate,
+  setBanner,
+  BannersData,
+} from "../redux";
+import { addBannerValidation } from "../validation";
+
+export const UpdateBannerModal = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { isAdd, banner } = useSelector((state: RootState) => state.banners);
+  const { isUpdate, banner } = useSelector((state: RootState) => state.banners);
   const [image, setImage] = useState<File | string | null>(null);
 
   const {
     register,
-    formState: { errors },
     setValue,
     handleSubmit,
+    formState: { errors },
   } = useForm<BannersData>({
     resolver: yupResolver(addBannerValidation),
+    defaultValues: {
+      position: banner?.position || 1,
+    },
   });
 
-  const handleAdd: SubmitHandler<BannersData> = (newData) => {
-    console.log(newData);
-    const bannerToAdd = {
-      id: newData.id,
-      position: newData.position,
-      image: typeof image === "string" ? image : URL.createObjectURL(image),
-    };
-    dispatch(addBanner(bannerToAdd));
-    handleClose();
-  };
-  const handleClose = () => {
-    dispatch(setBannerAdd(false));
-    dispatch(setBanner(null));
-    setImage(null);
-  };
-  // Handle image upload with react-dropzone
+  useEffect(() => {
+    if (banner?.image) {
+      setImage(banner.image);
+      setValue("position", banner.position);
+    }
+  }, [banner, setValue]);
+
   const onDrop = (acceptedFiles: File[]) => {
-    const myImage = acceptedFiles[0];
-    setImage(URL.createObjectURL(myImage)); // store File locally
-    setValue("image", myImage);
+    const file = acceptedFiles[0];
+    setImage(file);
+    setValue("image", file);
   };
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
-    accept: {
-      "image/*": [],
-    },
+    accept: { "image/*": [] },
     maxFiles: 1,
   });
-  if (!isAdd) return null;
+
+  const handleClose = () => {
+    dispatch(setBannerUpdate(false));
+    dispatch(setBanner(null));
+    setImage(null);
+  };
+
+  const handleUpdate: SubmitHandler<BannersData> = (data) => {
+    if (!image) return;
+    const updatedBanner = {
+      id: banner?.id || "",
+      position: data.position,
+      image: image,
+    };
+    dispatch(updateBanner(updatedBanner));
+    handleClose();
+  };
+
+  if (!isUpdate || !banner) return null;
 
   return (
     <div className="bg-opacity-30 fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
       <form
-        onSubmit={handleSubmit(handleAdd)}
+        onSubmit={handleSubmit(handleUpdate)}
         className="relative w-4/5 rounded-lg bg-white p-6 shadow-lg sm:w-1/2 md:w-1/3"
       >
-        {/* Cancel Icon */}
+        {/* Close icon */}
         <button
           onClick={handleClose}
           type="button"
@@ -69,14 +85,12 @@ export const AddBannerModal = () => {
           <IoMdCloseCircle />
         </button>
 
-        <h3 className="mb-4 text-center text-lg font-bold">Add Banner</h3>
+        <h3 className="mb-4 text-center text-lg font-bold">Update Banner</h3>
 
         <div className="mt-4">
-          {/* Category Name Input */}
+          {/* Position input */}
           {/* <div className="mb-4">
-            <label className="block text-sm font-medium">
-              Please Enter a postion
-            </label>
+            <label className="block text-sm font-medium">Position</label>
             <input
               type="number"
               {...register("position")}
@@ -90,12 +104,11 @@ export const AddBannerModal = () => {
             )}
           </div> */}
 
-          {/* Collection Image Upload with Dropzone */}
+          {/* Image upload with Dropzone */}
           <div className="mb-4">
             <label className="mb-3 block text-sm font-medium">
-              Banner Image
+              Update Banner Image
             </label>
-
             <div
               {...getRootProps()}
               className="hover:border-primary flex w-full cursor-pointer flex-col items-center justify-center rounded-md border-2 border-dashed border-gray-400 p-4"
@@ -103,7 +116,7 @@ export const AddBannerModal = () => {
               <input {...getInputProps()} />
               {!image ? (
                 <div className="text-center text-gray-500">
-                  <p>Drag & drop an image here, or click to select an image</p>
+                  <p>Drag & drop an image here, or click to select one</p>
                   <p className="mt-2 text-sm text-gray-400">
                     Max file size: 350kb
                   </p>
@@ -111,12 +124,17 @@ export const AddBannerModal = () => {
               ) : (
                 <div className="relative h-40 w-full">
                   <img
-                    src={image}
+                    src={
+                      typeof image === "string"
+                        ? image
+                        : URL.createObjectURL(image)
+                    }
                     alt="Preview"
                     className="h-full w-full rounded-md object-cover"
                   />
                   <button
-                    onClick={() => setImage(null)} // Clear image preview
+                    onClick={() => setImage(null)}
+                    type="button"
                     className="absolute top-2 right-2 rounded-full bg-red-500 p-1 text-white"
                   >
                     <MdClose />
@@ -124,20 +142,20 @@ export const AddBannerModal = () => {
                 </div>
               )}
             </div>
+            {errors.image && (
+              <p className="text-left text-xs text-red-500">
+                {errors.image.message}
+              </p>
+            )}
           </div>
         </div>
-        {errors.image && (
-          <p className="text-left text-xs text-red-500">
-            {errors.image.message}
-          </p>
-        )}
 
         <div className="mt-4 flex justify-center gap-4">
           <button
             type="submit"
             className="bg-primary text-secondary hover:bg-secondary hover:text-primary w-full rounded-md px-6 py-3 font-medium sm:w-auto"
           >
-            Add
+            Update
           </button>
           <button
             onClick={handleClose}

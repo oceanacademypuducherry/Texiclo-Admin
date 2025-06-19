@@ -11,15 +11,18 @@ export interface BannersData {
 interface BannerState {
   isAdd: boolean;
   isDelete: boolean;
+  isUpdate: boolean;
+  isBulkEdit: boolean;
   id?: string;
   banner?: BannersData;
   banners: BannersData[];
-
 }
 
 const initialState: BannerState = {
   isAdd: false,
   isDelete: false,
+  isUpdate: false,
+  isBulkEdit: false,
   banners: [],
 };
 
@@ -35,6 +38,12 @@ const bannerSlice = createSlice({
     setBannerDelete: (state, action: PayloadAction<boolean>) => {
       state.isDelete = action.payload;
     },
+    setBannerUpdate: (state, action: PayloadAction<boolean>) => {
+      state.isUpdate = action.payload;
+    },
+    setBulkEdit: (state, action: PayloadAction<boolean>) => {
+      state.isBulkEdit = action.payload;
+    },
     // Set the ID for deletion
     setBannerId: (state, action: PayloadAction<string>) => {
       state.id = action.payload;
@@ -49,10 +58,26 @@ const bannerSlice = createSlice({
         state.banners.push(action.payload);
       }
     },
-    
+
+    updateBanner: (state, action: PayloadAction<BannersData>) => {
+      state.banners = state.banners.map((b) =>
+        b.id === action.payload.id ? action.payload : b,
+      );
+    },
+
     // Delete banner by ID
     deleteBanner: (state, action: PayloadAction<BannersData>) => {
-      state.banners = state.banners.filter((col) => col.id !== action.payload.id);
+      state.banners = state.banners.filter(
+        (col) => col.id !== action.payload.id,
+      );
+    },
+    updateMany: (state, action: PayloadAction<BannersData[]>) => {
+      state.banners = action.payload
+        .slice()
+        .sort((x, y) => x.position - y.position);
+    },
+    setBannerData: (state, action: PayloadAction<BannersData[]>) => {
+      state.banners = action.payload;
     },
   },
 });
@@ -64,6 +89,11 @@ export const {
   setBanner,
   addBanner,
   deleteBanner,
+  setBannerUpdate,
+  setBulkEdit,
+  updateBanner,
+  updateMany,
+  setBannerData,
 } = bannerSlice.actions;
 
 export const BannerReducer = bannerSlice.reducer;
