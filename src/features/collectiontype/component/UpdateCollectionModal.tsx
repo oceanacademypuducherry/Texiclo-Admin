@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../app/store";
 import { SubmitHandler, useForm } from "react-hook-form";
 import {
-  CollectionsData,
   setCollection,
   setCollectionUpdateMode,
 } from "../redux";

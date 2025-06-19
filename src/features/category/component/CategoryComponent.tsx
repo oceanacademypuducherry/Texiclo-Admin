@@ -3,7 +3,7 @@ import { HiPencilAlt } from "react-icons/hi";
 import { MdDelete } from "react-icons/md";
 
 type CategoryProps = {
-  image: string;
+  image: string |File| null;
   title: string;
   onUpdate: () => void;
   onDelete: () => void;

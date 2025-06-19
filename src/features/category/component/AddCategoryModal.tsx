@@ -4,11 +4,12 @@ import { useDropzone } from "react-dropzone";
 import { IoMdCloseCircle } from "react-icons/io";
 import { AppDispatch, RootState } from "../../../app/store";
 import { useDispatch, useSelector } from "react-redux";
-import {  CategoryData, setCategory, setIsAdd } from "../redux";
+import { setCategory, setIsAdd } from "../redux";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { addCategoryValidation } from "../validation";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { ADD_CATEGORY } from "../service";
+import { ADD_CATEGORY, GET_CATEGORY } from "../service";
+import { Pagination } from "../../shared";
 
 interface AddCategoryFormData {
   name: string;
@@ -19,7 +20,7 @@ interface AddCategoryFormData {
 
 export const AddCategoryModal = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { isAdd ,isLoading} = useSelector((state: RootState) => state.categories);
+  const { isAdd ,isLoading ,pagination} = useSelector((state: RootState) => state.categories);
   const [image, setImage] = useState<File|string | null>(null);
 
   const {
@@ -41,6 +42,7 @@ export const AddCategoryModal = () => {
           image: image,
         })
       ).unwrap()
+      await dispatch(GET_CATEGORY(pagination.totalPages))
       handleClose()
     } catch (error) {
       console.error("failed to add category",error)

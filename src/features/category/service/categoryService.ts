@@ -2,30 +2,41 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { AdminAPI } from "../../../services";
 
 
-export const GET_CATEGORY = createAsyncThunk(
-  "category/get",
-  async (_, thunkAPI) => {
-    try {
-      const response = await AdminAPI.get("category/get/");
-      const rawData = response.data.data || [];
-
-      const formattedData = rawData.map((item: any) => ({
-        id: item._id,
-        image: item.imageUrl,
-        name: item.name,
-      }));
-
-      return {
-        data: formattedData,
-        message: "category fetched successfully",
-      };
-    } catch (error: any) {
-      return thunkAPI.rejectWithValue(
-        error.response?.data || { message: "Failed to fetch category" },
-      );
-    }
+export const GET_CATEGORY = createAsyncThunk<
+  {
+    data: any[];
+    pagination: {
+      currentPage: number;
+      totalPages: number;
+      totalResults: number;
+      hasMore: boolean;
+    };
+    message: string;
   },
-);
+  number,
+  { rejectValue: { message: string } }
+>("category/get", async (page=1, thunkAPI) => {
+  try {
+    const response = await AdminAPI.get(`category/get/?page=${page}`);
+    const rawData = response.data.data || [];
+
+    const formattedData = rawData.map((item: any) => ({
+      id: item._id,
+      image: item.imageUrl,
+      name: item.name,
+    }));
+
+    return {
+      data: formattedData,
+      pagination: response.data.pagination,
+      message: "category fetched successfully",
+    };
+  } catch (error: any) {
+    return thunkAPI.rejectWithValue(
+      error.response?.data || { message: "Failed to fetch category" },
+    );
+  }
+});
 
 export const ADD_CATEGORY = createAsyncThunk(
   "category/add",

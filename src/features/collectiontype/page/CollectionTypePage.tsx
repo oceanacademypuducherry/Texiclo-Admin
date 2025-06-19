@@ -101,15 +101,15 @@ export const CollectionTypePage = () => {
             )}
           </div>
 
-          <div className="fixed bottom-0 left-0 z-40 w-full p-3">
-            <div className="mx-auto flex max-w-screen-md justify-center">
-              <Pagination
-                current={pagination.currentPage}
-                total={pagination.totalPages}
-                onChange={handlePageChange}
-              />
-            </div>
+          {/* <div className="fixed bottom-0 z-40 w-full"> */}
+          <div className="mt-8 flex justify-center">
+            <Pagination
+              current={pagination.currentPage}
+              total={pagination.totalPages}
+              onChange={handlePageChange}
+            />
           </div>
+          {/* </div> */}
         </>
       )}
     </PlaceHolder>

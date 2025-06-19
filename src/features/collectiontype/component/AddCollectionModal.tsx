@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../app/store";
 import { SubmitHandler, useForm } from "react-hook-form";
-import {  CollectionsData, setCollection, setCollectionAddMode } from "../redux";
+import {  setCollection, setCollectionAddMode } from "../redux";
 import { addCollectionValidation } from "../validation";
 import { useDropzone } from "react-dropzone";
 import { IoMdCloseCircle } from "react-icons/io";

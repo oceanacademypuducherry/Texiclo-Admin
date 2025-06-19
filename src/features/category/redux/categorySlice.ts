@@ -19,7 +19,11 @@ interface ModelData {
   isLoading: boolean;
   message: string;
   isError: boolean;
-  success:boolean
+  success: boolean;
+  pagination: {
+    totalPages: number;
+    currentPage: number;
+  };
 }
 
 const initialState: ModelData = {
@@ -31,8 +35,11 @@ const initialState: ModelData = {
   isLoading: false,
   message: "",
   isError: false,
-  success:false
-  
+  success:false,
+  pagination: {
+    totalPages: 1,
+    currentPage:1
+  }
 };
 
 const CategorySlice = createSlice({
@@ -74,6 +81,10 @@ const CategorySlice = createSlice({
         state.success = true;
         state.categorys = action.payload.data;
         state.message = action.payload.message;
+        state.pagination = {
+          totalPages: action.payload.pagination.totalPages,
+          currentPage: action.payload.pagination.currentPage,
+        };
       })
       .addCase(GET_CATEGORY.rejected, (state, action) => {
         state.isLoading = false;

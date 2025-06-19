@@ -1,4 +1,4 @@
-import { PlaceHolder } from "../../shared";
+import { Pagination, PlaceHolder } from "../../shared";
 import {
   DeleteConfirmationModal,
   UpdateCategoryModal,
@@ -15,19 +15,23 @@ import {
   setIsDelete,
   setIsUpdate,
 } from "../redux";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { GET_CATEGORY } from "../service";
 import { CollectionSkeleton } from "../../collectiontype";
 
 export const CategoryPage = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { isAdd, isLoading, categorys } = useSelector(
+  const { isAdd, isLoading, categorys, pagination } = useSelector(
     (state: RootState) => state.categories,
   );
-
+  const [currentPage, setCurrentPage] = useState(1);
   useEffect(() => {
-    dispatch(GET_CATEGORY());
-  }, [dispatch]);
+    dispatch(GET_CATEGORY(currentPage));
+  }, [dispatch, currentPage]);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   const handleDelete = (id: string) => {
     dispatch(setIsDelete(true));
@@ -74,23 +78,32 @@ export const CategoryPage = () => {
           ))}
         </div>
       ) : (
-        <div className="grid justify-items-center gap-6 p-6 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3">
-          {categorys && categorys.length > 0 ? (
-            categorys.map((category) => (
-              <CategoryComponent
-                key={category.id}
-                image={category.image}
-                title={category.name}
-                onDelete={() => category.id && handleDelete(category.id)}
-                onUpdate={() => handleUpdate(category)}
-              />
-            ))
-          ) : (
-            <p className="col-span-full text-center text-gray-500">
-              No category found.
-            </p>
-          )}
-        </div>
+        <>
+          <div className="grid justify-items-center gap-6 p-6 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3">
+            {categorys && categorys.length > 0 ? (
+              categorys.map((category) => (
+                <CategoryComponent
+                  key={category.id}
+                  image={category.image}
+                  title={category.name}
+                  onDelete={() => category.id && handleDelete(category.id)}
+                  onUpdate={() => handleUpdate(category)}
+                />
+              ))
+            ) : (
+              <p className="col-span-full text-center text-gray-500">
+                No category found.
+              </p>
+            )}
+          </div>
+          <div className="mt-8 flex justify-center">
+            <Pagination
+              current={pagination.currentPage}
+              total={pagination.totalPages}
+              onChange={handlePageChange}
+            />
+          </div>
+        </>
       )}
     </PlaceHolder>
   );
