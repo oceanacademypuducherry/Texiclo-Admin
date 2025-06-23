@@ -64,9 +64,8 @@ export const BulkEditModal = () => {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
       <form
         onSubmit={handleSubmit(handleSave)}
-        className="relative w-full max-w-4xl rounded-xl bg-white p-6 shadow-xl"
+        className="relative w-full max-w-md rounded-xl bg-white p-6 shadow-xl sm:max-w-2xl"
       >
-        {/* Top-right Cancel Icon */}
         <button
           onClick={() => dispatch(setBulkEdit(false))}
           type="button"
@@ -75,7 +74,14 @@ export const BulkEditModal = () => {
           <IoMdCloseCircle />
         </button>
 
-        <h2 className="mb-6 text-center text-xl font-bold">Edit All Banners</h2>
+        <h2 className="mb-6 text-center text-xl font-bold">Edit Banners</h2>
+
+        {/* Global array-level error (like sequential/unique) */}
+        {errors.banners?.root?.message && (
+          <p className="mb-4 text-center text-sm font-semibold text-red-600">
+            {errors.banners.root.message}
+          </p>
+        )}
 
         <div className="max-h-[60vh] space-y-6 overflow-y-auto pr-2">
           {fields.map((field, index) => {
@@ -86,7 +92,7 @@ export const BulkEditModal = () => {
                 key={field.id}
                 className="flex flex-col items-center justify-center gap-x-4 gap-y-4 p-4 sm:flex-row"
               >
-                {/* Position Input First */}
+                {/* Position Input */}
                 <div>
                   <div className="flex flex-col items-center">
                     <label className="mb-1 text-sm font-medium">Position</label>

@@ -59,7 +59,7 @@ export const BannerPage = () => {
             onClick={() => dispatch(setBulkEdit(true))}
             className="bg-primary text-secondary hover:bg-secondary hover:text-primary w-full rounded-md px-6 py-3 font-medium sm:w-auto"
           >
-            Edit Banner
+            Edit Banners
           </button>
         </div>
         <div className="p-6">
