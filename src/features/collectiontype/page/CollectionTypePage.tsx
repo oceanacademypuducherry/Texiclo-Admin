@@ -1,9 +1,8 @@
 import { useDispatch, useSelector } from "react-redux";
-import { Pagination, PlaceHolder } from "../../shared";
+import { Pagination, PlaceHolder, Skeleton } from "../../shared";
 import {
   AddCollectionModal,
   CollectionComponent,
-  CollectionSkeleton,
   DeleteCollectionModal,
   UpdateCollectionModal,
 } from "../component";
@@ -76,7 +75,7 @@ export const CollectionTypePage = () => {
         // <p className="text-center">loading.....</p>
         <div className="grid justify-items-center gap-6 p-6 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3">
           {Array.from({ length: 6 }).map((_, idx) => (
-            <CollectionSkeleton key={idx} />
+            <Skeleton key={idx} />
           ))}
         </div>
       ) : (
@@ -102,13 +101,17 @@ export const CollectionTypePage = () => {
           </div>
 
           {/* <div className="fixed bottom-0 z-40 w-full"> */}
-          <div className="mt-8 flex justify-center">
-            <Pagination
-              current={pagination.currentPage}
-              total={pagination.totalPages}
-              onChange={handlePageChange}
-            />
-          </div>
+
+          {collections.length > 0 && pagination.totalPages > 1 && (
+            <div className="mt-8 flex justify-center">
+              <Pagination
+                current={pagination.currentPage}
+                total={pagination.totalPages}
+                onChange={handlePageChange}
+              />
+            </div>
+          )}
+
           {/* </div> */}
         </>
       )}

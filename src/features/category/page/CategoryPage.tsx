@@ -1,4 +1,4 @@
-import { Pagination, PlaceHolder } from "../../shared";
+import { Pagination, PlaceHolder, Skeleton } from "../../shared";
 import {
   DeleteConfirmationModal,
   UpdateCategoryModal,
@@ -17,7 +17,6 @@ import {
 } from "../redux";
 import { useEffect, useState } from "react";
 import { GET_CATEGORY } from "../service";
-import { CollectionSkeleton } from "../../collectiontype";
 
 export const CategoryPage = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -74,7 +73,7 @@ export const CategoryPage = () => {
       {isLoading ? (
         <div className="grid justify-items-center gap-6 p-6 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3">
           {Array.from({ length: 6 }).map((_, idx) => (
-            <CollectionSkeleton key={idx} />
+            <Skeleton key={idx} />
           ))}
         </div>
       ) : (
@@ -96,13 +95,16 @@ export const CategoryPage = () => {
               </p>
             )}
           </div>
-          <div className="mt-8 flex justify-center">
-            <Pagination
-              current={pagination.currentPage}
-              total={pagination.totalPages}
-              onChange={handlePageChange}
-            />
-          </div>
+
+          {categorys.length > 0 && pagination.totalPages > 1 && (
+            <div className="mt-8 flex justify-center">
+              <Pagination
+                current={pagination.currentPage}
+                total={pagination.totalPages}
+                onChange={handlePageChange}
+              />
+            </div>
+          )}
         </>
       )}
     </PlaceHolder>

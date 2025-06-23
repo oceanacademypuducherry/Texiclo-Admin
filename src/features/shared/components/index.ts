@@ -3,3 +3,4 @@ export * from "./Drawer";
 export * from "./PlaceHolder.tsx";
 export * from "./NavBar";
 export * from "./Pagination";
+export * from "./Skeleton";
