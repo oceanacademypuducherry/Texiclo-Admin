@@ -32,7 +32,11 @@ export const CollectionTypePage = () => {
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
-
+  useEffect(() => {
+    if (!isLoading && collections.length === 0 && currentPage > 1) {
+      setCurrentPage((prev) => prev - 1);
+    }
+  }, [collections, isLoading, currentPage]);
   const handleDelete = (id: string) => {
     // console.log(id, "id");
     dispatch(setCollectionDeleteMode(true));
