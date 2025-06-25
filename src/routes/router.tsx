@@ -4,6 +4,7 @@ import {
   CategoryPage,
   CollectionTypePage,
   Discounts,
+  GsmPage,
   HomePage,
   Login,
 } from "../features";
@@ -69,6 +70,10 @@ export const router = createBrowserRouter([
       {
         path: "/updateproduct/:id",
         element: <ProductUpdatePage />,
+      },
+      {
+        path: "gsm",
+        element: <GsmPage />,
       },
     ],
   },

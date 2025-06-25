@@ -1,11 +1,11 @@
 import { LOGO } from "../../../assets";
 import { NavLink } from "react-router-dom";
 import { BsBoxSeam } from "react-icons/bs";
-import { TbRosetteDiscountFilled } from "react-icons/tb";
 import { FaRegImages } from "react-icons/fa";
 import { LogoutBtn } from "./LogoutBtn";
 import { AiFillProduct } from "react-icons/ai";
 import { VscTypeHierarchy } from "react-icons/vsc";
+import { GiRolledCloth } from "react-icons/gi";
 
 export const NavBar = () => {
   return (
@@ -89,6 +89,19 @@ export const NavBar = () => {
         >
           <VscTypeHierarchy className="text-xl" />
           <span className="text-base font-medium">Collection Type</span>
+        </NavLink>
+        <NavLink
+          to="/gsm"
+          className={({ isActive }) =>
+            `flex cursor-pointer items-center gap-3 rounded-lg p-3 transition ${
+              isActive
+                ? "text-primary bg-black font-semibold"
+                : "text-black hover:bg-white/10"
+            }`
+          }
+        >
+          <GiRolledCloth className="text-xl" />
+          <span className="text-base font-medium">GSM</span>
         </NavLink>
       </div>
 
