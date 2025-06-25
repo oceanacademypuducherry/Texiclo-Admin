@@ -1,12 +1,14 @@
-import { useForm } from "react-hook-form";
 import { IoMdCloseCircle } from "react-icons/io";
-import { useDispatch } from "react-redux";
-import { addGsmValidation } from "../validation";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../../app";
+import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { addGsm, setGsmAdd } from "../redux";
+import { updateGsmValidation } from "../validation";
+import { setGsmUpdate, updateGsm } from "../redux";
 
-export const AddGsmModal = () => {
+export const UpdateGsmModal = () => {
   const dispatch = useDispatch();
+  const { gsm } = useSelector((state: RootState) => state.gsm);
 
   const {
     register,
@@ -14,22 +16,29 @@ export const AddGsmModal = () => {
     formState: { errors },
     reset,
   } = useForm({
-    resolver: yupResolver(addGsmValidation),
+    defaultValues: {
+      gsm: gsm?.gsm || "",
+    },
+    resolver: yupResolver(updateGsmValidation),
   });
+
   const onSubmit = (data: { gsm: number }) => {
-    const newGsm = {
-      id: Date.now().toString(),
-      gsm: Number(data.gsm),
-    };
-    dispatch(addGsm(newGsm));
-    dispatch(setGsmAdd(false));
-    reset();
+    if (gsm) {
+      const updatedGsm = {
+        ...gsm,
+        gsm: Number(data.gsm),
+      };
+      dispatch(updateGsm(updatedGsm));
+      dispatch(setGsmUpdate(false));
+      reset();
+    }
   };
 
   const handleClose = () => {
-    dispatch(setGsmAdd(false));
+    dispatch(setGsmUpdate(false));
     reset();
   };
+
   return (
     <div className="bg-opacity-30 fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
       <form
@@ -45,7 +54,7 @@ export const AddGsmModal = () => {
           <IoMdCloseCircle />
         </button>
 
-        <h3 className="mb-4 text-center text-lg font-bold">Create GSM</h3>
+        <h3 className="mb-4 text-center text-lg font-bold">Update GSM</h3>
 
         <div className="mt-4">
           <div className="mb-4">

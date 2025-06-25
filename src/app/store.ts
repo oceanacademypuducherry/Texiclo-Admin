@@ -1,6 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { AuthReducer, BannerReducer, CategoryReducer, CollectionReducer, FilterReducer } from "../features";
-
+import {
+  AuthReducer,
+  BannerReducer,
+  CategoryReducer,
+  CollectionReducer,
+  FilterReducer,
+  GsmReducer,
+} from "../features";
 
 export const store = configureStore({
   reducer: {
@@ -8,7 +14,8 @@ export const store = configureStore({
     collections: CollectionReducer,
     banners: BannerReducer,
     auth: AuthReducer,
-    filter:FilterReducer
+    filter: FilterReducer,
+    gsm: GsmReducer,
   },
 });
 

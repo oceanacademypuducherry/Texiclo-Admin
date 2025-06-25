@@ -1,13 +1,34 @@
 import { HiPencilAlt } from "react-icons/hi";
 import { MdDelete } from "react-icons/md";
+import { useDispatch } from "react-redux";
+import { GsmsData } from "../redux"; // Your gsm type
+import { setGsm, setGsmDelete, setGsmId, setGsmUpdate } from "../redux";
 
-export const GsmComponent = () => {
+interface GsmProps {
+  gsm: GsmsData;
+}
+
+export const GsmComponent = ({ gsm }: GsmProps) => {
+  const dispatch = useDispatch();
+ 
   return (
-    <div className="flex max-w-[150px] flex-col items-center space-y-2.5 rounded-lg border-2 border-gray-300 p-1">
-      <span className="text-xl font-bold"> 120 GSM</span>
+    <div className="flex max-w-[150px] flex-col items-center space-y-2.5 rounded-lg border-2 border-gray-300 p-2">
+      <span className="text-xl font-bold">{gsm.gsm} GSM</span>
       <div className="flex gap-2.5 pb-1">
-        <HiPencilAlt className="hover:text-blue-400" />
-        <MdDelete className="hover:text-secondary text-red-600" />
+        <HiPencilAlt
+          onClick={() => {
+            dispatch(setGsm(gsm));
+            dispatch(setGsmUpdate(true));
+          }}
+          className="cursor-pointer hover:text-blue-400"
+        />
+        <MdDelete
+          onClick={() => {
+            dispatch(setGsmId(gsm.id));
+            dispatch(setGsmDelete(true));
+          }}
+          className="hover:text-secondary cursor-pointer text-red-600"
+        />
       </div>
     </div>
   );
