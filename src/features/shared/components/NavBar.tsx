@@ -6,6 +6,8 @@ import { LogoutBtn } from "./LogoutBtn";
 import { AiFillProduct } from "react-icons/ai";
 import { VscTypeHierarchy } from "react-icons/vsc";
 import { GiRolledCloth } from "react-icons/gi";
+import { IoColorPaletteSharp } from "react-icons/io5";
+import { RxFontSize } from "react-icons/rx";
 
 export const NavBar = () => {
   return (
@@ -102,6 +104,33 @@ export const NavBar = () => {
         >
           <GiRolledCloth className="text-xl" />
           <span className="text-base font-medium">GSM</span>
+        </NavLink>
+        <NavLink
+          to="/color"
+          className={({ isActive }) =>
+            `flex cursor-pointer items-center gap-3 rounded-lg p-3 transition ${
+              isActive
+                ? "text-primary bg-black font-semibold"
+                : "text-black hover:bg-white/10"
+            }`
+          }
+        >
+          <IoColorPaletteSharp className="text-xl" />
+
+          <span className="text-base font-medium">Color</span>
+        </NavLink>
+        <NavLink
+          to="/size"
+          className={({ isActive }) =>
+            `flex cursor-pointer items-center gap-3 rounded-lg p-3 transition ${
+              isActive
+                ? "text-primary bg-black font-semibold"
+                : "text-black hover:bg-white/10"
+            }`
+          }
+        >
+          <RxFontSize className="text-xl" />
+          <span className="text-base font-medium">Size</span>
         </NavLink>
       </div>
 

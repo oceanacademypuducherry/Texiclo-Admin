@@ -7,3 +7,5 @@ export * from "./auth";
 export * from "./collectiontype";
 export * from "./products";
 export * from "./gsm";
+export * from "./color";
+export * from "./size";

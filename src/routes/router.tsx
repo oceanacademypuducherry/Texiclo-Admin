@@ -3,10 +3,12 @@ import {
   BannerPage,
   CategoryPage,
   CollectionTypePage,
+  ColorPage,
   Discounts,
   GsmPage,
   HomePage,
   Login,
+  SizePage,
 } from "../features";
 import { Checking } from "../features/Checking";
 import {
@@ -72,8 +74,16 @@ export const router = createBrowserRouter([
         element: <ProductUpdatePage />,
       },
       {
-        path: "gsm",
+        path: "/gsm",
         element: <GsmPage />,
+      },
+      {
+        path: "/color",
+        element: <ColorPage />,
+      },
+      {
+        path: "/size",
+        element: <SizePage />,
       },
     ],
   },
