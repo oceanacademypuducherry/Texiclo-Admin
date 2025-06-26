@@ -4,6 +4,7 @@ import {
   BannerReducer,
   CategoryReducer,
   CollectionReducer,
+  ColorReducer,
   FilterReducer,
   GsmReducer,
   SizeReducer,
@@ -17,7 +18,8 @@ export const store = configureStore({
     auth: AuthReducer,
     filter: FilterReducer,
     gsm: GsmReducer,
-    size:SizeReducer
+    size: SizeReducer,
+    color: ColorReducer,
   },
 });
 
