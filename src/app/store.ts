@@ -6,6 +6,7 @@ import {
   CollectionReducer,
   FilterReducer,
   GsmReducer,
+  SizeReducer,
 } from "../features";
 
 export const store = configureStore({
@@ -16,6 +17,7 @@ export const store = configureStore({
     auth: AuthReducer,
     filter: FilterReducer,
     gsm: GsmReducer,
+    size:SizeReducer
   },
 });
 
