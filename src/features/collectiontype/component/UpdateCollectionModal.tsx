@@ -12,6 +12,7 @@ import { useDropzone } from "react-dropzone";
 import { IoMdCloseCircle } from "react-icons/io";
 import { MdClose } from "react-icons/md";
 import { UPDATE_COLLECTION } from "../service";
+import { showError, showSuccess } from "../../../utils";
 
 interface UpdateCollectionFormData {
   name: string;
@@ -67,10 +68,11 @@ export const UpdateCollectionModal = () => {
           image: uploadedFile || data.image,
         }),
       ).unwrap();
-
+      showSuccess("Collection updated successfully!");
       handleClose();
     } catch (error) {
       console.error("Failed to update collection:", error);
+      showError("Failed to updated collection")
     }
   };
 

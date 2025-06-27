@@ -2,13 +2,14 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../app/store";
 import { SubmitHandler, useForm } from "react-hook-form";
-import {  setCollection, setCollectionAddMode } from "../redux";
+import { setCollection, setCollectionAddMode } from "../redux";
 import { addCollectionValidation } from "../validation";
 import { useDropzone } from "react-dropzone";
 import { IoMdCloseCircle } from "react-icons/io";
 import { MdClose } from "react-icons/md";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { ADD_COLLECTION, GET_COLLECTIONTYPE } from "../service";
+import { showError, showSuccess } from "../../../utils";
 
 interface AddCollectionFormData {
   name: string;
@@ -17,7 +18,9 @@ interface AddCollectionFormData {
 
 export const AddCollectionModal = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { isAdd ,isLoading,pagination} = useSelector((state: RootState) => state.collections);
+  const { isAdd, isLoading, pagination } = useSelector(
+    (state: RootState) => state.collections,
+  );
   const [image, setImage] = useState<File | null>(null);
 
   const {
@@ -40,10 +43,12 @@ export const AddCollectionModal = () => {
           image: image,
         }),
       ).unwrap();
-      await dispatch(GET_COLLECTIONTYPE(pagination.totalPages))
+      await dispatch(GET_COLLECTIONTYPE(pagination.totalPages));
+      showSuccess("Collection added successfully!");
       handleClose();
     } catch (error) {
       console.error("Failed to add collection:", error);
+      showError("Failed to add collection.");
     }
   };
   const handleClose = () => {
