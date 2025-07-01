@@ -1,23 +1,99 @@
-import { FC } from "react";
+// import { FC } from "react";
+// import { Link } from "react-router-dom";
+
+// interface ProductProps {
+//   id:string
+//   image: string;
+//   title: string;
+//   price: number;
+//   discountprice: number;
+//   discount: number;
+// }
+
+// export const ProductComponent: FC<ProductProps> = ({
+//   id,
+//   image,
+//   title,
+//   price,
+//   discountprice,
+//   discount,
+// }) => {
+//   const formattedPrice = new Intl.NumberFormat("en-IN", {
+//     style: "currency",
+//     currency: "INR",
+//   }).format(price);
+
+//   const formattedDiscountPrice = new Intl.NumberFormat("en-IN", {
+//     style: "currency",
+//     currency: "INR",
+//   }).format(discountprice);
+
+//   return (
+//     <Link to={`/products/${id}`}>
+//       <div className="flex w-full max-w-xs flex-col items-center gap-2 rounded-xl p-4 shadow-md sm:w-64">
+//         <div className="h-[220px] w-[220px]">
+//           <img
+//             src={image}
+//             alt={title}
+//             className="h-full w-full rounded-md object-cover"
+//             aria-label={`Image of ${title}`}
+//           />
+//         </div>
+
+//         <div className="flex flex-col items-center gap-2">
+//           <div>
+//             <h2 className="text-base font-semibold text-gray-800 capitalize">
+//               {title}
+//             </h2>
+//           </div>
+//           <div className="flex gap-2">
+//             <p className="text-sm text-gray-700">
+//               {formattedDiscountPrice}{" "}
+//               {price !== discountprice && (
+//                 <span className="line-through">{formattedPrice}</span>
+//               )}
+//             </p>
+//             {discount > 0 && (
+//               <p className="text-sm text-green-600">{discount}% off</p>
+//             )}
+//           </div>
+//         </div>
+//       </div>
+//     </Link>
+//   );
+// };
+import { FC, useState } from "react";
 import { Link } from "react-router-dom";
 
-interface ProductProps {
-  id:string
+interface ColorOption {
+  name: string;
+  code: string;
   image: string;
+}
+
+interface ProductProps {
+  id: string;
+  previewImage: string;
   title: string;
   price: number;
   discountprice: number;
   discount: number;
+  colors?: ColorOption[];
+  type?: string;
 }
 
 export const ProductComponent: FC<ProductProps> = ({
   id,
-  image,
+  previewImage,
   title,
   price,
   discountprice,
   discount,
+  colors = [],
+  type = "",
 }) => {
+  const [selectedImage, setSelectedImage] = useState(previewImage);
+
   const formattedPrice = new Intl.NumberFormat("en-IN", {
     style: "currency",
     currency: "INR",
@@ -28,35 +104,64 @@ export const ProductComponent: FC<ProductProps> = ({
     currency: "INR",
   }).format(discountprice);
 
+  const handleColorClick = (e: React.MouseEvent, colorImage: string) => {
+    e.preventDefault();
+    setSelectedImage(colorImage);
+  };
+
   return (
     <Link to={`/products/${id}`}>
-      <div className="flex w-full max-w-xs flex-col items-center gap-2 rounded-xl p-4 shadow-md sm:w-64">
-        <div className="h-[220px] w-[220px]">
+      <div className="w-[220px] rounded-xl border border-gray-200 p-3 shadow transition hover:shadow-md">
+        {/* Image */}
+        <div className="mx-auto mb-2 h-[160px] w-[160px]">
           <img
-            src={image}
+            src={selectedImage}
             alt={title}
-            className="h-full w-full rounded-md object-cover"
-            aria-label={`Image of ${title}`}
+            className="h-full w-full object-contain transition-all duration-300"
           />
         </div>
 
-        <div className="flex flex-col items-center gap-2">
-          <div>
-            <h2 className="text-base font-semibold text-gray-800 capitalize">
-              {title}
-            </h2>
-          </div>
-          <div className="flex gap-2">
-            <p className="text-sm text-gray-700">
-              {formattedDiscountPrice}{" "}
-              {price !== discountprice && (
-                <span className="line-through">{formattedPrice}</span>
-              )}
-            </p>
-            {discount > 0 && (
-              <p className="text-sm text-green-600">{discount}% off</p>
+        {/* Color Dots */}
+        {colors.length > 0 && (
+          <div className="mb-1 flex items-center gap-1 px-1">
+            {colors.slice(0, 3).map((color, index) => (
+              <div
+                key={index}
+                className="h-4 w-4 cursor-pointer rounded-full border border-gray-300"
+                title={color.name}
+                style={{ backgroundColor: color.code }}
+                onClick={(e) => handleColorClick(e, color.image)}
+              />
+            ))}
+            {colors.length > 3 && (
+              <span className="text-xs text-gray-500">
+                +{colors.length - 3}
+              </span>
             )}
           </div>
+        )}
+
+        {/* Title and Type */}
+        <div className="truncate px-1 text-sm font-semibold text-gray-800">
+          {title}
+        </div>
+        <div className="px-1 text-xs text-gray-500">{type}</div>
+
+        {/* Price */}
+        <div className="mt-1 flex items-center gap-2 px-1">
+          <span className="text-sm font-semibold text-black">
+            {formattedDiscountPrice}
+          </span>
+          {price !== discountprice && (
+            <span className="text-xs text-gray-500 line-through">
+              {formattedPrice}
+            </span>
+          )}
+          {discount > 0 && (
+            <span className="text-xs font-medium text-green-600">
+              {discount}% off
+            </span>
+          )}
         </div>
       </div>
     </Link>
