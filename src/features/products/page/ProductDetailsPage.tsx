@@ -25,7 +25,7 @@ export const ProductDetailsPage = () => {
               <ProductComponent
                 id={product.id}
                 key={product.id}
-                image={product.image}
+                previewImage={product.image}
                 title={product.name}
                 price={product.price}
                 discount={product.discount}
