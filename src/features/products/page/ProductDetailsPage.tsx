@@ -18,7 +18,7 @@ export const ProductDetailsPage = () => {
           <h1 className="text-center text-2xl font-bold">View Product</h1>
           <ProductDetailComponent />
         </div>
-        <div className="flex flex-col gap-4">
+        {/* <div className="flex flex-col gap-4">
           <h1 className="text-center text-2xl font-bold">Related Product</h1>
           <div className="grid justify-center gap-0 p-6 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {ProductsData.map((product) => (
@@ -33,7 +33,7 @@ export const ProductDetailsPage = () => {
               />
             ))}
           </div>
-        </div>
+        </div> */}
       </div>
     </PlaceHolder>
   );

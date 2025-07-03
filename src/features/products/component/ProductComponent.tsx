@@ -1,4 +1,3 @@
-
 import { FC, useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -8,42 +7,50 @@ interface ColorOption {
   image: string;
 }
 
+interface Variant {
+  color: { name: string; code: string };
+  previewImage: string;
+}
+
 interface ProductProps {
   id: string;
-  previewImage: string;
   title: string;
-  price: number;
-  discountprice: number;
   discount: number;
-  colors?: ColorOption[];
+  prices: { [gsm: string]: number }; // multiple GSM-based prices
+  variants: Variant[];
   type?: string;
+  defaultGSM?: string; // optional default gsm
 }
 
 export const ProductComponent: FC<ProductProps> = ({
   id,
-  previewImage,
   title,
-  price,
-  discountprice,
+  prices,
   discount,
-  colors = [],
+  variants,
   type = "",
+  defaultGSM = "120"
 }) => {
-  const [selectedImage, setSelectedImage] = useState(previewImage);
+  const [selectedVariant, setSelectedVariant] = useState<Variant>(variants[0]);
+  const [selectedImage, setSelectedImage] = useState<string>(variants[0]?.previewImage || "");
+  const [selectedGsm, setSelectedGsm] = useState<string>(defaultGSM);
+
+  const originalPrice = prices[selectedGsm];
+  const discountPrice = Math.round(originalPrice * (1 - discount / 100));
 
   const formattedPrice = new Intl.NumberFormat("en-IN", {
     style: "currency",
-    currency: "INR",
-  }).format(price);
+    currency: "INR"
+  }).format(originalPrice);
 
   const formattedDiscountPrice = new Intl.NumberFormat("en-IN", {
     style: "currency",
-    currency: "INR",
-  }).format(discountprice);
+    currency: "INR"
+  }).format(discountPrice);
 
-  const handleColorClick = (e: React.MouseEvent, colorImage: string) => {
-    e.preventDefault();
-    setSelectedImage(colorImage);
+  const handleColorClick = (variant: Variant) => {
+    setSelectedVariant(variant);
+    setSelectedImage(variant.previewImage);
   };
 
   return (
@@ -59,26 +66,26 @@ export const ProductComponent: FC<ProductProps> = ({
         </div>
 
         {/* Color Dots */}
-        {colors.length > 0 && (
+        {variants.length > 0 && (
           <div className="mb-1 flex items-center gap-1 px-1">
-            {colors.slice(0, 3).map((color, index) => (
+            {variants.slice(0, 3).map((variant, index) => (
               <div
                 key={index}
                 className="h-4 w-4 cursor-pointer rounded-full border border-gray-300"
-                title={color.name}
-                style={{ backgroundColor: color.code }}
-                onClick={(e) => handleColorClick(e, color.image)}
+                title={variant.color.name}
+                style={{ backgroundColor: variant.color.code }}
+                onClick={() => handleColorClick(variant)}
               />
             ))}
-            {colors.length > 3 && (
+            {variants.length > 3 && (
               <span className="text-xs text-gray-500">
-                +{colors.length - 3}
+                +{variants.length - 3}
               </span>
             )}
           </div>
         )}
 
-        {/* Title and Type */}
+        {/* Title & Type */}
         <div className="truncate px-1 text-sm font-semibold text-gray-800">
           {title}
         </div>
@@ -89,15 +96,15 @@ export const ProductComponent: FC<ProductProps> = ({
           <span className="text-sm font-semibold text-black">
             {formattedDiscountPrice}
           </span>
-          {price !== discountprice && (
-            <span className="text-xs text-gray-500 line-through">
-              {formattedPrice}
-            </span>
-          )}
           {discount > 0 && (
-            <span className="text-xs font-medium text-green-600">
-              {discount}% off
-            </span>
+            <>
+              <span className="text-xs text-gray-500 line-through">
+                {formattedPrice}
+              </span>
+              <span className="text-xs font-medium text-green-600">
+                {discount}% off
+              </span>
+            </>
           )}
         </div>
       </div>

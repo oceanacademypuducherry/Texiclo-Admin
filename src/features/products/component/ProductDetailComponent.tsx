@@ -1,27 +1,15 @@
-import { ProductsData } from "../data/productData";
 import { useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
+import { ProductsData } from "../data/productData";
 import { DeleteModal } from "./DeleteModal";
 
 export const ProductDetailComponent = () => {
   const navigate = useNavigate();
-
   const { id } = useParams();
   const product = ProductsData.find((item) => item.id === id);
 
-  const [mainImage, setMainImage] = useState(
-    product?.images?.[0] || product?.image,
-  );
-  const [selectedImage, setSelectedImage] = useState(
-    product?.images?.[0] || product?.image,
-  );
-
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleDelete = () => {
-    console.log("Product deleted!");
-    setIsModalOpen(false);
-  };
   if (!product) {
     return (
       <div className="mt-10 text-center text-xl font-semibold">
@@ -30,26 +18,40 @@ export const ProductDetailComponent = () => {
     );
   }
 
+  const [selectedVariant, setSelectedVariant] = useState(product.variants[0]);
+  const [selectedGsm, setSelectedGsm] = useState(Object.keys(product.prices)[0]);
+  const [mainImage, setMainImage] = useState(selectedVariant.previewImage);
+
+  const allImages = [
+    selectedVariant.previewImage,
+    selectedVariant.frontImage,
+    selectedVariant.backImage,
+    ...(selectedVariant.otherImages || []),
+  ].filter(Boolean);
+
+  const originalPrice = product.prices[selectedGsm];
+  const discountPrice = Math.round(originalPrice * (1 - product.discount / 100));
+
+  const handleDelete = () => {
+    console.log("Product deleted!");
+    setIsModalOpen(false);
+  };
+
   return (
-    <div className="flex flex-col items-center justify-center gap-6 xl:flex-row">
-      {/* Left Section - Image Thumbnails + Main Image */}
-      <div className="flex flex-col gap-4 sm:flex-row">
+    <div className="flex flex-col items-center  justify-center gap-6 xl:flex-row">
+      {/* Left: Images */}
+      <div className="flex flex-col gap-4 sm:flex-row    ">
         {/* Thumbnails */}
         <div className="flex flex-row justify-center gap-2 pt-2 sm:flex-col sm:justify-start">
-          {product.images.map((img, index) => (
+          {allImages.map((img, index) => (
             <img
               key={index}
               src={img}
               alt={`thumb-${index}`}
-              onClick={() => {
-                setMainImage(img);
-                setSelectedImage(img);
-              }}
+              onClick={() => setMainImage(img)}
               onMouseEnter={() => setMainImage(img)}
               className={`h-16 w-16 cursor-pointer rounded border object-cover transition duration-200 ${
-                selectedImage === img
-                  ? "border-secondary"
-                  : "border-transparent"
+                mainImage === img ? "border-secondary" : "border-transparent"
               }`}
             />
           ))}
@@ -59,43 +61,55 @@ export const ProductDetailComponent = () => {
         <div className="h-80 w-80 rounded-md sm:w-96 md:h-96">
           <img
             src={mainImage}
-            alt={product.name}
-            className="h-full w-full object-cover"
+            alt={product.title}
+            className="h-full w-full object-contain"
           />
         </div>
       </div>
 
-      {/* Right Section - Product Info */}
-      <div className="flex w-[340px] flex-col justify-center gap-4 sm:w-[400px] md:gap-3 lg:gap-4">
-        <h2 className="text-xl font-bold md:text-2xl">{product.name}</h2>
+      {/* Right: Product Details */}
+      <div className="flex w-[340px] flex-col   justify-center gap-4 sm:w-[400px] md:gap-3 lg:gap-4">
+        <h2 className="text-xl font-bold md:text-2xl">{product.title}</h2>
+        <p className="text-sm text-gray-600 md:text-base">{product.description}</p>
 
-        <p className="text-sm text-gray-600 md:text-base">
-          {product.description}
-        </p>
-
-        {/* GSM */}
+        {/* GSM Selection */}
         <div className="flex flex-wrap gap-2">
           <span className="text-sm font-semibold md:text-base">GSM:</span>
-          {product.gsm.map((g, i) => (
-            <span
+          {Object.keys(product.prices).map((gsm, i) => (
+            <button
               key={i}
-              className="rounded bg-gray-200 px-2 py-1 text-xs md:text-sm"
+              className={`rounded px-2 py-1 text-xs md:text-sm ${
+                selectedGsm === gsm ? "bg-secondary text-white" : "bg-gray-200"
+              }`}
+              onClick={() => setSelectedGsm(gsm)}
             >
-              {g}
-            </span>
+              {gsm}
+            </button>
           ))}
         </div>
 
-        {/* Color */}
-        <div className="flex flex-wrap gap-2">
+        {/* Color Selection */}
+        <div className="flex flex-wrap items-center gap-2">
           <span className="text-sm font-semibold md:text-base">Color:</span>
-
-          <span className="rounded bg-gray-200 px-2 py-1 text-xs md:text-sm">
-            {product.colors}
-          </span>
+          {product.variants.map((variant, i) => (
+            <button
+              key={i}
+              onClick={() => {
+                setSelectedVariant(variant);
+                setMainImage(variant.previewImage);
+              }}
+              className={`h-6 w-6 rounded-full border transition-all duration-200 ${
+                selectedVariant.color.code === variant.color.code
+                  ? "border-2 border-secondary scale-110"
+                  : "border-gray-300"
+              }`}
+              style={{ backgroundColor: variant.color.code }}
+              title={variant.color.name}
+            />
+          ))}
         </div>
 
-        {/* Size */}
+        {/* Sizes */}
         <div className="flex flex-wrap gap-2">
           <span className="text-sm font-semibold md:text-base">Size:</span>
           {product.sizes.map((size, i) => (
@@ -108,37 +122,24 @@ export const ProductDetailComponent = () => {
           ))}
         </div>
 
-        {/* Type */}
-        <div className="flex flex-wrap gap-2">
-          <span className="text-sm font-semibold md:text-base">Type:</span>
-          {product.types.map((type, i) => (
-            <span
-              key={i}
-              className="rounded bg-gray-200 px-2 py-1 text-xs md:text-sm"
-            >
-              {type}
-            </span>
-          ))}
-        </div>
-
-        {/* Pricing */}
-        <p className="pt-2">
+        {/* Price Display */}
+        <div className="pt-2">
           <span className="text-secondary text-lg font-semibold md:text-xl">
-            ₹{product.discountPrice}
+            ₹{discountPrice}
           </span>
           <span className="ml-2 text-sm text-gray-500 line-through md:text-base">
-            ₹{product.price}
+            ₹{originalPrice}
           </span>
           <span className="ml-2 text-sm text-green-500 md:text-base">
             {product.discount}% off
           </span>
-        </p>
+        </div>
 
-        {/* Buttons */}
+        {/* Action Buttons */}
         <div className="flex gap-4">
           <button
             className="bg-primary text-secondary rounded px-6 py-2 text-sm font-medium md:text-base"
-            onClick={() => navigate(`/updateproduct/${product.id}`)}
+            onClick={() => navigate(`/updateproduct/${id}`)}
           >
             Edit
           </button>
@@ -151,6 +152,7 @@ export const ProductDetailComponent = () => {
         </div>
       </div>
 
+      {/* Confirm Delete Modal */}
       <DeleteModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

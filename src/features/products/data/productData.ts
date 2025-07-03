@@ -1,25 +1,136 @@
-import { PRODUCT1, PRODUCT2, TSHIRT } from "../../../assets";
-
+import { POLO_BLACK_BACK, POLO_BLACK_FRONT, POLO_GREEN_BACK, POLO_GREEN_FRONT, POLO_LAVENDAR_BACK, POLO_LAVENDAR_FRONT, POLO_RED_BACK, POLO_RED_FRONT, PRODUCT1, PRODUCT2, TSHIRT } from "../../../assets";
 
 
 export const ProductsData = [
   {
-    id: "1",
-    name: "Mens printed t-shirts",
-    image: PRODUCT1,
-    price: 2899,
-    discountPrice: 2562,
-    discount: 9,
-    type: "Half Sleeve",
-    colors: [
-      { name: "Black", code: "#000000", image: PRODUCT1 },
-      { name: "Red", code: "#ff0000", image: PRODUCT2 },
-      { name: "Gray", code: "#808080", image: TSHIRT },
-      { name: "Green", code: "#00ff00", image: TSHIRT },
-      { name: "Beige", code: "#f5f5dc", image: TSHIRT },
-    ],
-    category: "Men",
+    id:"1",
+    title: "Mens printed t-shirts",
     collectionType: "Summer",
+    category: "Men",
+    description: "Soft cotton printed t-shirts for everyday wear.",
+    prices: { "120": 2562, "140": 2662, "160": 2762 },
+    sizes: ["S", "M", "L", "XL"],
+    discount: 10,
+    variants: [
+      {
+        color: { name: "Black", code: "#000000" },
+        previewImage: TSHIRT,
+        frontImage:POLO_BLACK_FRONT ,
+        backImage: POLO_BLACK_BACK,
+        otherImages: [],
+      },
+      {
+        color: { name: "Red", code: "#FF0000" },
+         previewImage: PRODUCT1,
+        frontImage:POLO_RED_FRONT ,
+        backImage: POLO_RED_BACK,
+        otherImages: [PRODUCT2],
+      },
+      {
+        color: { name: "Violet", code: "#9432d1" },
+         previewImage: PRODUCT2,
+        frontImage:POLO_LAVENDAR_FRONT ,
+        backImage: POLO_LAVENDAR_BACK,
+        otherImages: [PRODUCT1],
+      },
+      {
+        color: { name: "Green", code: "#52d918" },
+         previewImage: PRODUCT2,
+        frontImage:POLO_GREEN_FRONT ,
+        backImage: POLO_GREEN_BACK,
+        otherImages: [PRODUCT1],
+      }
+    ]
   },
-
+  {
+    id:"2",
+    title: "Mens casual t-shirts",
+    collectionType: "Winter",
+    category: "Men",
+    description: "Premium casual tees for your everyday look.",
+    prices: { "120": 2999, "140": 3099, "160": 3199 },
+    sizes: ["M", "L", "XL"],
+    discount: 15,
+    variants: [
+      {
+        color: { name: "Blue", code: "#0000FF" },
+         previewImage: TSHIRT,
+        frontImage:PRODUCT1 ,
+        backImage: PRODUCT2,
+        otherImages: [PRODUCT1],
+      },
+      {
+        color: { name: "Gray", code: "#808080" },
+         previewImage: TSHIRT,
+        frontImage:PRODUCT1 ,
+        backImage: PRODUCT2,
+        otherImages: [PRODUCT1],
+      }
+    ]
+  },
+  {
+    id:"3",
+    title: "Mens polo t-shirts",
+    collectionType: "Casual",
+    category: "Men",
+    description: "Classic polo style with a modern fit.",
+    prices: { "120": 1899, "140": 1999, "160": 2099 },
+    sizes: ["S", "M", "L", "XL", "XXL"],
+    discount: 20,
+    variants: [
+      {
+        color: { name: "Green", code: "#00FF00" },
+         previewImage: TSHIRT,
+        frontImage:PRODUCT1 ,
+        backImage: PRODUCT2,
+        otherImages: [PRODUCT1],
+      },
+    ]
+  },
+  {
+    id:"4",
+    title: "Mens half-sleeve t-shirts",
+    collectionType: "Summer",
+    category: "Men",
+    description: "Cool and comfy half-sleeve t-shirts.",
+    prices: { "120": 1499, "140": 1599, "160": 1699 },
+    sizes: ["S", "M", "L"],
+    discount: 5,
+    variants: [
+      {
+        color: { name: "White", code: "#FFFFFF" },
+         previewImage: TSHIRT,
+        frontImage:PRODUCT1 ,
+        backImage: PRODUCT2,
+        otherImages: [PRODUCT1],
+      },
+      {
+        color: { name: "Yellow", code: "#FFFF00" },
+      
+         previewImage: TSHIRT,
+        frontImage:PRODUCT1 ,
+        backImage: PRODUCT2,
+        otherImages: [PRODUCT1],
+      }
+    ]
+  },
+  {
+    id:"5",
+    title: "Mens round neck t-shirts",
+    collectionType: "All-season",
+    category: "Men",
+    description: "Versatile round neck tees for all occasions.",
+    prices: { "120": 1799, "140": 1899, "160": 1999 },
+    sizes: ["M", "L", "XL", "XXL"],
+    discount: 12,
+    variants: [
+      {
+        color: { name: "Beige", code: "#F5F5DC" },
+        previewImage: TSHIRT,
+        frontImage:PRODUCT1 ,
+        backImage: PRODUCT2,
+        otherImages: [],
+      }
+    ]
+  }
 ];

@@ -42,12 +42,11 @@ export const ProductPage = () => {
               <ProductComponent
                 id={product.id}
                 key={product.id}
-                previewImage={product.image}
-                title={product.name}
-                price={product.price}
+                title={product.title}
+                prices={product.prices}
                 discount={product.discount}
-                discountprice={product.discountPrice}
-                colors={product.colors}
+                variants={product.variants}
+                type={product.collectionType}
               />
             ))}
           </div>
