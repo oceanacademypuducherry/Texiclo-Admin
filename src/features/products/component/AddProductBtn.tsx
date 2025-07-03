@@ -1,8 +1,12 @@
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { resetForm } from "../redux";
 
 export const AddProductBtn = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const handleAdd = () => {
+    dispatch(resetForm());
     navigate("/addproduct");
   };
 

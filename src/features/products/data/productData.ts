@@ -1,9 +1,20 @@
-import { POLO_BLACK_BACK, POLO_BLACK_FRONT, POLO_GREEN_BACK, POLO_GREEN_FRONT, POLO_LAVENDAR_BACK, POLO_LAVENDAR_FRONT, POLO_RED_BACK, POLO_RED_FRONT, PRODUCT1, PRODUCT2, TSHIRT } from "../../../assets";
-
+import {
+  POLO_BLACK_BACK,
+  POLO_BLACK_FRONT,
+  POLO_GREEN_BACK,
+  POLO_GREEN_FRONT,
+  POLO_LAVENDAR_BACK,
+  POLO_LAVENDAR_FRONT,
+  POLO_RED_BACK,
+  POLO_RED_FRONT,
+  PRODUCT1,
+  PRODUCT2,
+  TSHIRT,
+} from "../../../assets";
 
 export const ProductsData = [
   {
-    id:"1",
+    id: "1",
     title: "Mens printed t-shirts",
     collectionType: "Summer",
     category: "Men",
@@ -15,35 +26,35 @@ export const ProductsData = [
       {
         color: { name: "Black", code: "#000000" },
         previewImage: TSHIRT,
-        frontImage:POLO_BLACK_FRONT ,
+        frontImage: POLO_BLACK_FRONT,
         backImage: POLO_BLACK_BACK,
         otherImages: [],
       },
       {
         color: { name: "Red", code: "#FF0000" },
-         previewImage: PRODUCT1,
-        frontImage:POLO_RED_FRONT ,
+        previewImage: PRODUCT1,
+        frontImage: POLO_RED_FRONT,
         backImage: POLO_RED_BACK,
         otherImages: [PRODUCT2],
       },
       {
         color: { name: "Violet", code: "#9432d1" },
-         previewImage: PRODUCT2,
-        frontImage:POLO_LAVENDAR_FRONT ,
+        previewImage: PRODUCT2,
+        frontImage: POLO_LAVENDAR_FRONT,
         backImage: POLO_LAVENDAR_BACK,
         otherImages: [PRODUCT1],
       },
       {
         color: { name: "Green", code: "#52d918" },
-         previewImage: PRODUCT2,
-        frontImage:POLO_GREEN_FRONT ,
+        previewImage: PRODUCT2,
+        frontImage: POLO_GREEN_FRONT,
         backImage: POLO_GREEN_BACK,
         otherImages: [PRODUCT1],
-      }
-    ]
+      },
+    ],
   },
   {
-    id:"2",
+    id: "2",
     title: "Mens casual t-shirts",
     collectionType: "Winter",
     category: "Men",
@@ -54,22 +65,22 @@ export const ProductsData = [
     variants: [
       {
         color: { name: "Blue", code: "#0000FF" },
-         previewImage: TSHIRT,
-        frontImage:PRODUCT1 ,
+        previewImage: TSHIRT,
+        frontImage: PRODUCT1,
         backImage: PRODUCT2,
         otherImages: [PRODUCT1],
       },
       {
         color: { name: "Gray", code: "#808080" },
-         previewImage: TSHIRT,
-        frontImage:PRODUCT1 ,
+        previewImage: TSHIRT,
+        frontImage: PRODUCT1,
         backImage: PRODUCT2,
         otherImages: [PRODUCT1],
-      }
-    ]
+      },
+    ],
   },
   {
-    id:"3",
+    id: "3",
     title: "Mens polo t-shirts",
     collectionType: "Casual",
     category: "Men",
@@ -80,15 +91,15 @@ export const ProductsData = [
     variants: [
       {
         color: { name: "Green", code: "#00FF00" },
-         previewImage: TSHIRT,
-        frontImage:PRODUCT1 ,
+        previewImage: TSHIRT,
+        frontImage: PRODUCT1,
         backImage: PRODUCT2,
         otherImages: [PRODUCT1],
       },
-    ]
+    ],
   },
   {
-    id:"4",
+    id: "4",
     title: "Mens half-sleeve t-shirts",
     collectionType: "Summer",
     category: "Men",
@@ -99,23 +110,23 @@ export const ProductsData = [
     variants: [
       {
         color: { name: "White", code: "#FFFFFF" },
-         previewImage: TSHIRT,
-        frontImage:PRODUCT1 ,
+        previewImage: TSHIRT,
+        frontImage: PRODUCT1,
         backImage: PRODUCT2,
         otherImages: [PRODUCT1],
       },
       {
         color: { name: "Yellow", code: "#FFFF00" },
-      
-         previewImage: TSHIRT,
-        frontImage:PRODUCT1 ,
+
+        previewImage: TSHIRT,
+        frontImage: PRODUCT1,
         backImage: PRODUCT2,
         otherImages: [PRODUCT1],
-      }
-    ]
+      },
+    ],
   },
   {
-    id:"5",
+    id: "5",
     title: "Mens round neck t-shirts",
     collectionType: "All-season",
     category: "Men",
@@ -127,10 +138,10 @@ export const ProductsData = [
       {
         color: { name: "Beige", code: "#F5F5DC" },
         previewImage: TSHIRT,
-        frontImage:PRODUCT1 ,
+        frontImage: PRODUCT1,
         backImage: PRODUCT2,
         otherImages: [],
-      }
-    ]
-  }
+      },
+    ],
+  },
 ];

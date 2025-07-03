@@ -15,17 +15,18 @@ import { setProducts } from "../redux";
 
 export const ProductPage = () => {
   const [showFilter, setShowFilter] = useState(false);
-  const dispatch=useDispatch()
+  const dispatch = useDispatch();
 
+  const { allProducts, selectedCategories, selectedCollections, searchQuery } =
+    useSelector((state: RootState) => state.product);
 
-  const {allProducts,selectedCategories,selectedCollections,searchQuery}=useSelector((state:RootState)=>state.product)
+  // useEffect(() => {
+  //   if (allProducts.length == 0) {
+  //     dispatch(setProducts(ProductsData));
+  //   }
+  // }, [allProducts.length,dispatch]);
 
-
-  useEffect(()=>{
-    dispatch(setProducts(ProductsData))
-  },[dispatch])
-
-// ✅ Filter and search logic
+  // ✅ Filter and search logic
   const filteredProducts = allProducts.filter((product) => {
     const matchesCategory =
       selectedCategories.length === 0 ||
@@ -35,12 +36,12 @@ export const ProductPage = () => {
       selectedCollections.length === 0 ||
       selectedCollections.includes(product.collectionType);
 
-    const matchesSearch =
-      product.title.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch = product.title
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
 
     return matchesCategory && matchesCollection && matchesSearch;
   });
-
 
   return (
     <PlaceHolder>
@@ -61,13 +62,13 @@ export const ProductPage = () => {
       {/* Main layout */}
       <div className="md:mt[50px] mt-[10px] flex gap-20 p-3 md:gap-10">
         <div className="mt-4 hidden lg:block">
-          <FilterComponent isVisible={ false} isSidenav={false} />
+          <FilterComponent isVisible={false} isSidenav={false} />
         </div>
 
         <div className="flex w-full flex-col">
           <SearchComponent />
-           {filteredProducts.length === 0 ? (
-            <p className="text-center text-gray-600 py-6 text-lg">
+          {filteredProducts.length === 0 ? (
+            <p className="py-6 text-center text-lg text-gray-600">
               No products found.
             </p>
           ) : (

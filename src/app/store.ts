@@ -14,31 +14,24 @@ import {
   SizeReducer,
 } from "../features";
 
-
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["productForm"], // only persist productForm
+  whitelist: ["productForm", "product"], // only persist productForm
 };
 
-
 export const rootReducer = combineReducers({
-
-    categories: CategoryReducer,
-    collections: CollectionReducer,
-    banners: BannerReducer,
-    auth: AuthReducer,
-    // filter: FilterReducer,
-    gsm: GsmReducer,
-    size: SizeReducer,
-    color: ColorReducer,
-    product:productReducer,
-    productForm:productFormReducer
-  
+  categories: CategoryReducer,
+  collections: CollectionReducer,
+  banners: BannerReducer,
+  auth: AuthReducer,
+  // filter: FilterReducer,
+  gsm: GsmReducer,
+  size: SizeReducer,
+  color: ColorReducer,
+  product: productReducer,
+  productForm: productFormReducer,
 });
-
-
-
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
@@ -51,8 +44,6 @@ export const store = configureStore({
 
 // Persistor for Provider
 export const persistor = persistStore(store);
-
-
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

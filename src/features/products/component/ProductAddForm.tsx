@@ -1,15 +1,15 @@
-import { useDropzone } from 'react-dropzone';
-import { MdOutlineCancel } from 'react-icons/md';
+import { useDropzone } from "react-dropzone";
+import { MdOutlineCancel } from "react-icons/md";
 import {
   Control,
   FieldErrors,
   UseFormRegister,
   UseFormSetValue,
-  UseFormWatch
-} from 'react-hook-form';
-import { ProductFormInputs, ColorOption } from './ProductForm';
-import { useImageCropper } from './useImageCropper';
-import { AiOutlineCloudUpload } from 'react-icons/ai';
+  UseFormWatch,
+} from "react-hook-form";
+import { ProductFormInputs, ColorOption } from "./ProductForm";
+import { useImageCropper } from "./useImageCropper";
+import { AiOutlineCloudUpload } from "react-icons/ai";
 
 interface Props {
   register: UseFormRegister<ProductFormInputs>;
@@ -29,7 +29,7 @@ export const ProductAddForm = ({
   watch,
   index,
   colorOptions,
-  onRemove
+  onRemove,
 }: Props) => {
   const { cropImageFromFile, CropperModal } = useImageCropper();
 
@@ -39,8 +39,8 @@ export const ProductAddForm = ({
   const otherImages = watch(`variants.${index}.otherImages`) || [];
 
   const handleCropped = (
-    field: keyof ProductFormInputs['variants'][0],
-    file: File
+    field: keyof ProductFormInputs["variants"][0],
+    file: File,
   ) => {
     setValue(`variants.${index}.${field}`, file, { shouldValidate: true });
   };
@@ -55,9 +55,15 @@ export const ProductAddForm = ({
     });
   };
 
-  const processOtherImages = (files: File[], startIndex: number, updated: File[]) => {
+  const processOtherImages = (
+    files: File[],
+    startIndex: number,
+    updated: File[],
+  ) => {
     if (startIndex >= files.length) {
-      setValue(`variants.${index}.otherImages`, updated, { shouldValidate: true });
+      setValue(`variants.${index}.otherImages`, updated, {
+        shouldValidate: true,
+      });
       return;
     }
 
@@ -67,7 +73,10 @@ export const ProductAddForm = ({
     });
   };
 
-  const getImageDropProps = (field: keyof ProductFormInputs['variants'][0], multiple = false) =>
+  const getImageDropProps = (
+    field: keyof ProductFormInputs["variants"][0],
+    multiple = false,
+  ) =>
     useDropzone({
       onDrop: (files) => {
         if (multiple) {
@@ -76,24 +85,57 @@ export const ProductAddForm = ({
           cropImageFromFile(files[0], (file) => handleCropped(field, file));
         }
       },
-      multiple
+      multiple,
     });
 
-  const previewImageDrop = getImageDropProps('previewImage');
-  const frontImageDrop = getImageDropProps('frontImage');
-  const backImageDrop = getImageDropProps('backImage');
-  const otherImageDrop = getImageDropProps('otherImages', true);
+  const previewImageDrop = getImageDropProps("previewImage");
+  const frontImageDrop = getImageDropProps("frontImage");
+  const backImageDrop = getImageDropProps("backImage");
+  const otherImageDrop = getImageDropProps("otherImages", true);
 
-  const renderImagePreview = (image: File | null | undefined, onRemove: () => void) => {
+  // const renderImagePreview = (image: File | null |string| undefined, onRemove: () => void) => {
+  //   if (!image) return null;
+  //   // const url = URL.createObjectURL(image);
+  //   return (
+  //     <div className="relative w-24 h-24 mt-2">
+  //       <img src={url} alt="Preview" className="w-full h-full object-cover rounded" />
+  //       <button
+  //         onClick={onRemove}
+  //         type="button"
+  //         className="absolute top-0 right-0 bg-white text-red-600 rounded-full p-1 shadow"
+  //       >
+  //         <MdOutlineCancel size={18} />
+  //       </button>
+  //     </div>
+  //   );
+  // };
+  const renderImagePreview = (
+    image: File | string | null | undefined,
+    onRemove: () => void,
+  ) => {
     if (!image) return null;
-    const url = URL.createObjectURL(image);
+
+    let url: string;
+
+    if (typeof image === "string") {
+      url = image; // from edit mode (URL from DB)
+    } else if (image instanceof File) {
+      url = URL.createObjectURL(image); // from upload
+    } else {
+      return null;
+    }
+
     return (
-      <div className="relative w-24 h-24 mt-2">
-        <img src={url} alt="Preview" className="w-full h-full object-cover rounded" />
+      <div className="relative mt-2 h-24 w-24">
+        <img
+          src={url}
+          alt="Preview"
+          className="h-full w-full rounded object-cover"
+        />
         <button
           onClick={onRemove}
           type="button"
-          className="absolute top-0 right-0 bg-white text-red-600 rounded-full p-1 shadow"
+          className="absolute top-0 right-0 rounded-full bg-white p-1 text-red-600 shadow"
         >
           <MdOutlineCancel size={18} />
         </button>
@@ -104,8 +146,11 @@ export const ProductAddForm = ({
   const variantErrors = errors?.variants?.[index];
 
   return (
-    <div className=" pt-4 rounded relative mb-4   border-gray-200  p-2  space-y-4">
-      <button onClick={onRemove} className="absolute -top-2 right-2 text-red-500">
+    <div className="relative mb-4 space-y-4 rounded border-gray-200 p-2 pt-4">
+      <button
+        onClick={onRemove}
+        className="absolute -top-2 right-2 text-red-500"
+      >
         <MdOutlineCancel size={20} />
       </button>
 
@@ -118,10 +163,12 @@ export const ProductAddForm = ({
             onChange={(e) =>
               setValue(`variants.${index}.color`, {
                 name: e.target.value,
-                code: colorOptions.find((c) => c.name === e.target.value)?.code || ''
+                code:
+                  colorOptions.find((c) => c.name === e.target.value)?.code ||
+                  "",
               })
             }
-            className="flex-1 border border-gray-300 p-2 rounded"
+            className="flex-1 rounded border border-gray-300 p-2"
           >
             <option value="">Choose Color</option>
             {colorOptions.map((color) => (
@@ -132,10 +179,14 @@ export const ProductAddForm = ({
           </select>
         </div>
         {variantErrors?.color?.name && (
-          <p className="text-red-500 text-sm ml-40">{variantErrors.color.name.message}</p>
+          <p className="ml-40 text-sm text-red-500">
+            {variantErrors.color.name.message}
+          </p>
         )}
         {variantErrors?.color?.code && (
-          <p className="text-red-500 text-sm ml-40">{variantErrors.color.code.message}</p>
+          <p className="ml-40 text-sm text-red-500">
+            {variantErrors.color.code.message}
+          </p>
         )}
       </div>
 
@@ -145,64 +196,88 @@ export const ProductAddForm = ({
           <label className="w-33">Preview Image</label>
           <div className="flex-1">
             {!previewImage ? (
-              <div {...previewImageDrop.getRootProps()} className="border-dashed border-2 border-gray-300 p-3 rounded text-center cursor-pointer">
+              <div
+                {...previewImageDrop.getRootProps()}
+                className="cursor-pointer rounded border-2 border-dashed border-gray-300 p-3 text-center"
+              >
                 <input {...previewImageDrop.getInputProps()} />
-                <p className='text-gray-500'>Upload a preview image</p>
+                <p className="text-gray-500">Upload a preview image</p>
               </div>
             ) : (
               renderImagePreview(previewImage, () =>
-                setValue(`variants.${index}.previewImage`, undefined)
+                setValue(`variants.${index}.previewImage`, undefined),
               )
             )}
           </div>
         </div>
         {variantErrors?.previewImage && (
-          <p className="text-red-500 text-sm ml-40">{variantErrors.previewImage.message}</p>
+          <p className="ml-40 text-sm text-red-500">
+            {variantErrors.previewImage.message}
+          </p>
         )}
       </div>
 
       {/* Front & Back Images */}
       <div className="grid grid-cols-2 gap-4">
-        {[{ label: 'Front Image', drop: frontImageDrop, field: 'frontImage', image: frontImage },
-          { label: 'Back Image', drop: backImageDrop, field: 'backImage', image: backImage }
+        {[
+          {
+            label: "Front Image",
+            drop: frontImageDrop,
+            field: "frontImage",
+            image: frontImage,
+          },
+          {
+            label: "Back Image",
+            drop: backImageDrop,
+            field: "backImage",
+            image: backImage,
+          },
         ].map(({ label, drop, field, image }) => (
           <div key={field} className="space-y-1">
-            <label className="block mb-1">{label}</label>
+            <label className="mb-1 block">{label}</label>
             {!image ? (
-              <div {...drop.getRootProps()} className="border-dashed border-2 p-3 rounded border-gray-300 text-center cursor-pointer">
+              <div
+                {...drop.getRootProps()}
+                className="cursor-pointer rounded border-2 border-dashed border-gray-300 p-3 text-center"
+              >
                 <input {...drop.getInputProps()} />
-                <p className='text-gray-500'>Upload </p>
+                <p className="text-gray-500">Upload </p>
               </div>
             ) : (
               renderImagePreview(image, () =>
-                setValue(`variants.${index}.${field as keyof ProductFormInputs['variants'][0]}`, undefined)
+                setValue(
+                  `variants.${index}.${field as keyof ProductFormInputs["variants"][0]}`,
+                  undefined,
+                ),
               )
             )}
             {variantErrors?.[field as keyof typeof variantErrors] && (
-      <p className="text-red-500 text-sm">
-        {variantErrors[field as keyof typeof variantErrors]?.message}
-      </p>
-    )}
+              <p className="text-sm text-red-500">
+                {variantErrors[field as keyof typeof variantErrors]?.message}
+              </p>
+            )}
           </div>
         ))}
       </div>
 
       {/* Other Images */}
       <div className="">
-       <div className='flex  justify-between items-center'>
-          <label className="block mb-1">Other Images</label>
-        <div {...otherImageDrop.getRootProps()} className="border p-2 border-gray-300  bg-gray-200 rounded-lg text-center cursor-pointer w-fit">
-          <input {...otherImageDrop.getInputProps()} />
-          <div className='flex gap-2 items-center '>
-            <p className='text-secondary '>Upload</p>
-            <AiOutlineCloudUpload />
+        <div className="flex items-center justify-between">
+          <label className="mb-1 block">Other Images</label>
+          <div
+            {...otherImageDrop.getRootProps()}
+            className="w-fit cursor-pointer rounded-lg border border-gray-300 bg-gray-200 p-2 text-center"
+          >
+            <input {...otherImageDrop.getInputProps()} />
+            <div className="flex items-center gap-2">
+              <p className="text-secondary">Upload</p>
+              <AiOutlineCloudUpload />
+            </div>
           </div>
-          
         </div>
-       </div>
-        
-        <div className="flex flex-wrap gap-2 mt-2">
-          {otherImages.map((file: File, i: number) => (
+
+        <div className="mt-2 flex flex-wrap gap-2">
+          {/* {otherImages.map((file: File |string, i: number) => (
             <div key={i} className="relative w-20 h-20">
               <img src={URL.createObjectURL(file)} alt={`Other ${i}`} className="w-full h-full object-cover rounded" />
               <button
@@ -217,7 +292,36 @@ export const ProductAddForm = ({
                 <MdOutlineCancel size={18} />
               </button>
             </div>
-          ))}
+          ))} */}
+          {otherImages.map((fileOrUrl: File | string, i: number) => {
+            const url =
+              typeof fileOrUrl === "string"
+                ? fileOrUrl
+                : URL.createObjectURL(fileOrUrl);
+
+            return (
+              <div key={i} className="relative h-20 w-20">
+                <img
+                  src={url}
+                  alt={`Other ${i}`}
+                  className="h-full w-full rounded object-cover"
+                />
+                <button
+                  onClick={() => {
+                    const updated = [...otherImages];
+                    updated.splice(i, 1);
+                    setValue(`variants.${index}.otherImages`, updated, {
+                      shouldValidate: true,
+                    });
+                  }}
+                  type="button"
+                  className="absolute top-0 right-0 rounded-full bg-white p-1 text-red-600 shadow"
+                >
+                  <MdOutlineCancel size={18} />
+                </button>
+              </div>
+            );
+          })}
         </div>
       </div>
 

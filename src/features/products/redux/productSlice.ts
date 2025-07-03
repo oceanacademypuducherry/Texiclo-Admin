@@ -1,5 +1,6 @@
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { ProductsData } from "../data/productData";
 
 interface Variant {
   color: { name: string; code: string };
@@ -29,7 +30,7 @@ interface ProductState {
 }
 
 const initialState: ProductState = {
-  allProducts: [],
+  allProducts: ProductsData,
   searchQuery: "",
   selectedCategories: [],
   selectedCollections: [],
@@ -42,8 +43,13 @@ const productSlice = createSlice({
     setProducts(state, action: PayloadAction<Product[]>) {
       state.allProducts = action.payload;
     },
+    addProduct(state, action: PayloadAction<Product>) {
+      state.allProducts.push(action.payload);
+    },
     deleteProduct(state, action: PayloadAction<string>) {
-      state.allProducts = state.allProducts.filter(p => p.id !== action.payload);
+      state.allProducts = state.allProducts.filter(
+        (p) => p.id !== action.payload,
+      );
     },
     setSearchQuery(state, action: PayloadAction<string>) {
       state.searchQuery = action.payload;
@@ -51,13 +57,13 @@ const productSlice = createSlice({
     toggleCategoryFilter(state, action: PayloadAction<string>) {
       const cat = action.payload;
       state.selectedCategories = state.selectedCategories.includes(cat)
-        ? state.selectedCategories.filter(c => c !== cat)
+        ? state.selectedCategories.filter((c) => c !== cat)
         : [...state.selectedCategories, cat];
     },
     toggleCollectionFilter(state, action: PayloadAction<string>) {
       const col = action.payload;
       state.selectedCollections = state.selectedCollections.includes(col)
-        ? state.selectedCollections.filter(c => c !== col)
+        ? state.selectedCollections.filter((c) => c !== col)
         : [...state.selectedCollections, col];
     },
     resetFilters(state) {
@@ -74,7 +80,7 @@ export const {
   setSearchQuery,
   toggleCategoryFilter,
   toggleCollectionFilter,
-  resetFilters,
+  resetFilters, addProduct
 } = productSlice.actions;
 
 export const productReducer = productSlice.reducer;

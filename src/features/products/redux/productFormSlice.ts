@@ -26,7 +26,15 @@ const initialState: ProductFormData = {
   prices: {},
   sizes: [],
   discount: 0,
-  variants: [],
+  variants: [
+    {
+      color: { name: "", code: "" },
+      previewImage: "",
+      frontImage: "",
+      backImage: "",
+      otherImages: [],
+    },
+  ],
 };
 
 const productFormSlice = createSlice({
@@ -34,7 +42,7 @@ const productFormSlice = createSlice({
   initialState,
   reducers: {
     setFormData(state, action: PayloadAction<ProductFormData>) {
-      return { ...action.payload };
+      return { ...state, ...action.payload };
     },
     resetForm(state) {
       return { ...initialState };
