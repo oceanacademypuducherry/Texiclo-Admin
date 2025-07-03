@@ -1,5 +1,5 @@
-import { useState, JSX } from 'react';
-import ImageCropper from './ImageCropper';
+import { useState, JSX } from "react";
+import ImageCropper from "./ImageCropper";
 
 interface UseImageCropperReturn {
   cropImageFromFile: (file: File, onCrop: (croppedFile: File) => void) => void;
@@ -7,7 +7,7 @@ interface UseImageCropperReturn {
 }
 
 const dataURLToFile = (dataUrl: string, filename: string): File => {
-  const arr = dataUrl.split(',');
+  const arr = dataUrl.split(",");
   const mime = arr[0].match(/:(.*?);/)?.[1];
   const bstr = atob(arr[1]);
   let n = bstr.length;
@@ -18,9 +18,14 @@ const dataURLToFile = (dataUrl: string, filename: string): File => {
 
 export const useImageCropper = (): UseImageCropperReturn => {
   const [currentBase64, setCurrentBase64] = useState<string | null>(null);
-  const [onCropCallback, setOnCropCallback] = useState<((file: File) => void) | null>(null);
+  const [onCropCallback, setOnCropCallback] = useState<
+    ((file: File) => void) | null
+  >(null);
 
-  const cropImageFromFile = (file: File, onCrop: (croppedFile: File) => void) => {
+  const cropImageFromFile = (
+    file: File,
+    onCrop: (croppedFile: File) => void,
+  ) => {
     const reader = new FileReader();
     reader.onload = (e) => {
       setCurrentBase64(e.target?.result as string);
@@ -29,9 +34,9 @@ export const useImageCropper = (): UseImageCropperReturn => {
     reader.readAsDataURL(file);
   };
 
-  const handleCropped = (base64: string) => {
+  const handleCropped = (file: File) => {
     if (onCropCallback) {
-      const file = dataURLToFile(base64, 'cropped.jpg');
+      // const file = dataURLToFile(base64, "cropped.jpg");
       onCropCallback(file);
     }
     setCurrentBase64(null);
@@ -45,7 +50,7 @@ export const useImageCropper = (): UseImageCropperReturn => {
 
   const CropperModal = currentBase64 ? (
     <div className="bg-opacity-30 fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
-      <div className="bg-white p-4 rounded shadow-md max-w-full">
+      <div className="max-w-full rounded bg-white p-4 shadow-md">
         <ImageCropper
           currentImage={currentBase64}
           onImageCropped={handleCropped}

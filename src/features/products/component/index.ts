@@ -8,4 +8,5 @@ export * from "./DeleteModal";
 export * from "./ProductForm.tsx";
 export * from "./ProductDetailComponent";
 export * from "./BackBtn";
-export * from "./ImageCropper.tsx"
+export * from "./ImageCropper.tsx";
+export * from "./ImagePreview";
