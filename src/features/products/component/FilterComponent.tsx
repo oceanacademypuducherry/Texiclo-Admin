@@ -4,7 +4,7 @@ import { CollectionData } from "../../collectiontype/data/CollectionData";
 import { FC, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../app/store";
-import { resetFilters, setFilterCategory, setFilterCollection } from "../redux";
+import { resetFilters, toggleCategoryFilter, toggleCollectionFilter,  } from "../redux";
 import { Tooltip } from "react-tooltip";
 
 export const FilterComponent: FC<{
@@ -14,24 +14,24 @@ export const FilterComponent: FC<{
   const [isFiltervisible, setIsFilterVisisble] = useState(isVisible);
 
   const dispatch = useDispatch();
-  const selectedCategories = useSelector(
-    (state: RootState) => state.filter.selectedCategories,
+  const {selectedCategories ,selectedCollections }= useSelector(
+    (state: RootState) => state.product
   );
-  const selectedCollections = useSelector(
-    (state: RootState) => state.filter.selectedCollections,
-  );
+  // const selectedCollections = useSelector(
+  //   (state: RootState) => state.filter.selectedCollections,
+  // );
 
   const toggleFilter = () => {
     setIsFilterVisisble(!isFiltervisible);
   };
 
   const handleCategoryChange = (category: string) => {
-    dispatch(setFilterCategory(category));
+    dispatch(toggleCategoryFilter(category));
     console.log("Selected Category:", category);
   };
 
   const handleCollectionChange = (collection: string) => {
-    dispatch(setFilterCollection(collection));
+    dispatch(toggleCollectionFilter(collection));
     console.log("Selected Collections:", collection);
   };
   const handleReset = () => {

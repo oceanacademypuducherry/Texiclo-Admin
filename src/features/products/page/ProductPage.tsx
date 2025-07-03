@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PlaceHolder } from "../../shared";
 import {
   AddProductBtn,
@@ -9,9 +9,38 @@ import {
 } from "../component";
 import { ProductsData } from "../data/productData";
 import { TbAdjustmentsAlt } from "react-icons/tb";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../../app";
+import { setProducts } from "../redux";
 
 export const ProductPage = () => {
   const [showFilter, setShowFilter] = useState(false);
+  const dispatch=useDispatch()
+
+
+  const {allProducts,selectedCategories,selectedCollections,searchQuery}=useSelector((state:RootState)=>state.product)
+
+
+  useEffect(()=>{
+    dispatch(setProducts(ProductsData))
+  },[dispatch])
+
+// ✅ Filter and search logic
+  const filteredProducts = allProducts.filter((product) => {
+    const matchesCategory =
+      selectedCategories.length === 0 ||
+      selectedCategories.includes(product.category);
+
+    const matchesCollection =
+      selectedCollections.length === 0 ||
+      selectedCollections.includes(product.collectionType);
+
+    const matchesSearch =
+      product.title.toLowerCase().includes(searchQuery.toLowerCase());
+
+    return matchesCategory && matchesCollection && matchesSearch;
+  });
+
 
   return (
     <PlaceHolder>
@@ -37,7 +66,27 @@ export const ProductPage = () => {
 
         <div className="flex w-full flex-col">
           <SearchComponent />
-          <div className="grid justify-center gap-6 p-6 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+           {filteredProducts.length === 0 ? (
+            <p className="text-center text-gray-600 py-6 text-lg">
+              No products found.
+            </p>
+          ) : (
+            <div className="grid justify-center gap-6 p-6 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+              {filteredProducts.map((product) => (
+                <ProductComponent
+                  key={product.id}
+                  id={product.id}
+                  title={product.title}
+                  prices={product.prices}
+                  discount={product.discount}
+                  variants={product.variants}
+                  type={product.collectionType}
+                />
+              ))}
+            </div>
+          )}
+          {/* <div className="grid justify-center gap-6 p-6 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+
             {ProductsData.map((product) => (
               <ProductComponent
                 id={product.id}
@@ -49,7 +98,7 @@ export const ProductPage = () => {
                 type={product.collectionType}
               />
             ))}
-          </div>
+          </div> */}
         </div>
       </div>
 
