@@ -1,12 +1,13 @@
+// productFormSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface ProductFormData {
+export interface ProductFormData {
   id?: string;
   productName: string;
   collectionType: string;
   category: string;
   description: string;
-  prices: { [key: string]: number };
+  prices: { [gsm: string]: number };
   sizes: string[];
   discount: number;
   variants: {
@@ -44,11 +45,17 @@ const productFormSlice = createSlice({
     setFormData(state, action: PayloadAction<ProductFormData>) {
       return { ...state, ...action.payload };
     },
-    resetForm(state) {
-      return { ...initialState };
+    updateField<K extends keyof ProductFormData>(
+      state,
+      action: PayloadAction<{ key: K; value: ProductFormData[K] }>,
+    ) {
+      state[action.payload.key] = action.payload.value;
+    },
+    resetForm() {
+      return initialState;
     },
   },
 });
 
-export const { setFormData, resetForm } = productFormSlice.actions;
+export const { setFormData, resetForm, updateField } = productFormSlice.actions;
 export const productFormReducer = productFormSlice.reducer;

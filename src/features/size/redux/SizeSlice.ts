@@ -1,15 +1,15 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface SizesData {
-  id: string;
-  size:string
+  _id: string;
+  size: string;
 }
 
 interface SizeState {
   isAdd: boolean;
   isDelete: boolean;
   isUpdate: boolean;
-  id?: string;
+  _id?: string;
   size?: SizesData;
   sizes: SizesData[];
 }
@@ -18,7 +18,13 @@ const initialState: SizeState = {
   isAdd: false,
   isDelete: false,
   isUpdate: false,
-  sizes: [],
+  sizes: [
+    { _id: "46546ffdsfgfdsf654", size: "s" },
+    { _id: "ljsdfsad54f5s4daf65a", size: "lg" },
+    { _id: "46546ffdsfgfdsfsafd654", size: "Xs" },
+    { _id: "654sad65f46sadsf", size: "xl" },
+    { _id: "sjflsaddff5sadf54ssa", size: "xxl" },
+  ],
 };
 
 const sizeSlice = createSlice({
@@ -36,14 +42,14 @@ const sizeSlice = createSlice({
     },
 
     setSizeId: (state, action: PayloadAction<string>) => {
-      state.id = action.payload;
+      state._id = action.payload;
     },
     setSize: (state, action: PayloadAction<SizesData>) => {
       state.size = action.payload;
     },
 
     addSize: (state, action: PayloadAction<SizesData>) => {
-      const exists = state.sizes.some((col) => col.id === action.payload.id);
+      const exists = state.sizes.some((col) => col._id === action.payload._id);
       if (!exists) {
         state.sizes.push(action.payload);
       }
@@ -51,12 +57,12 @@ const sizeSlice = createSlice({
 
     updateSize: (state, action: PayloadAction<SizesData>) => {
       state.sizes = state.sizes.map((Size) =>
-        Size.id === action.payload.id ? action.payload : Size,
+        Size._id === action.payload._id ? action.payload : Size,
       );
     },
 
     deleteSize: (state, action: PayloadAction<SizesData>) => {
-      state.sizes = state.sizes.filter((col) => col.id !== action.payload.id);
+      state.sizes = state.sizes.filter((col) => col._id !== action.payload._id);
     },
 
     setSizeData: (state, action: PayloadAction<SizesData[]>) => {
@@ -64,7 +70,7 @@ const sizeSlice = createSlice({
     },
     clearSize: (state) => {
       state.size = undefined;
-      state.id = undefined;
+      state._id = undefined;
     },
 
     resetModalStates: (state) => {

@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface ColorsData {
-  id: string;
+  _id: string;
   colorName: string;
   colorValue: string;
 }
@@ -10,7 +10,7 @@ interface ColorState {
   isAdd: boolean;
   isDelete: boolean;
   isUpdate: boolean;
-  id?: string;
+  _id?: string;
   colorName: string;
   colorValue: string;
   color?: ColorsData;
@@ -23,7 +23,11 @@ const initialState: ColorState = {
   isUpdate: false,
   colorName: "",
   colorValue: "",
-  colors: [],
+  colors: [
+    { _id: "ds5f45sad4f654dsa", colorName: "red", colorValue: "#646545" },
+    { _id: "dafsad453f5dsaasdf", colorName: "blue", colorValue: "#465sdf" },
+    { _id: "456d4fsa56dsfasd6", colorName: "green", colorValue: "#dadsf654ds" },
+  ],
 };
 
 const colorSlice = createSlice({
@@ -40,31 +44,33 @@ const colorSlice = createSlice({
       state.isUpdate = action.payload;
     },
     setColorId: (state, action: PayloadAction<string>) => {
-      state.id = action.payload;
+      state._id = action.payload;
     },
     setColor: (state, action: PayloadAction<ColorsData>) => {
       state.color = action.payload;
     },
     addColor: (state, action: PayloadAction<ColorsData>) => {
-      const exists = state.colors.some((col) => col.id === action.payload.id);
+      const exists = state.colors.some((col) => col._id === action.payload._id);
       if (!exists) {
         state.colors.push(action.payload);
       }
     },
     updateColor: (state, action: PayloadAction<ColorsData>) => {
       state.colors = state.colors.map((col) =>
-        col.id === action.payload.id ? action.payload : col,
+        col._id === action.payload._id ? action.payload : col,
       );
     },
     deleteColor: (state, action: PayloadAction<ColorsData>) => {
-      state.colors = state.colors.filter((col) => col.id !== action.payload.id);
+      state.colors = state.colors.filter(
+        (col) => col._id !== action.payload._id,
+      );
     },
     setColorData: (state, action: PayloadAction<ColorsData[]>) => {
       state.colors = action.payload;
     },
     clearColor: (state) => {
       state.color = undefined;
-      state.id = undefined;
+      state._id = undefined;
     },
     resetModalStates: (state) => {
       state.isAdd = false;

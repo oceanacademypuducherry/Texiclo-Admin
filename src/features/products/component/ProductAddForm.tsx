@@ -7,19 +7,20 @@ import {
   UseFormSetValue,
   UseFormWatch,
 } from "react-hook-form";
-import { ProductFormInputs, ColorOption } from "./ProductForm";
 import { useImageCropper } from "./useImageCropper";
 import { AiOutlineCloudUpload } from "react-icons/ai";
-import { useEffect, useState } from "react";
+import { JSX, useEffect, useState } from "react";
+import { ProductFormValues } from "./AddProductForm";
+import { ColorsData } from "../../color";
 
 interface Props {
-  register: UseFormRegister<ProductFormInputs>;
-  errors: FieldErrors<ProductFormInputs>;
-  setValue: UseFormSetValue<ProductFormInputs>;
-  watch: UseFormWatch<ProductFormInputs>;
-  control: Control<ProductFormInputs>;
+  register: UseFormRegister<ProductFormValues>;
+  errors: FieldErrors<ProductFormValues>;
+  setValue: UseFormSetValue<ProductFormValues>;
+  watch: UseFormWatch<ProductFormValues>;
+  control: Control<ProductFormValues>;
   index: number;
-  colorOptions: ColorOption[];
+  colorOptions: ColorsData[];
   onRemove: () => void;
 }
 
@@ -35,83 +36,63 @@ export const ProductAddForm = ({
 }: Props) => {
   const { cropImageFromFile, CropperModal } = useImageCropper();
 
-  // ————
-  // Local state for image files (source of truth for previews)
-  // ————
-  const [previewFile, setPreviewFile] = useState<File | null>(null);
-  const [frontFile, setFrontFile] = useState<File | null>(null);
-  const [backFile, setBackFile] = useState<File | null>(null);
+  const [files, setFiles] = useState<
+    Record<"previewImage" | "frontImage" | "backImage", File | null>
+  >({
+    previewImage: null,
+    frontImage: null,
+    backImage: null,
+  });
 
-  // ————
-  // Local state for object URLs (to display as previews)
-  // ————
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [frontUrl, setFrontUrl] = useState<string | null>(null);
-  const [backUrl, setBackUrl] = useState<string | null>(null);
+  const [urls, setUrls] = useState<
+    Record<"previewImage" | "frontImage" | "backImage", string | null>
+  >({
+    previewImage: null,
+    frontImage: null,
+    backImage: null,
+  });
 
-  // Update preview URL when previewFile changes
-  useEffect(() => {
-    if (previewFile) {
-      const url = URL.createObjectURL(previewFile);
-      setPreviewUrl(url);
-      return () => URL.revokeObjectURL(url);
-    } else {
-      setPreviewUrl(null);
-    }
-  }, [previewFile]);
-
-  // Update front URL when frontFile changes
-  useEffect(() => {
-    if (frontFile) {
-      const url = URL.createObjectURL(frontFile);
-      setFrontUrl(url);
-      return () => URL.revokeObjectURL(url);
-    } else {
-      setFrontUrl(null);
-    }
-  }, [frontFile]);
-
-  // Update back URL when backFile changes
-  useEffect(() => {
-    if (backFile) {
-      const url = URL.createObjectURL(backFile);
-      setBackUrl(url);
-      return () => URL.revokeObjectURL(url);
-    } else {
-      setBackUrl(null);
-    }
-  }, [backFile]);
-
-  // ————
-  // Other images are still stored in the form state (they’re a list)
-  // ————
   const otherImages = watch(`variants.${index}.otherImages`) || [];
 
-  // ————
-  // Handling cropped images: update both form state and local state if needed
-  // ————
+  // Update preview URLs when file changes
+  useEffect(() => {
+    (["previewImage", "frontImage", "backImage"] as const).forEach((key) => {
+      const base64 = watch(`variants.${index}.${key}`);
+      if (typeof base64 === "string" && base64.startsWith("data:image")) {
+        setUrls((prev) => ({ ...prev, [key]: base64 }));
+      } else {
+        setUrls((prev) => ({ ...prev, [key]: null }));
+      }
+    });
+  }, [watch(`variants.${index}`)]);
+
   const handleCropped = (
-    field: keyof ProductFormInputs["variants"][0],
+    field: keyof ProductFormValues["variants"][0],
     file: File,
   ) => {
-    setValue(`variants.${index}.${field}`, file, {
-      shouldValidate: true,
-      shouldDirty: true,
-      shouldTouch: true,
-    });
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64String = reader.result as string;
 
-    if (field === "previewImage") {
-      setPreviewFile(file);
-    } else if (field === "frontImage") {
-      setFrontFile(file);
-    } else if (field === "backImage") {
-      setBackFile(file);
-    }
+      const variants = [...(watch("variants") ?? [])];
+      const updatedVariant = { ...variants[index], [field]: base64String };
+      variants[index] = updatedVariant;
+
+      setValue("variants", variants, {
+        shouldValidate: true,
+        shouldDirty: true,
+        shouldTouch: true,
+      });
+
+      if (["previewImage", "frontImage", "backImage"].includes(field)) {
+        setFiles((prev) => ({ ...prev, [field]: file }));
+      }
+    };
+    reader.readAsDataURL(file); // read file as base64
   };
 
   const handleOtherImages = (files: File[]) => {
     if (files.length === 0) return;
-
     cropImageFromFile(files[0], (croppedFile) => {
       const updated = [...otherImages, croppedFile];
       processOtherImages(files, 1, updated);
@@ -133,16 +114,12 @@ export const ProductAddForm = ({
     }
 
     cropImageFromFile(files[startIndex], (cropped) => {
-      const nextUpdated = [...updated, cropped];
-      processOtherImages(files, startIndex + 1, nextUpdated);
+      processOtherImages(files, startIndex + 1, [...updated, cropped]);
     });
   };
 
-  // ————
-  // Dropzone setup
-  // ————
-  const getImageDropProps = (
-    field: keyof ProductFormInputs["variants"][0],
+  const getDropzoneProps = (
+    field: keyof ProductFormValues["variants"][0],
     multiple = false,
   ) =>
     useDropzone({
@@ -156,15 +133,10 @@ export const ProductAddForm = ({
       multiple,
     });
 
-  const previewImageDrop = getImageDropProps("previewImage");
-  const frontImageDrop = getImageDropProps("frontImage");
-  const backImageDrop = getImageDropProps("backImage");
-  const otherImageDrop = getImageDropProps("otherImages", true);
-
-  // ————
-  // Render helper for image preview with removal
-  // ————
-  const renderImagePreview = (url: string | null, onRemove: () => void) => {
+  const renderImage = (
+    url: string | null,
+    onRemove: () => void,
+  ): JSX.Element | null => {
     if (!url) return null;
     return (
       <div className="relative mt-2 h-24 w-24">
@@ -183,11 +155,11 @@ export const ProductAddForm = ({
       </div>
     );
   };
-
-  const variantErrors = watch(`variants.${index}`) && errors?.variants?.[index];
+  const otherImageDropzone = getDropzoneProps("otherImages", true);
+  const variantErrors = errors?.variants?.[index];
 
   return (
-    <div className="relative mb-4 space-y-4 rounded border-gray-200 p-2 pt-4">
+    <div className="relative mb-4 space-y-4 rounded border border-gray-200 p-2 pt-4">
       <button
         onClick={onRemove}
         className="absolute -top-2 right-2 text-red-500"
@@ -195,26 +167,26 @@ export const ProductAddForm = ({
         <MdOutlineCancel size={20} />
       </button>
 
-      {/* Color Selection */}
+      {/* Color Dropdown */}
       <div className="space-y-1">
         <div className="flex items-center">
           <label className="w-33">Color</label>
           <select
             {...register(`variants.${index}.color.name`)}
-            onChange={(e) =>
+            onChange={(e) => {
+              const name = e.target.value;
+              const code = colorOptions.find((c) => c.colorName === name);
               setValue(`variants.${index}.color`, {
-                name: e.target.value,
-                code:
-                  colorOptions.find((c) => c.name === e.target.value)?.code ||
-                  "",
-              })
-            }
+                name,
+                code: code?.colorValue || "",
+              });
+            }}
             className="flex-1 rounded border border-gray-300 p-2"
           >
             <option value="">Choose Color</option>
-            {colorOptions.map((color) => (
-              <option key={color.name} value={color.name}>
-                {color.name}
+            {colorOptions?.map((c) => (
+              <option key={c._id} value={c.colorValue}>
+                {c.colorName}
               </option>
             ))}
           </select>
@@ -231,54 +203,13 @@ export const ProductAddForm = ({
         )}
       </div>
 
-      {/* Preview Image */}
-      <div className="space-y-1">
-        <label className="w-33">Preview Image</label>
-        {!previewFile ? (
-          <div
-            {...previewImageDrop.getRootProps()}
-            className="cursor-pointer rounded border-2 border-dashed border-gray-300 p-3 text-center"
-          >
-            <input {...previewImageDrop.getInputProps()} />
-            <p className="text-gray-500">Upload a preview image</p>
-          </div>
-        ) : (
-          renderImagePreview(previewUrl, () => {
-            // Clear both local state and form value for previewImage
-            setPreviewFile(null);
-            setValue(`variants.${index}.previewImage`, undefined, {
-              shouldValidate: true,
-            });
-          })
-        )}
-        {variantErrors?.previewImage && (
-          <p className="ml-40 text-sm text-red-500">
-            {variantErrors.previewImage.message}
-          </p>
-        )}
-      </div>
-
-      {/* Front & Back Images */}
-      <div className="grid grid-cols-2 gap-4">
-        {[
-          {
-            label: "Front Image",
-            drop: frontImageDrop,
-            field: "frontImage",
-            file: frontFile,
-            url: frontUrl,
-          },
-          {
-            label: "Back Image",
-            drop: backImageDrop,
-            field: "backImage",
-            file: backFile,
-            url: backUrl,
-          },
-        ].map(({ label, drop, field, file, url }) => (
+      {/* Preview, Front, and Back Images */}
+      {(["previewImage", "frontImage", "backImage"] as const).map((field) => {
+        const drop = getDropzoneProps(field);
+        return (
           <div key={field} className="space-y-1">
-            <label className="mb-1 block">{label}</label>
-            {!file ? (
+            <label className="block">{field.replace(/Image/, "")} Image</label>
+            {!files[field] ? (
               <div
                 {...drop.getRootProps()}
                 className="cursor-pointer rounded border-2 border-dashed border-gray-300 p-3 text-center"
@@ -287,71 +218,70 @@ export const ProductAddForm = ({
                 <p className="text-gray-500">Upload</p>
               </div>
             ) : (
-              renderImagePreview(url, () => {
-                // Clear local and form for the field
-                if (field === "frontImage") {
-                  setFrontFile(null);
-                } else if (field === "backImage") {
-                  setBackFile(null);
-                }
-                setValue(`variants.${index}.${field}` as any, undefined, {
+              renderImage(urls[field], () => {
+                setFiles((prev) => ({ ...prev, [field]: null }));
+                setValue(`variants.${index}.${field}`, null, {
                   shouldValidate: true,
                 });
               })
             )}
-            {variantErrors?.[field as keyof typeof variantErrors] && (
+            {variantErrors?.[field] && (
               <p className="text-sm text-red-500">
-                {variantErrors[field as keyof typeof variantErrors]?.message}
+                {variantErrors[field]?.message}
               </p>
             )}
           </div>
-        ))}
-      </div>
+        );
+      })}
 
       {/* Other Images */}
       <div>
-        <div className="flex items-center justify-between">
-          <label className="mb-1 block">Other Images</label>
-          <div
-            {...otherImageDrop.getRootProps()}
-            className="w-fit cursor-pointer rounded-lg border border-gray-300 bg-gray-200 p-2 text-center"
-          >
-            <input {...otherImageDrop.getInputProps()} />
-            <div className="flex items-center gap-2">
-              <p className="text-secondary">Upload</p>
-              <AiOutlineCloudUpload />
+        <div>
+          <div className="flex items-center justify-between">
+            <label className="mb-1 block">Other Images</label>
+            <div
+              {...otherImageDropzone.getRootProps()}
+              className="w-fit cursor-pointer rounded-lg border border-gray-300 bg-gray-200 p-2 text-center"
+            >
+              <input {...otherImageDropzone.getInputProps()} />
+              <div className="flex items-center gap-2">
+                <p className="text-secondary">Upload</p>
+                <AiOutlineCloudUpload />
+              </div>
             </div>
           </div>
         </div>
+
         <div className="mt-2 flex flex-wrap gap-2">
-          {otherImages.map((img, i) => {
-            // For other images, create an object URL on the fly.
-            // (You might consider a similar local state approach if needed.)
-            const url =
-              img instanceof File ? URL.createObjectURL(img) : (img as string);
-            return (
-              <div key={i} className="relative h-20 w-20">
-                <img
-                  src={url || ""}
-                  alt={`Other ${i}`}
-                  className="h-full w-full rounded object-cover"
-                />
-                <button
-                  onClick={() => {
-                    const updated = [...otherImages];
-                    updated.splice(i, 1);
-                    setValue(`variants.${index}.otherImages`, updated, {
-                      shouldValidate: true,
-                    });
-                  }}
-                  type="button"
-                  className="absolute top-0 right-0 rounded-full bg-white p-1 text-red-600 shadow"
-                >
-                  <MdOutlineCancel size={18} />
-                </button>
-              </div>
-            );
-          })}
+          {Array.isArray(otherImages) &&
+            otherImages?.map((img, i) => {
+              const url =
+                img instanceof File
+                  ? URL.createObjectURL(img)
+                  : (img as string);
+              return (
+                <div key={i} className="relative h-20 w-20">
+                  <img
+                    src={url}
+                    alt={`Other ${i}`}
+                    className="h-full w-full rounded object-cover"
+                  />
+                  <button
+                    onClick={() => {
+                      const updated = [...otherImages];
+                      updated.splice(i, 1);
+                      setValue(`variants.${index}.otherImages`, updated, {
+                        shouldValidate: true,
+                      });
+                    }}
+                    type="button"
+                    className="absolute top-0 right-0 rounded-full bg-white p-1 text-red-600 shadow"
+                  >
+                    <MdOutlineCancel size={18} />
+                  </button>
+                </div>
+              );
+            })}
         </div>
       </div>
 

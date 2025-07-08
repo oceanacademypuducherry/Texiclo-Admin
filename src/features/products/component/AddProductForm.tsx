@@ -1,68 +1,101 @@
-import { useForm, useFieldArray } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { ProductAddForm } from "./ProductAddForm";
-import Select from "react-select";
-import { IoMdAddCircle } from "react-icons/io";
+import { useFieldArray, useForm } from "react-hook-form";
 import { productSchema } from "../validation";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../app";
-import { useEffect, useCallback, useRef } from "react";
-import { resetForm, setFormData } from "../redux";
-import { useNavigate } from "react-router-dom";
+import { AppDispatch, RootState } from "../../../app";
+import Select from "react-select";
+import { IoMdAddCircle } from "react-icons/io";
+import { ProductAddForm } from "./ProductAddForm";
+import { fileToBase64 } from "../../../utils";
+import { setFormData } from "../redux";
+import { useEffect } from "react";
 
-export type GSMOption = number;
-export type SizeOption = string;
-export type ColorOption = { name: string; code: string };
-
-export type ProductFormInputs = {
+export interface ProductFormValues {
   productName: string;
   collectionType: string;
   category: string;
   description: string;
-  prices: { [gsm: string]: number };
-  sizes: SizeOption[];
-  discount: number;
+  discount?: number;
+
+  prices: {
+    [key: string]: number | string | undefined; // GSM dynamic keys
+  };
+
+  sizes: string[];
+
   variants: {
-    color: ColorOption;
+    color: {
+      name: string;
+      code: string;
+    };
     previewImage: File | null;
     frontImage: File | null;
     backImage: File | null;
-    otherImages: File[];
+    otherImages: (File | string)[];
   }[];
-};
+}
 
-export const ProductForm = () => {
-  const gsmOptions: GSMOption[] = [120, 140, 160, 180, 200, 220];
-  const sizeOptions: SizeOption[] = ["S", "M", "L", "XL", "XXL"];
-  const colorOptions: ColorOption[] = [
-    { name: "Black", code: "#000000" },
-    { name: "Red", code: "#FF0000" },
-    { name: "Blue", code: "#0000FF" },
-    { name: "Green", code: "#00FF00" },
-    { name: "White", code: "#FFFFFF" },
-    { name: "Yellow", code: "#FFFF00" },
-  ];
+export const AddProductForm = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { gsms } = useSelector((state: RootState) => state.gsm);
+  const { sizes } = useSelector((state: RootState) => state.size);
+  const { colors } = useSelector((state: RootState) => state.color);
+  const productFormData = useSelector((state: RootState) => state.productForm);
 
   const {
     register,
     handleSubmit,
-    control,
-    setValue,
-    watch,
     reset,
+    setValue,
+    control,
+    watch,
     formState: { errors },
-  } = useForm<ProductFormInputs>({
+  } = useForm<ProductFormValues>({
+    defaultValues: productFormData || {},
     resolver: yupResolver(productSchema),
   });
+
+  console.log(errors);
 
   const { fields, append, remove } = useFieldArray({
     control,
     name: "variants",
   });
+  const onSubmit = async (data: ProductFormValues) => {
+    // Convert image File objects to base64
+    const variants = await Promise.all(
+      data.variants.map(async (variant) => ({
+        ...variant,
+        previewImage:
+          typeof variant.previewImage === "string"
+            ? variant.previewImage
+            : await fileToBase64(variant.previewImage),
+        frontImage:
+          typeof variant.frontImage === "string"
+            ? variant.frontImage
+            : await fileToBase64(variant.frontImage),
+        backImage:
+          typeof variant.backImage === "string"
+            ? variant.backImage
+            : await fileToBase64(variant.backImage),
+        otherImages: await Promise.all(
+          variant.otherImages.map((img) =>
+            typeof img === "string" ? img : fileToBase64(img),
+          ),
+        ),
+      })),
+    );
 
-  const onSubmit = (data: ProductFormInputs) => {
-    console.log("Form Submitted:", data);
+    const payload = { ...data, variants };
+    dispatch(setFormData(payload));
   };
+
+  useEffect(() => {
+    const subscription = watch((value) => {
+      dispatch(setFormData(value as ProductFormValues));
+    });
+    return () => subscription.unsubscribe();
+  }, [watch, dispatch]);
 
   return (
     <form
@@ -79,13 +112,13 @@ export const ProductForm = () => {
           <div className="flex items-center">
             <label className="w-36">{label}</label>
             <input
-              {...register(name as keyof ProductFormInputs)}
+              {...register(name as keyof ProductFormValues)}
               className="flex-1 rounded border border-gray-300 p-2"
             />
           </div>
-          {errors[name as keyof ProductFormInputs] && (
+          {errors[name as keyof ProductFormValues] && (
             <p className="ml-40 text-sm text-red-500">
-              {errors[name as keyof ProductFormInputs]?.message as string}
+              {errors[name as keyof ProductFormValues]?.message as string}
             </p>
           )}
         </div>
@@ -112,13 +145,13 @@ export const ProductForm = () => {
       <div className="flex items-start gap-4">
         <label className="mb-2 block w-36">Product Price</label>
         <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
-          {gsmOptions.map((gsm) => (
-            <div key={gsm} className="space-y-1">
+          {gsms.map((gsm) => (
+            <div key={gsm._id} className="space-y-1">
               <div className="flex flex-col justify-center gap-2">
-                <label className="w-24">{gsm} GSM</label>
+                <label className="w-24">{gsm.gsm} GSM</label>
                 <input
                   type="number"
-                  {...register(`prices.${gsm}`)}
+                  {...register(`prices.${gsm.gsm}` as const)}
                   className="flex-1 rounded border border-gray-300 p-2"
                   placeholder="₹"
                 />
@@ -138,14 +171,8 @@ export const ProductForm = () => {
           <div className="flex-1">
             <Select
               isMulti
-              options={sizeOptions.map((s) => ({ value: s, label: s }))}
+              options={sizes.map((s) => ({ value: s._id, label: s.size }))}
               closeMenuOnSelect={false}
-              value={
-                watch("sizes")?.map((size) => ({
-                  value: size,
-                  label: size,
-                })) || []
-              }
               onChange={(selected) =>
                 setValue(
                   "sizes",
@@ -181,15 +208,15 @@ export const ProductForm = () => {
       {/* Variants */}
       {fields.map((field, index) => (
         <ProductAddForm
+          colorOptions={colors}
           key={field.id}
           index={index}
           register={register}
-          errors={errors}
           watch={watch}
+          errors={errors}
           control={control}
           setValue={setValue}
           onRemove={() => remove(index)}
-          colorOptions={colorOptions}
         />
       ))}
 
