@@ -129,7 +129,7 @@ export const ProductsData = [
     id: "5",
     title: "Mens round neck t-shirts",
     collectionType: "All-season",
-    category: "Men",
+    category: "Mens",
     description: "Versatile round neck tees for all occasions.",
     prices: { "120": 1799, "140": 1899, "160": 1999 },
     sizes: ["M", "L", "XL", "XXL"],
