@@ -1,8 +1,9 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { ADD_GSM, DELETE_GSM, GET_GSM, UPDATE_GSM } from "../service";
 
 export interface GsmsData {
   _id: string;
-  gsm: number;
+  value: number;
 }
 
 interface GsmState {
@@ -12,19 +13,17 @@ interface GsmState {
   _id?: string;
   gsm?: GsmsData;
   gsms: GsmsData[];
+  loading: boolean;
+  error: string | null;
 }
 
 const initialState: GsmState = {
   isAdd: false,
   isDelete: false,
   isUpdate: false,
-  gsms: [
-    { _id: "65dsfsad65465f6sa5dd", gsm: 120 },
-    { _id: "adfassdasfsadf36dsafas", gsm: 150 },
-    { _id: "da65f4sad6f65dwsafdsa", gsm: 170 },
-    { _id: "sdf654dsa65f465ds4f6dsa", gsm: 180 },
-    { _id: "fsda65f4sda654fdsa", gsm: 110 },
-  ],
+  gsms: [],
+  loading: false,
+  error: null,
 };
 
 const gsmSlice = createSlice({
@@ -40,44 +39,82 @@ const gsmSlice = createSlice({
     setGsmUpdate: (state, action: PayloadAction<boolean>) => {
       state.isUpdate = action.payload;
     },
-
     setGsm_id: (state, action: PayloadAction<string>) => {
       state._id = action.payload;
     },
     setGsm: (state, action: PayloadAction<GsmsData>) => {
       state.gsm = action.payload;
     },
-
-    addGsm: (state, action: PayloadAction<GsmsData>) => {
-      const exists = state.gsms.some((col) => col._id === action.payload._id);
-      if (!exists) {
-        state.gsms.push(action.payload);
-      }
-    },
-
-    updateGsm: (state, action: PayloadAction<GsmsData>) => {
-      state.gsms = state.gsms.map((gsm) =>
-        gsm._id === action.payload._id ? action.payload : gsm,
-      );
-    },
-
-    deleteGsm: (state, action: PayloadAction<GsmsData>) => {
-      state.gsms = state.gsms.filter((col) => col._id !== action.payload._id);
-    },
-
-    setGsmData: (state, action: PayloadAction<GsmsData[]>) => {
-      state.gsms = action.payload;
-    },
     clearGsm: (state) => {
       state.gsm = undefined;
       state._id = undefined;
     },
-
     resetModalStates: (state) => {
       state.isAdd = false;
       state.isDelete = false;
       state.isUpdate = false;
     },
+  },
+
+  extraReducers: (builder) => {
+    // GET
+    builder.addCase(GET_GSM.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(GET_GSM.fulfilled, (state, action) => {
+      state.loading = false;
+      state.gsms = action.payload;
+    });
+    builder.addCase(GET_GSM.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload?.message || "Failed to fetch GSMs";
+    });
+
+    // ADD
+    builder.addCase(ADD_GSM.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(ADD_GSM.fulfilled, (state, action) => {
+      state.loading = false;
+      const exists = state.gsms.some((g) => g.value === action.payload.value);
+      if (!exists) {
+        state.gsms.push(action.payload);
+      }
+    });
+
+    builder.addCase(ADD_GSM.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload?.message || "Failed to add GSM";
+    });
+
+    // UPDATE
+    builder.addCase(UPDATE_GSM.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(UPDATE_GSM.fulfilled, (state, action) => {
+      state.loading = false;
+      state.gsms = state.gsms.map((gsm) =>
+        gsm._id === action.payload._id ? action.payload : gsm,
+      );
+    });
+    builder.addCase(UPDATE_GSM.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload?.message || "Failed to update GSM";
+    });
+
+    // DELETE
+    builder.addCase(DELETE_GSM.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(DELETE_GSM.fulfilled, (state, action) => {
+      state.loading = false;
+      state.gsms = state.gsms.filter((gsm) => gsm._id !== action.payload);
+    });
+    builder.addCase(DELETE_GSM.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload?.message || "Failed to delete GSM";
+    });
   },
 });
 
@@ -87,12 +124,8 @@ export const {
   setGsmDelete,
   setGsmUpdate,
   setGsm_id,
-  setGsmData,
   clearGsm,
   resetModalStates,
-  addGsm,
-  deleteGsm,
-  updateGsm,
 } = gsmSlice.actions;
 
 export const GsmReducer = gsmSlice.reducer;

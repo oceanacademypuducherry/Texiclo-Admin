@@ -1,20 +1,29 @@
 import { IoMdCloseCircle } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
-import { deleteGsm, setGsmDelete } from "../redux";
-import { RootState } from "../../../app";
+import { setGsmDelete } from "../redux";
+import { AppDispatch, RootState } from "../../../app";
+import { DELETE_GSM, GET_GSM } from "../service";
+import { showError, showSuccess } from "../../../utils";
 
 export const DeleteGsmModal = () => {
-  const dispatch = useDispatch();
-  const { id } = useSelector((state: RootState) => state.gsm);
+  const dispatch = useDispatch<AppDispatch>();
+  const { _id } = useSelector((state: RootState) => state.gsm);
 
   const handleClose = () => {
     dispatch(setGsmDelete(false));
   };
 
-  const handleDelete = () => {
-    if (id) {
-      dispatch(deleteGsm({ id, gsm: 0 }));
-      dispatch(setGsmDelete(false));
+  const handleDelete = async () => {
+    if (_id) {
+      try {
+        await dispatch(DELETE_GSM(_id)).unwrap();
+        dispatch(setGsmDelete(false));
+        showSuccess("GSM Deleted Sucessfully");
+        dispatch(GET_GSM());
+      } catch (error: any) {
+        console.error("Delete GSM error:", error.message || error);
+        showError("Failed to delete GSM");
+      }
     }
   };
   return (

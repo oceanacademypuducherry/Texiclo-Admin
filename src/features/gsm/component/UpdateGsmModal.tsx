@@ -1,13 +1,15 @@
 import { IoMdCloseCircle } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../app";
+import { AppDispatch, RootState } from "../../../app";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { updateGsmValidation } from "../validation";
-import { setGsmUpdate, updateGsm } from "../redux";
+import { setGsmUpdate } from "../redux";
+import { GET_GSM, UPDATE_GSM } from "../service";
+import { showError, showSuccess } from "../../../utils";
 
 export const UpdateGsmModal = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const { gsm } = useSelector((state: RootState) => state.gsm);
 
   const {
@@ -17,20 +19,23 @@ export const UpdateGsmModal = () => {
     reset,
   } = useForm({
     defaultValues: {
-      gsm: gsm?.gsm || "",
+      gsm: gsm?.value,
     },
     resolver: yupResolver(updateGsmValidation),
   });
 
-  const onSubmit = (data: { gsm: number }) => {
-    if (gsm) {
-      const updatedGsm = {
-        ...gsm,
-        gsm: Number(data.gsm),
-      };
-      dispatch(updateGsm(updatedGsm));
-      dispatch(setGsmUpdate(false));
-      reset();
+  const onSubmit = async (data: { gsm: number }) => {
+    if (gsm?._id) {
+      try {
+        await dispatch(UPDATE_GSM({ id: gsm._id, value: data.gsm })).unwrap();
+        dispatch(setGsmUpdate(false));
+        reset();
+        dispatch(GET_GSM());
+        showSuccess("GSM updated sucessfully");
+      } catch (error: any) {
+        console.error("Update error:", error.message || error);
+        showError("Failed to update GSM");
+      }
     }
   };
 

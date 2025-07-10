@@ -13,7 +13,7 @@ export const GsmComponent = ({ gsm }: GsmProps) => {
 
   return (
     <div className="flex max-w-[150px] flex-col items-center space-y-2.5 rounded-lg border-2 border-gray-300 p-2">
-      <span className="text-xl font-bold">{gsm.gsm} GSM</span>
+      <span className="text-xl font-bold">{gsm.value} GSM</span>
       <div className="flex gap-2.5 pb-1">
         <HiPencilAlt
           onClick={() => {

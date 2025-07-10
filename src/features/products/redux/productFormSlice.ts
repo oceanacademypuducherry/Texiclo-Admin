@@ -1,5 +1,4 @@
-
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface Color {
   name: string;
@@ -33,16 +32,16 @@ export interface ProductForm {
 
 const initialState: { formData: ProductForm } = {
   formData: {
-    productName: '',
-    collectionType: '',
-    category: '',
-    description: '',
+    productName: "",
+    collectionType: "",
+    category: "",
+    description: "",
     discount: 0,
     prices: {},
     sizes: [],
     variants: [
       {
-        color: { name: '', code: '' },
+        color: { name: "", code: "" },
         previewImage: null,
         frontImage: null,
         backImage: null,
@@ -53,7 +52,7 @@ const initialState: { formData: ProductForm } = {
 };
 
 const productFormSlice = createSlice({
-  name: 'productForm',
+  name: "productForm",
   initialState,
   reducers: {
     setFormData: (state, action: PayloadAction<Partial<ProductForm>>) => {
@@ -64,34 +63,21 @@ const productFormSlice = createSlice({
     },
     addLocalVariant: (state) => {
       state.formData.variants.push({
-        color: { name: '', code: '' },
+        color: { name: "", code: "" },
         previewImage: null,
         frontImage: null,
         backImage: null,
         otherImages: [],
       });
     },
-    // updateVariantImage: (
-    //   state,
-    //   action: PayloadAction<{
-    //     index: number;
-    //     field: keyof Variant;
-    //     value: File | File[];
-    //   }>
-    // ) => {
-    //   const { index, field, value } = action.payload;
-    //   if (state.formData.variants[index]) {
-    //     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    //     (state.formData.variants[index] as any)[field] = value;
-    //   }
-    // },
+
     updateVariantImage: (
       state,
       action: PayloadAction<{
         index: number;
         field: keyof Variant;
         value: ImageSource | ImageSource[]; // ✅ Updated type
-      }>
+      }>,
     ) => {
       const { index, field, value } = action.payload;
       if (state.formData.variants[index]) {
@@ -100,7 +86,7 @@ const productFormSlice = createSlice({
       }
     },
     addNewProduct: (_, action: PayloadAction<ProductForm>) => {
-      console.log('Submitting product:', action.payload);
+      console.log("Submitting product:", action.payload);
       // Here, you might dispatch an async thunk to post to backend
     },
     resetForm: (state) => {
@@ -116,6 +102,5 @@ export const {
   addNewProduct,
   resetForm,
 } = productFormSlice.actions;
-
 
 export const productFormReducer = productFormSlice.reducer;

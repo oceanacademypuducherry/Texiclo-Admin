@@ -4,21 +4,22 @@ import {
   AddGsmModal,
   DeleteGsmModal,
   GsmComponent,
+  GsmSkeleton,
   UpdateGsmModal,
 } from "../component";
-import { RootState } from "../../../app";
-import { setGsmAdd, setGsmData } from "../redux";
-import { GsmData } from "../data/gsm";
+import { AppDispatch, RootState } from "../../../app";
+import { setGsmAdd } from "../redux";
 import { useEffect } from "react";
+import { GET_GSM } from "../service";
 
 export const GsmPage = () => {
-  const dispatch = useDispatch();
-  const { isAdd, isDelete, isUpdate, gsms } = useSelector(
+  const dispatch = useDispatch<AppDispatch>();
+  const { isAdd, isDelete, isUpdate, gsms, loading } = useSelector(
     (state: RootState) => state.gsm,
   );
   useEffect(() => {
-    dispatch(setGsmData(GsmData));
-  }, []);
+    dispatch(GET_GSM());
+  }, [dispatch]);
   return (
     <PlaceHolder>
       {isAdd && <AddGsmModal />}
@@ -37,8 +38,10 @@ export const GsmPage = () => {
       </div>
 
       <div className="flex flex-wrap justify-center gap-4 p-4">
-        {GsmData.length > 0 ? (
-          gsms.map((item) => <GsmComponent key={item.id} gsm={item} />)
+        {loading ? (
+          [...Array(4)].map((_, idx) => <GsmSkeleton key={idx} />)
+        ) : gsms.length > 0 ? (
+          gsms.map((item) => <GsmComponent key={item._id} gsm={item} />)
         ) : (
           <p className="text-center text-gray-500">No GSM data available.</p>
         )}

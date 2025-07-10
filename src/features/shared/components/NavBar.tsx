@@ -105,7 +105,7 @@ export const NavBar = () => {
           <GiRolledCloth className="text-xl" />
           <span className="text-base font-medium">GSM</span>
         </NavLink>
-        <NavLink
+        {/* <NavLink
           to="/color"
           className={({ isActive }) =>
             `flex cursor-pointer items-center gap-3 rounded-lg p-3 transition ${
@@ -118,7 +118,7 @@ export const NavBar = () => {
           <IoColorPaletteSharp className="text-xl" />
 
           <span className="text-base font-medium">Color</span>
-        </NavLink>
+        </NavLink> */}
         <NavLink
           to="/size"
           className={({ isActive }) =>

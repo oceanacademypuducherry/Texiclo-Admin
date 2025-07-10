@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { MdClose } from "react-icons/md"; 
-import { useDropzone } from "react-dropzone"; 
+import { MdClose } from "react-icons/md";
+import { useDropzone } from "react-dropzone";
 import { IoMdCloseCircle } from "react-icons/io";
 import { AppDispatch, RootState } from "../../../app/store";
 import { useDispatch, useSelector } from "react-redux";
@@ -10,25 +10,26 @@ import { addCategoryValidation } from "../validation";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { ADD_CATEGORY, GET_CATEGORY } from "../service";
 import { Pagination } from "../../shared";
+import { showError, showSuccess } from "../../../utils";
 
 interface AddCategoryFormData {
   name: string;
   image: File;
 }
 
-
-
 export const AddCategoryModal = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { isAdd ,isLoading ,pagination} = useSelector((state: RootState) => state.categories);
-  const [image, setImage] = useState<File|string | null>(null);
+  const { isAdd, isLoading, pagination } = useSelector(
+    (state: RootState) => state.categories,
+  );
+  const [image, setImage] = useState<File | string | null>(null);
 
   const {
     register,
     formState: { errors },
     setValue,
     handleSubmit,
-    reset
+    reset,
   } = useForm<AddCategoryFormData>({
     resolver: yupResolver(addCategoryValidation),
   });
@@ -40,24 +41,26 @@ export const AddCategoryModal = () => {
         ADD_CATEGORY({
           name: formData.name,
           image: image,
-        })
-      ).unwrap()
-      await dispatch(GET_CATEGORY(pagination.totalPages))
-      handleClose()
+        }),
+      ).unwrap();
+      await dispatch(GET_CATEGORY(pagination.totalPages));
+      showSuccess("Category Added Successfully");
+      handleClose();
     } catch (error) {
-      console.error("failed to add category",error)
+      console.error("failed to add category", error);
+      showError("Failed to add category");
     }
   };
   const handleClose = () => {
     dispatch(setIsAdd(false));
     dispatch(setCategory(null));
     setImage(null);
-    reset()
+    reset();
   };
-  
+
   const onDrop = (acceptedFiles: File[]) => {
     const myImage = acceptedFiles[0];
-    setImage(myImage); 
+    setImage(myImage);
     setValue("image", myImage);
   };
 

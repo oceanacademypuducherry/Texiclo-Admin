@@ -9,18 +9,17 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { updateCategoryValidation } from "../validation";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { UPDATE_CATEGORY } from "../service";
+import { showError, showSuccess } from "../../../utils";
 
 interface UpdateCategoryFormData {
   name: string;
   image?: File | string | undefined;
 }
 
-
-
 export const UpdateCategoryModal = () => {
   const dispatch = useDispatch<AppDispatch>();
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
-  const { isUpdate, category ,isLoading} = useSelector(
+  const { isUpdate, category, isLoading } = useSelector(
     (state: RootState) => state.categories,
   );
 
@@ -32,9 +31,7 @@ export const UpdateCategoryModal = () => {
     reset,
   } = useForm<CategoryData>({
     resolver: yupResolver(updateCategoryValidation),
-    
   });
-
 
   useEffect(() => {
     if (category) {
@@ -46,28 +43,30 @@ export const UpdateCategoryModal = () => {
   const handleClose = () => {
     dispatch(setIsUpdate(false));
     dispatch(setCategory({ id: "", name: "", image: null }));
-    reset(); 
+    reset();
   };
 
-  const handleUpdate: SubmitHandler<UpdateCategoryFormData> = async(data) => {
-    if (!category?.id) return
-    
+  const handleUpdate: SubmitHandler<UpdateCategoryFormData> = async (data) => {
+    if (!category?.id) return;
+
     try {
-      const formData = new FormData()
-      formData.append("name", data.name)
+      const formData = new FormData();
+      formData.append("name", data.name);
       if (uploadedFile) {
-        formData.append("image",uploadedFile)
+        formData.append("image", uploadedFile);
       }
       await dispatch(
         UPDATE_CATEGORY({
           id: category.id,
           name: data.name,
-          image:uploadedFile ||data.image
-        })
-      ).unwrap()
-      handleClose()
+          image: uploadedFile || data.image,
+        }),
+      ).unwrap();
+      showSuccess("Category updated successfully");
+      handleClose();
     } catch (error) {
-      console.error("failed to update category",error)
+      console.error("failed to update category", error);
+      showError("Failed to updated category ");
     }
   };
 
@@ -77,7 +76,6 @@ export const UpdateCategoryModal = () => {
       setUploadedFile(myImage);
       setValue("image", myImage);
     }
-    
   };
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -89,7 +87,6 @@ export const UpdateCategoryModal = () => {
   const removeImage = () => {
     setUploadedFile(null);
     setValue("image", undefined);
-    
   };
   const getImageSrc = () => {
     if (uploadedFile) {
@@ -98,7 +95,6 @@ export const UpdateCategoryModal = () => {
     if (category?.image && typeof category.image === "string") {
       return category.image;
     }
-    
   };
 
   if (!isUpdate) return null;

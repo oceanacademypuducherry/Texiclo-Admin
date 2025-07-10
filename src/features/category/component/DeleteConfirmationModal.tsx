@@ -3,26 +3,30 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../app/store";
 import { setIsDelete } from "../redux";
 import { DELETE_CATEGORY } from "../service";
+import { showError, showSuccess } from "../../../utils";
 
 export const DeleteConfirmationModal = ({}) => {
   const dispatch = useDispatch<AppDispatch>();
-  const { isDelete ,id,isLoading} = useSelector((state: RootState) => state.categories);
+  const { isDelete, id, isLoading } = useSelector(
+    (state: RootState) => state.categories,
+  );
 
   const handleClose = () => {
     dispatch(setIsDelete(false));
   };
-  const handleConfirm = async() => {
+  const handleConfirm = async () => {
     console.log("Category ID to delete:", id);
-        if (id) {
-          try {
-            await dispatch(DELETE_CATEGORY(id)).unwrap()
-            handleClose()
-          } catch (error) {
-            console.error("failed to delete category",error)
-          }
-        }
+    if (id) {
+      try {
+        await dispatch(DELETE_CATEGORY(id)).unwrap();
+        showSuccess("Category Deleted Successfully");
+        handleClose();
+      } catch (error) {
+        console.error("failed to delete category", error);
+        showError("Failed to delete Category");
+      }
+    }
   };
-
 
   if (!isDelete) return null;
 

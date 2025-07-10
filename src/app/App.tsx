@@ -12,8 +12,8 @@ export function App() {
       <PersistGate loading={null} persistor={persistor}>
         <RouterProvider router={router} />
         <ToastContainer
-          position="top-right"
-          autoClose={5000}
+          position="top-center"
+          autoClose={2000}
           hideProgressBar={false}
           newestOnTop={false}
           closeOnClick
@@ -23,7 +23,6 @@ export function App() {
           pauseOnHover
         />
       </PersistGate>
-      
     </Provider>
   );
 }

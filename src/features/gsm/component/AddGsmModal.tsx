@@ -3,10 +3,13 @@ import { IoMdCloseCircle } from "react-icons/io";
 import { useDispatch } from "react-redux";
 import { addGsmValidation } from "../validation";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { addGsm, setGsmAdd } from "../redux";
+import { setGsmAdd } from "../redux";
+import { AppDispatch } from "../../../app";
+import { ADD_GSM, GET_GSM } from "../service";
+import { showError, showSuccess } from "../../../utils";
 
 export const AddGsmModal = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   const {
     register,
@@ -16,14 +19,18 @@ export const AddGsmModal = () => {
   } = useForm({
     resolver: yupResolver(addGsmValidation),
   });
-  const onSubmit = (data: { gsm: number }) => {
-    const newGsm = {
-      id: Date.now().toString(),
-      gsm: Number(data.gsm),
-    };
-    dispatch(addGsm(newGsm));
-    dispatch(setGsmAdd(false));
-    reset();
+  const onSubmit = async (data: { gsm: number }) => {
+    const value = data.gsm.toString();
+    try {
+      await dispatch(ADD_GSM(value)).unwrap();
+      await dispatch(GET_GSM());
+      dispatch(setGsmAdd(false));
+      showSuccess("GSM added successfully!");
+      reset();
+    } catch (err: any) {
+      console.error("Failed to add GSM", err.message || err);
+      showError("Failed to add GSM.");
+    }
   };
 
   const handleClose = () => {
