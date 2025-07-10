@@ -1,4 +1,4 @@
-import { BackBtn, ProductForm, ProductFormInputs } from "../component";
+import { BackBtn,} from "../component";
 
 export const ProductUpdatePage = () => {
   return (
@@ -9,7 +9,7 @@ export const ProductUpdatePage = () => {
       <h1 className="text-secondary text-center text-2xl font-bold">
         Update Products
       </h1>
-      <ProductForm />
+      {/* <ProductForm /> */}
     </div>
   );
 };

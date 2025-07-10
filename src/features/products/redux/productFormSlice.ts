@@ -30,6 +30,8 @@ export interface ProductForm {
   variants: Variant[];
 }
 
+
+
 const initialState: { formData: ProductForm } = {
   formData: {
     productName: "",

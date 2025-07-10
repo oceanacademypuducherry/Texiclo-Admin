@@ -125,10 +125,10 @@ export const ImageCropUpload: React.FC<Props> = ({
 
   return (
     <div>
-      <label className="mb-1 block font-semibold">{label}</label>
+      {/* <label className="mb-1 block font-semibold">{label}</label> */}
       <button
         type="button"
-        className="rounded bg-yellow-400 px-4 py-1 font-medium text-black shadow"
+        className="min-w-36 rounded bg-yellow-400 px-4 py-1 font-medium text-black shadow"
         onClick={() => inputRef.current?.click()}
       >
         {label}

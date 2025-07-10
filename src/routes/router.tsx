@@ -12,6 +12,7 @@ import {
 } from "../features";
 import { Checking } from "../features/Checking";
 import {
+  ProductAddPage,
   // ProductAddPage,
   ProductDetailsPage,
   ProductPage,
@@ -19,7 +20,6 @@ import {
 } from "../features/products";
 import { PublicRoutes } from "./PublicRoutes";
 import { ProtectedRoutes } from "./ProtectedRoutes";
-import { AddProductFormNew } from "../features/products/demo/AddProductFormNew";
 
 export const router = createBrowserRouter([
   {
@@ -68,7 +68,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "/addproduct",
-        element: <AddProductFormNew />,
+        element: <ProductAddPage />,
       },
       {
         path: "/updateproduct/:id",
