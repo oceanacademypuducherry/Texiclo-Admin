@@ -3,10 +3,13 @@ import { useForm } from "react-hook-form";
 import { IoMdCloseCircle } from "react-icons/io";
 import { useDispatch } from "react-redux";
 import { addSizeValidation } from "../validation";
-import { addSize, setSizeAdd } from "../redux";
+import { setSizeAdd } from "../redux";
+import { AppDispatch } from "../../../app";
+import { ADD_SIZE, GET_SIZE } from "../service";
+import { showError, showSuccess } from "../../../utils";
 
 export const AddSizeModal = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const {
     register,
     handleSubmit,
@@ -15,14 +18,17 @@ export const AddSizeModal = () => {
   } = useForm({
     resolver: yupResolver(addSizeValidation),
   });
-  const onSubmit = (data: { size: string }) => {
-    const newSize = {
-      id: Date.now().toString(),
-      size: data.size,
-    };
-    dispatch(addSize(newSize));
-    dispatch(setSizeAdd(false));
-    reset();
+  const onSubmit = async (data: { size: string }) => {
+    const label = data.size.toString();
+    try {
+      await dispatch(ADD_SIZE(label)).unwrap();
+      await dispatch(GET_SIZE());
+      dispatch(setSizeAdd(false));
+      showSuccess("Size Added successfully");
+      reset();
+    } catch (err: any) {
+      showError("Failed To add Size");
+    }
   };
 
   const handleClose = () => {

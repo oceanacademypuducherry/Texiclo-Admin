@@ -1,24 +1,26 @@
 import { useDispatch, useSelector } from "react-redux";
 import { PlaceHolder } from "../../shared";
-import { RootState } from "../../../app";
+import { AppDispatch, RootState } from "../../../app";
 import { useEffect } from "react";
-import { setSizeAdd, setSizeData } from "../redux";
-import { SizeData } from "../data/size";
+import { setSizeAdd } from "../redux";
+
 import {
   AddSizeModal,
   DeleteSizeModal,
   SizeComponent,
+  SizeSkeleton,
   UpdateSizeModal,
 } from "../component";
+import { GET_SIZE } from "../service";
 
 export const SizePage = () => {
-  const dispatch = useDispatch();
-  const { isAdd, isDelete, isUpdate, sizes } = useSelector(
+  const dispatch = useDispatch<AppDispatch>();
+  const { isAdd, isDelete, isUpdate, sizes ,loading } = useSelector(
     (state: RootState) => state.size,
   );
 
   useEffect(() => {
-    dispatch(setSizeData(SizeData));
+    dispatch(GET_SIZE());
   }, []);
   return (
     <PlaceHolder>
@@ -38,8 +40,11 @@ export const SizePage = () => {
       </div>
 
       <div className="flex flex-wrap justify-center gap-4 p-4">
-        {SizeData.length > 0 ? (
-          sizes.map((item) => <SizeComponent key={item.id} size={item} />)
+        {loading ? (
+          [...Array(4)].map((_,idx)=><SizeSkeleton key={idx}/>)
+        ):
+          sizes.length >0?(
+          sizes.map((item) => <SizeComponent key={item._id} size={item} />)
         ) : (
           <p className="text-center text-gray-500">No Size data available.</p>
         )}

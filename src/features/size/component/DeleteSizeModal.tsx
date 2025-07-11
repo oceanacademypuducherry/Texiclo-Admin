@@ -1,20 +1,27 @@
 import { IoMdCloseCircle } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../app";
-import { deleteSize, setSizeDelete } from "../redux";
+import { AppDispatch, RootState } from "../../../app";
+import { setSizeDelete } from "../redux";
+import { DELETE_SIZE } from "../service";
+import { showError, showSuccess } from "../../../utils";
 
 export const DeleteSizeModal = () => {
-  const dispatch = useDispatch();
-  const { id } = useSelector((state: RootState) => state.size);
+  const dispatch = useDispatch<AppDispatch>();
+  const { _id } = useSelector((state: RootState) => state.size);
 
   const handleClose = () => {
     dispatch(setSizeDelete(false));
   };
 
-  const handleDelete = () => {
-    if (id) {
-      dispatch(deleteSize({ id, size: "" }));
-      dispatch(setSizeDelete(false));
+  const handleDelete = async () => {
+    if (_id) {
+      try {
+        await dispatch(DELETE_SIZE(_id)).unwrap;
+        dispatch(setSizeDelete(false));
+        showSuccess("Size Deleted Successfully");
+      } catch (error: any) {
+        showError("Failed to Deleted Size");
+      }
     }
   };
 

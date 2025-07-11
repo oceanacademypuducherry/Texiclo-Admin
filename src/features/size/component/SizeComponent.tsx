@@ -18,7 +18,7 @@ export const SizeComponent = ({ size }: SizeProps) => {
   const dispatch = useDispatch();
   return (
     <div className="flex w-[120px] flex-col items-center space-y-2.5 rounded-lg border-2 border-gray-300 p-2">
-      <span className="text-xl font-bold">{size.size}</span>
+      <span className="text-xl font-bold">{size.label}</span>
       <div className="flex gap-2.5 pb-1">
         <HiPencilAlt
           onClick={() => {
@@ -29,7 +29,7 @@ export const SizeComponent = ({ size }: SizeProps) => {
         />
         <MdDelete
           onClick={() => {
-            dispatch(setSizeId(size.id));
+            dispatch(setSizeId(size._id));
             dispatch(setSizeDelete(true));
           }}
           className="hover:text-secondary cursor-pointer text-red-600"

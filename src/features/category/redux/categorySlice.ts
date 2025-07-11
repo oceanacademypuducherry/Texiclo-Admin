@@ -1,10 +1,13 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { ADD_CATEGORY, DELETE_CATEGORY, GET_CATEGORY, UPDATE_CATEGORY } from "../service";
-
-
+import {
+  ADD_CATEGORY,
+  DELETE_CATEGORY,
+  GET_CATEGORY,
+  UPDATE_CATEGORY,
+} from "../service";
 
 export interface CategoryData {
-  id?: string;
+  _id?: string;
   name: string;
   image: string | File | null;
 }
@@ -28,18 +31,18 @@ interface ModelData {
 
 const initialState: ModelData = {
   categorys: [],
-  category:undefined,
+  category: undefined,
   isAdd: false,
   isDelete: false,
   isUpdate: false,
   isLoading: false,
   message: "",
   isError: false,
-  success:false,
+  success: false,
   pagination: {
     totalPages: 1,
-    currentPage:1
-  }
+    currentPage: 1,
+  },
 };
 
 const CategorySlice = createSlice({
@@ -59,16 +62,13 @@ const CategorySlice = createSlice({
       state.id = action.payload;
     },
     setCategory: (state, action: PayloadAction<CategoryData | null>) => {
-      
-      state.category = action.payload??undefined;
-     
+      state.category = action.payload ?? undefined;
     },
     resetCategoryState: (state) => {
-      state.isError = false
-      state.message = ""
-      state.success=false
-    }
-
+      state.isError = false;
+      state.message = "";
+      state.success = false;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -117,7 +117,7 @@ const CategorySlice = createSlice({
         state.isLoading = false;
         state.success = true;
         const index = state.categorys.findIndex(
-          (cat) => cat.id === action.payload.data.id,
+          (cat) => cat._id === action.payload.data.id,
         );
         if (index !== -1) {
           state.categorys[index] = action.payload.data;
@@ -139,7 +139,7 @@ const CategorySlice = createSlice({
         state.isLoading = false;
         state.success = true;
         state.categorys = state.categorys.filter(
-          (cat) => cat.id !== action.meta.arg,
+          (cat) => cat._id !== action.meta.arg,
         );
         state.message = action.payload.message;
       })
@@ -149,7 +149,7 @@ const CategorySlice = createSlice({
         state.message =
           (action.payload as any)?.message || "Failed to delete category";
       });
-  }
+  },
 });
 export const {
   setIsUpdate,

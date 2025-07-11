@@ -5,7 +5,7 @@ export const fileToBase64 = (file: File): Promise<string> =>
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = () => resolve(reader.result as string);
-    reader.onerror = error => reject(error);
+    reader.onerror = (error) => reject(error);
   });
 
 export const fileToBase64Image = (file: File): Promise<Base64Image> =>
@@ -20,3 +20,9 @@ export const fileToBase64Image = (file: File): Promise<Base64Image> =>
     reader.onerror = reject;
     reader.readAsDataURL(file);
   });
+
+export const base64ToBlob = async (base64Data: string): Promise<Blob> => {
+  const response = await fetch(base64Data);
+  const blob = await response.blob();
+  return blob;
+};

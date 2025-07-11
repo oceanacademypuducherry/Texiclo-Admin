@@ -11,7 +11,14 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { productSchema } from "../validation";
 import { addNewProduct } from "../redux";
 import { useEffect } from "react";
-import { GET_GSM } from "../../gsm";
+
+import {
+  GET_OPTIONS_CATEGORY,
+  GET_OPTIONS_COLLECTIONTYPE,
+  GET_OPTIONS_GSM,
+  GET_OPTIONS_SIZE,
+} from "../service/productOptionsService";
+import { base64ToBlob } from "../../../utils";
 
 export const ProductAddPage = () => {
   const { formData } = useSelector((state: RootState) => state.productForm);
@@ -23,12 +30,45 @@ export const ProductAddPage = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    dispatch(GET_GSM());
+    dispatch(GET_OPTIONS_GSM());
+    dispatch(GET_OPTIONS_SIZE());
+    dispatch(GET_OPTIONS_CATEGORY());
+    dispatch(GET_OPTIONS_COLLECTIONTYPE());
   }, [dispatch]);
 
   const onSubmit = (data: any) => {
-    dispatch(addNewProduct(data));
-    console.log("Submitted form:", data);
+    // dispatch(addNewProduct(data));
+    // console.log("Submitted form:", data);
+
+    const {
+      variants,
+      category,
+      collectionType,
+      productName,
+      discount,
+      ...rest
+    } = data;
+    // console.log(variants);
+    const transformedVariants = variants.map((variant: any) => ({
+      color: variant.color,
+      previewImage: base64ToBlob(variant.previewImage),
+      frontImage: base64ToBlob(variant.frontImage),
+      backImage: base64ToBlob(variant.backImage),
+      otherImages: variant.otherImages.map((otherImage: any) =>
+        base64ToBlob(otherImage),
+      ),
+    }));
+
+    // console.log(transformedVariants);
+    const transformedData = {
+      categoryId: category.value,
+      collectionId: collectionType.value,
+      name: productName,
+      discountPercentage: discount,
+      variants: transformedVariants,
+      ...rest,
+    };
+    console.log(transformedData);
   };
 
   return (

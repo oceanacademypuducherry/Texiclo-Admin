@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { GET_CATEGORY } from "../../category";
 
 interface Color {
   name: string;
@@ -25,12 +26,10 @@ export interface ProductForm {
   category: string;
   description: string;
   discount: number;
-  prices: Record<string, number | string>;
+  prices: [];
   sizes: string[];
   variants: Variant[];
 }
-
-
 
 const initialState: { formData: ProductForm } = {
   formData: {
@@ -39,7 +38,7 @@ const initialState: { formData: ProductForm } = {
     category: "",
     description: "",
     discount: 0,
-    prices: {},
+    prices: [],
     sizes: [],
     variants: [
       {

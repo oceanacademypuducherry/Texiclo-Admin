@@ -1,14 +1,16 @@
 import React from "react";
 import { IoMdCloseCircle } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../app";
+import { AppDispatch, RootState } from "../../../app";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { updateSizeValidation } from "../validation";
-import { setSizeUpdate, updateSize } from "../redux";
+import { setSizeUpdate } from "../redux";
+import { GET_SIZE, UPDATE_SIZE } from "../service";
+import { showError, showSuccess } from "../../../utils";
 
 export const UpdateSizeModal = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const { size } = useSelector((state: RootState) => state.size);
   const {
     register,
@@ -17,20 +19,23 @@ export const UpdateSizeModal = () => {
     reset,
   } = useForm({
     defaultValues: {
-      size: size?.size || "",
+      size: size?.label ,
     },
     resolver: yupResolver(updateSizeValidation),
   });
 
-  const onSubmit = (data: { size: string }) => {
-    if (size) {
-      const updatedSize = {
-        ...size,
-        size: data.size,
-      };
-      dispatch(updateSize(updatedSize));
-      dispatch(setSizeUpdate(false));
-      reset();
+  const onSubmit =async (data: { size: string }) => {
+    if (size?._id) {
+      try {
+        await dispatch(UPDATE_SIZE({id:size._id,label:data.size}));
+        dispatch(setSizeUpdate(false));
+        reset();
+        dispatch(GET_SIZE())
+        showSuccess("Size Updated Successfully")
+      } catch (error) {
+        showError("Failed to update Size")
+      }
+      
     }
   };
 

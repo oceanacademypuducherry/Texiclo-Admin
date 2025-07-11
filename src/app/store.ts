@@ -15,6 +15,7 @@ import {
   SizeReducer,
   productReducer,
   productFormReducer,
+  productOptionsReducer,
 } from "../features";
 
 const persistConfig = {
@@ -33,6 +34,7 @@ const rootReducer = combineReducers({
   size: SizeReducer,
   product: productReducer,
   productForm: productFormReducer,
+  productFormOptions:productOptionsReducer
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

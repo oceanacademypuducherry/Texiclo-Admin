@@ -56,8 +56,19 @@ import * as yup from "yup";
 
 export const productSchema = yup.object().shape({
   productName: yup.string().required("Product name is required"),
-  collectionType: yup.string().required("Collection type is required"),
-  category: yup.string().required("Category is required"),
+  collectionType: yup
+    .object({
+      label: yup.string().required("Collection label is required"),
+      value: yup.string().required("Collection value is required"),
+    })
+    .required("Collection type is required"),
+
+  category: yup
+    .object({
+      label: yup.string().required("Category label is required"),
+      value: yup.string().required("Category value is required"),
+    })
+    .required("Category is required"),
   description: yup.string().required("Description is required"),
   discount: yup
     .number()
@@ -66,26 +77,24 @@ export const productSchema = yup.object().shape({
     .typeError("Discount must be a number"),
 
   prices: yup
-    .object()
-    .required("Prices are required")
-    .test(
-      "has-at-least-one-valid-price",
-      "At least one GSM must have a valid numeric price",
-      (value) => {
-        if (!value || typeof value !== "object") return false;
-
-        return Object.entries(value).some(
-          ([key, val]) =>
-            /^\d+$/.test(key) &&
-            val !== "" &&
-            val !== undefined &&
-            !isNaN(Number(val)),
-        );
-      },
-    ),
+    .array()
+    .of(
+      yup.object().shape({
+        gsmId: yup.string().required("GSM ID is required"),
+        amount: yup.string(), // no need to validate each one yet
+      }),
+    )
+    .test("at-least-one-price", "At least one price is required", (prices) => {
+      return prices?.some((price) => price.amount?.trim() !== "");
+    }),
   sizes: yup
     .array()
-    .of(yup.string())
+    .of(
+      yup.object({
+        label: yup.string().required(),
+        value: yup.string().required(),
+      }),
+    )
     .min(1, "At least one size must be selected"),
 
   variants: yup

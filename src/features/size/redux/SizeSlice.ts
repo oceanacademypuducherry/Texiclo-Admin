@@ -1,8 +1,9 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { ADD_SIZE, DELETE_SIZE, GET_SIZE, UPDATE_SIZE } from "../service";
 
 export interface SizesData {
   _id: string;
-  size: string;
+  label: string;
 }
 
 interface SizeState {
@@ -12,19 +13,17 @@ interface SizeState {
   _id?: string;
   size?: SizesData;
   sizes: SizesData[];
+  loading: boolean;
+  error: string | null;
 }
 
 const initialState: SizeState = {
   isAdd: false,
   isDelete: false,
   isUpdate: false,
-  sizes: [
-    { _id: "46546ffdsfgfdsf654", size: "s" },
-    { _id: "ljsdfsad54f5s4daf65a", size: "lg" },
-    { _id: "46546ffdsfgfdsfsafd654", size: "Xs" },
-    { _id: "654sad65f46sadsf", size: "xl" },
-    { _id: "sjflsaddff5sadf54ssa", size: "xxl" },
-  ],
+  sizes: [],
+  loading: false,
+  error: null,
 };
 
 const sizeSlice = createSlice({
@@ -40,44 +39,81 @@ const sizeSlice = createSlice({
     setSizeUpdate: (state, action: PayloadAction<boolean>) => {
       state.isUpdate = action.payload;
     },
-
     setSizeId: (state, action: PayloadAction<string>) => {
       state._id = action.payload;
     },
     setSize: (state, action: PayloadAction<SizesData>) => {
       state.size = action.payload;
     },
-
-    addSize: (state, action: PayloadAction<SizesData>) => {
-      const exists = state.sizes.some((col) => col._id === action.payload._id);
-      if (!exists) {
-        state.sizes.push(action.payload);
-      }
-    },
-
-    updateSize: (state, action: PayloadAction<SizesData>) => {
-      state.sizes = state.sizes.map((Size) =>
-        Size._id === action.payload._id ? action.payload : Size,
-      );
-    },
-
-    deleteSize: (state, action: PayloadAction<SizesData>) => {
-      state.sizes = state.sizes.filter((col) => col._id !== action.payload._id);
-    },
-
-    setSizeData: (state, action: PayloadAction<SizesData[]>) => {
-      state.sizes = action.payload;
-    },
     clearSize: (state) => {
       state.size = undefined;
       state._id = undefined;
     },
-
     resetModalStates: (state) => {
       state.isAdd = false;
       state.isDelete = false;
       state.isUpdate = false;
     },
+  },
+
+  extraReducers: (builder) => {
+    // GET
+    builder.addCase(GET_SIZE.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(GET_SIZE.fulfilled, (state, action) => {
+      state.loading = false;
+      state.sizes = action.payload;
+    });
+    builder.addCase(GET_SIZE.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload?.message || "Failed to fetch Sizes";
+    });
+
+    // ADD
+    builder.addCase(ADD_SIZE.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(ADD_SIZE.fulfilled, (state, action) => {
+      state.loading = false;
+      const exists = state.sizes.some((s) => s.label === action.payload.label);
+      if (!exists) {
+        state.sizes.push(action.payload);
+      }
+    });
+    builder.addCase(ADD_SIZE.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload?.message || "Failed to add Size";
+    });
+
+    // UPDATE
+    builder.addCase(UPDATE_SIZE.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(UPDATE_SIZE.fulfilled, (state, action) => {
+      state.loading = false;
+      state.sizes = state.sizes.map((size) =>
+        size._id === action.payload._id ? action.payload : size,
+      );
+    });
+    builder.addCase(UPDATE_SIZE.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload?.message || "Failed to update Size";
+    });
+
+    // DELETE
+    builder.addCase(DELETE_SIZE.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(DELETE_SIZE.fulfilled, (state, action) => {
+      state.loading = false;
+      state.sizes = state.sizes.filter((size) => size._id !== action.payload);
+    });
+    builder.addCase(DELETE_SIZE.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload?.message || "Failed to delete Size";
+    });
   },
 });
 
@@ -87,12 +123,8 @@ export const {
   setSizeDelete,
   setSizeUpdate,
   setSizeId,
-  setSizeData,
   clearSize,
   resetModalStates,
-  addSize,
-  deleteSize,
-  updateSize,
 } = sizeSlice.actions;
 
 export const SizeReducer = sizeSlice.reducer;

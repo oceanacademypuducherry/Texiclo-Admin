@@ -7,7 +7,7 @@ import {
 } from "../service";
 
 export interface CollectionsData {
-  id?: string;
+  _id?: string;
   name: string;
   image: string | File | null;
 }
@@ -24,9 +24,9 @@ interface CollectionState {
   isError: boolean;
   success: boolean;
   pagination: {
-    totalPages: number
-    currentPage:number
-  }
+    totalPages: number;
+    currentPage: number;
+  };
 }
 
 const initialState: CollectionState = {
@@ -42,8 +42,8 @@ const initialState: CollectionState = {
   success: false,
   pagination: {
     totalPages: 1,
-    currentPage:1
-  }
+    currentPage: 1,
+  },
 };
 
 const CollectionSlice = createSlice({
@@ -65,7 +65,7 @@ const CollectionSlice = createSlice({
     setCollection: (state, action: PayloadAction<CollectionsData | null>) => {
       state.collection = action.payload;
     },
-    
+
     resetCollectionState: (state) => {
       state.isError = false;
       state.message = "";
@@ -86,8 +86,8 @@ const CollectionSlice = createSlice({
         state.collections = action.payload.data;
         state.pagination = {
           totalPages: action.payload.pagination.totalPages,
-          currentPage:action.payload.pagination.currentPage
-        }
+          currentPage: action.payload.pagination.currentPage,
+        };
       })
       .addCase(GET_COLLECTIONTYPE.rejected, (state, action) => {
         state.isLoading = false;
@@ -125,7 +125,7 @@ const CollectionSlice = createSlice({
         state.isLoading = false;
         state.success = true;
         const index = state.collections.findIndex(
-          (col) => col.id === action.payload.data.id,
+          (col) => col._id === action.payload.data.id,
         );
         if (index !== -1) {
           state.collections[index] = action.payload.data;
@@ -149,7 +149,7 @@ const CollectionSlice = createSlice({
         state.success = true;
 
         state.collections = state.collections.filter(
-          (col) => col.id !== action.meta.arg,
+          (col) => col._id !== action.meta.arg,
         );
         state.message = action.payload.message;
       })

@@ -7,15 +7,17 @@ export const ProductDetails = () => {
   const {
     register,
     control,
+    // watch,
     formState: { errors },
   } = useFormContext();
 
-  const { sizes } = useSelector((state: RootState) => state.size);
-  const { gsms } = useSelector((state: RootState) => state.gsm);
-  const sizeOptions = sizes.map((size) => ({
-    value: size.size,
-    label: size.size,
-  }));
+  // console.log(watch());
+  // console.log(errors);
+
+  const { sizes, gsms, collections, categories } = useSelector(
+    (state: RootState) => state.productFormOptions,
+  );
+
   return (
     <section className="max-w-xl rounded-lg bg-white p-6 shadow-md">
       <div className="flex flex-col">
@@ -29,7 +31,18 @@ export const ProductDetails = () => {
 
         <div>
           <label className="mb-1 block font-semibold">Collection Type</label>
-          <input {...register("collectionType")} className="input w-full" />
+          <Controller
+            name="collectionType"
+            control={control}
+            render={({ field }) => (
+              <Select
+                {...field}
+                options={collections}
+                className="react-select-container"
+                classNamePrefix="react-select"
+              />
+            )}
+          />
           <p className="mt-1 text-sm text-red-500">
             {getErrorMessage(errors.collectionType)}
           </p>
@@ -37,7 +50,18 @@ export const ProductDetails = () => {
 
         <div>
           <label className="mb-1 block font-semibold">Category</label>
-          <input {...register("category")} className="input w-full" />
+          <Controller
+            name="category"
+            control={control}
+            render={({ field }) => (
+              <Select
+                {...field}
+                options={categories}
+                className="react-select-container"
+                classNamePrefix="react-select"
+              />
+            )}
+          />
           <p className="mt-1 text-sm text-red-500">
             {getErrorMessage(errors.category)}
           </p>
@@ -51,7 +75,7 @@ export const ProductDetails = () => {
           </p>
         </div>
 
-        <div className="md:col-span-2">
+        {/* <div className="md:col-span-2">
           <label className="mb-2 block font-semibold">
             Product Price (by GSM)
           </label>
@@ -79,6 +103,47 @@ export const ProductDetails = () => {
           <p className="mt-1 text-sm text-red-500">
             {getErrorMessage(errors.prices)}
           </p>
+        </div> */}
+        <div className="md:col-span-2">
+          <label className="mb-2 block font-semibold">
+            Product Price (by GSM)
+          </label>
+          <div className="grid grid-cols-3 gap-4 md:grid-cols-6">
+            {gsms.map((gsm, index) => (
+              <div key={gsm._id} className="flex flex-col">
+                <span className="text-center text-sm font-medium">
+                  {gsm.value}
+                </span>
+
+                {/* Hidden GSM ID field */}
+                <Controller
+                  name={`prices.${index}.gsmId`}
+                  control={control}
+                  defaultValue={gsm._id}
+                  render={({ field }) => <input type="hidden" {...field} />}
+                />
+
+                {/* Price input */}
+                <Controller
+                  name={`prices.${index}.amount`}
+                  control={control}
+                  defaultValue=""
+                  render={({ field }) => (
+                    <input
+                      {...field}
+                      type="number"
+                      className="input text-center"
+                      placeholder="₹"
+                    />
+                  )}
+                />
+              </div>
+            ))}
+          </div>
+
+          <p className="mt-1 text-sm text-red-500">
+            {getErrorMessage(errors.prices)}
+          </p>
         </div>
 
         <div className="md:col-span-2">
@@ -90,7 +155,7 @@ export const ProductDetails = () => {
               <Select
                 {...field}
                 isMulti
-                options={sizeOptions}
+                options={sizes}
                 className="react-select-container"
                 classNamePrefix="react-select"
                 closeMenuOnSelect={false}
