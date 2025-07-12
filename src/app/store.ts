@@ -1,6 +1,6 @@
 // store.ts
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
-import createIdbStorage from 'redux-persist-indexeddb-storage';
+import createIdbStorage from "redux-persist-indexeddb-storage";
 // import storage from "redux-persist/lib/storage"; // defaults to localStorage
 import { persistReducer, persistStore } from "redux-persist";
 
@@ -20,7 +20,10 @@ import {
 
 const persistConfig = {
   key: "root",
-  storage: createIdbStorage({ name: 'texiclo-admin', storeName: 'product-form' }),
+  storage: createIdbStorage({
+    name: "texiclo-admin",
+    storeName: "product-form",
+  }),
   whitelist: ["productForm", "product"], // persist only these slices
 };
 
@@ -34,7 +37,7 @@ const rootReducer = combineReducers({
   size: SizeReducer,
   product: productReducer,
   productForm: productFormReducer,
-  productFormOptions:productOptionsReducer
+  productFormOptions: productOptionsReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -45,20 +48,22 @@ export const store = configureStore({
     getDefaultMiddleware({
       serializableCheck: false, // disable to support non-serializables like File
     }),
-  devTools:
-    process.env.NODE_ENV !== 'production' && {
-      trace: true,
-      traceLimit: 25,
-      actionsDenylist: ['productForm/setFormData', 'productForm/updateVariantImage'],
-      stateSanitizer: (state) => ({
-        ...state,
-        productForm: '[REDACTED]', // optional: sanitize entire productForm slice
-      }),
-      actionSanitizer: (action) =>
-        action.type.startsWith('productForm/')
-          ? { ...action, payload: '[LARGE_PAYLOAD_REDACTED]' }
-          : action,
-    },
+  devTools: process.env.NODE_ENV !== "production" && {
+    trace: true,
+    traceLimit: 25,
+    actionsDenylist: [
+      "productForm/setFormData",
+      "productForm/updateVariantImage",
+    ],
+    stateSanitizer: (state) => ({
+      ...state,
+      productForm: "[REDACTED]", // optional: sanitize entire productForm slice
+    }),
+    actionSanitizer: (action) =>
+      action.type.startsWith("productForm/")
+        ? { ...action, payload: "[LARGE_PAYLOAD_REDACTED]" }
+        : action,
+  },
 });
 
 export const persistor = persistStore(store);

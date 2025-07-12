@@ -1,5 +1,5 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { GET_ALL_PRODUCTS, GET_PRODUCT_BY_ID } from "../service";
+import { createSlice, PayloadAction, SerializedError } from "@reduxjs/toolkit";
+import { ADD_PRODUCT, GET_ALL_PRODUCTS, GET_PRODUCT_BY_ID } from "../service";
 
 interface Variant {
   color: { name: string; code: string };
@@ -96,6 +96,7 @@ const productSlice = createSlice({
       .addCase(GET_ALL_PRODUCTS.fulfilled, (state, action) => {
         state.loading = false;
         const { data, pagination } = action.payload;
+        console.log(data);
 
         state.allProducts = data.map((p: any) => ({
           id: p._id,
@@ -128,41 +129,79 @@ const productSlice = createSlice({
         state.loading = false;
         state.error = action.payload?.message || "Failed to fetch products";
       })
-    .addCase(GET_PRODUCT_BY_ID.pending, (state) => {
-      state.loading = true;
-      state.error = null;
-      state.productDetail = null;
-    })
-    .addCase(GET_PRODUCT_BY_ID.fulfilled, (state, action) => {
-      const p = action.payload.data;
-      state.loading = false;
-      state.productDetail = {
-        id: p._id,
-        title: p.productName,
-        collectionType: p.collectionId,
-        category: p.categoryId,
-        description: p.description,
-        prices: Object.fromEntries(
-          p.prices.map((price: any) => [price.gsmName, price.amount])
-        ),
-        sizes: p.sizes||[], 
-        discountPercentage: p.discountPercentage,
-        variants: p.variantData.map((variant: any) => ({
-          color: {
-            name: variant.colors.colorName,
-            code: variant.colors.colorValue,
-          },
-          previewImage: variant.varientImage,
-          frontImage: variant.frontImage,
-          backImage: variant.backImage,
-          otherImages: variant.otherImage,
-        })),
-      };
-    })
-    .addCase(GET_PRODUCT_BY_ID.rejected, (state, action) => {
-      state.loading = false;
-      state.error = action.payload?.message || "Failed to fetch product";
-    });
+      .addCase(GET_PRODUCT_BY_ID.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.productDetail = null;
+      })
+      .addCase(GET_PRODUCT_BY_ID.fulfilled, (state, action) => {
+        const p = action.payload.data;
+        state.loading = false;
+        state.productDetail = {
+          id: p._id,
+          title: p.productName,
+          collectionType: p.collectionId,
+          category: p.categoryId,
+          description: p.description,
+          prices: Object.fromEntries(
+            p.prices.map((price: any) => [price.gsmName, price.amount]),
+          ),
+          sizes: p.sizes || [],
+          discountPercentage: p.discountPercentage,
+          variants: p.variantData.map((variant: any) => ({
+            color: {
+              name: variant.colors.colorName,
+              code: variant.colors.colorValue,
+            },
+            previewImage: variant.varientImage,
+            frontImage: variant.frontImage,
+            backImage: variant.backImage,
+            otherImages: variant.otherImage,
+          })),
+        };
+      })
+      .addCase(GET_PRODUCT_BY_ID.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload?.message || "Failed to fetch product";
+      })
+
+      .addCase(ADD_PRODUCT.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(ADD_PRODUCT.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+        // state.allProducts.push({
+        //   id: action.payload.data._id,
+        //   title: action.payload.data.productName,
+        //   collectionType: action.payload.data.collectionId,
+        //   category: action.payload.data.categoryId,
+        //   description: action.payload.data.description,
+        //   prices: Object.fromEntries(
+        //     action.payload.data.prices.map((p: any) => [p.gsmId, p.amount]),
+        //   ),
+        //   sizes: action.payload.data.sizes || [],
+        //   discountPercentage: action.payload.data.discountPercentage,
+        //   variants: action.payload.data.variantData.map((variant: any) => ({
+        //     color: {
+        //       name: variant.colors.colorName,
+        //       code: variant.colors.colorValue,
+        //     },
+        //     previewImage: variant.varientImage,
+        //     frontImage: variant.frontImage,
+        //     backImage: variant.backImage,
+        //     otherImages: variant.otherImage,
+        //   })),
+        // });
+      })
+      .addCase(ADD_PRODUCT.rejected, (state, action: any) => {
+        state.loading = false;
+        state.error =
+          typeof action.payload === "string"
+            ? action.payload
+            : action.payload?.message || "Failed to add product";
+      });
   },
 });
 

@@ -9,7 +9,7 @@ import { AppDispatch, RootState } from "../../../app";
 import { FormProvider, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { productSchema } from "../validation";
-import { addNewProduct } from "../redux";
+import { addNewProduct, resetForm } from "../redux";
 import { useEffect } from "react";
 
 import {
@@ -18,16 +18,19 @@ import {
   GET_OPTIONS_GSM,
   GET_OPTIONS_SIZE,
 } from "../service/productOptionsService";
-import { base64ToBlob } from "../../../utils";
+import { base64ToFile } from "../../../utils";
+import { ADD_PRODUCT } from "../service";
+import { useNavigate } from "react-router-dom";
 
 export const ProductAddPage = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
   const { formData } = useSelector((state: RootState) => state.productForm);
   const methods = useForm({
     defaultValues: formData,
     resolver: yupResolver(productSchema as any),
     mode: "onBlur",
   });
-  const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
     dispatch(GET_OPTIONS_GSM());
@@ -36,7 +39,7 @@ export const ProductAddPage = () => {
     dispatch(GET_OPTIONS_COLLECTIONTYPE());
   }, [dispatch]);
 
-  const onSubmit = (data: any) => {
+  const onSubmit = async (data: any) => {
     // dispatch(addNewProduct(data));
     // console.log("Submitted form:", data);
 
@@ -46,29 +49,40 @@ export const ProductAddPage = () => {
       collectionType,
       productName,
       discount,
+      sizes,
       ...rest
     } = data;
-    // console.log(variants);
-    const transformedVariants = variants.map((variant: any) => ({
-      color: variant.color,
-      previewImage: base64ToBlob(variant.previewImage),
-      frontImage: base64ToBlob(variant.frontImage),
-      backImage: base64ToBlob(variant.backImage),
-      otherImages: variant.otherImages.map((otherImage: any) =>
-        base64ToBlob(otherImage),
-      ),
-    }));
+    console.log(variants);
 
-    // console.log(transformedVariants);
+    const transformedVariants = await Promise.all(
+      variants.map(async (variant: any) => ({
+        color: variant.color,
+        variantImage: await base64ToFile(variant.previewImage),
+        frontImage: await base64ToFile(variant.frontImage),
+        backImage: await base64ToFile(variant.backImage),
+        otherImages: await Promise.all(
+          variant.otherImages.map((img: any) => base64ToFile(img)),
+        ),
+      })),
+    );
+
     const transformedData = {
       categoryId: category.value,
       collectionId: collectionType.value,
+      sizeIds: sizes.map((size: any) => size.value),
       name: productName,
       discountPercentage: discount,
       variants: transformedVariants,
       ...rest,
     };
-    console.log(transformedData);
+    console.log(transformedData, "🚓🚓🚓🚓🚓");
+    const { payload } = await dispatch(ADD_PRODUCT(transformedData));
+    const { success } = payload;
+    if (success) {
+      dispatch(resetForm());
+      navigate("/products");
+    }
+    console.log(payload, "🛺🛺🛺🛺🛺");
   };
 
   return (

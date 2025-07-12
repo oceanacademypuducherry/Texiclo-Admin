@@ -26,3 +26,19 @@ export const base64ToBlob = async (base64Data: string): Promise<Blob> => {
   const blob = await response.blob();
   return blob;
 };
+
+type Base64FileInput = {
+  name: string; // e.g. "image.png"
+  type: string; // e.g. "image/png"
+  base64: string; // data:image/png;base64,iVBORw0KGgoAAAANS...
+};
+
+export const base64ToFile = async ({
+  name,
+  type,
+  base64,
+}: Base64FileInput): Promise<File> => {
+  const res = await fetch(base64);
+  const blob = await res.blob();
+  return new File([blob], name, { type });
+};
