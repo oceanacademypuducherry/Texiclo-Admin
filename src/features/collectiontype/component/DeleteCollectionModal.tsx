@@ -3,7 +3,7 @@ import { AppDispatch, RootState } from "../../../app/store";
 
 import { setCollectionDeleteMode } from "../redux";
 import { IoMdCloseCircle } from "react-icons/io";
-import { DELETE_COLLECTION } from "../service";
+import { DELETE_COLLECTION, GET_COLLECTIONTYPE } from "../service";
 import { showError, showSuccess } from "../../../utils";
 
 export const DeleteCollectionModal = () => {
@@ -22,6 +22,7 @@ export const DeleteCollectionModal = () => {
       try {
         await dispatch(DELETE_COLLECTION(id)).unwrap();
         showSuccess("Collection deleted successfully");
+        await dispatch(GET_COLLECTIONTYPE())
         handleClose();
       } catch (error) {
         console.error("Failed to delete collection:", error);

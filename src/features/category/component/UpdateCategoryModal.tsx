@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { updateCategoryValidation } from "../validation";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { UPDATE_CATEGORY } from "../service";
+import { GET_CATEGORY, UPDATE_CATEGORY } from "../service";
 import { showError, showSuccess } from "../../../utils";
 
 interface UpdateCategoryFormData {
@@ -63,6 +63,7 @@ export const UpdateCategoryModal = () => {
         }),
       ).unwrap();
       showSuccess("Category updated successfully");
+      await dispatch(GET_CATEGORY());
       handleClose();
     } catch (error) {
       console.error("failed to update category", error);

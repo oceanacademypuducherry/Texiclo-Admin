@@ -1,46 +1,105 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useState } from "react";
-import { ProductsData } from "../data/productData";
+import { useEffect, useState } from "react";
 import { DeleteModal } from "./DeleteModal";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../../app";
+import { GET_PRODUCT_BY_ID } from "../service";
 
 export const ProductDetailComponent = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  const product = ProductsData.find((item) => item.id === id);
+  const dispatch = useDispatch<AppDispatch>();
 
+  const {
+    productDetail: product,
+    loading,
+    error,
+  } = useSelector((state: RootState) => state.product);
+  // const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // useEffect(() => {
+  //   if (id) dispatch(GET_PRODUCT_BY_ID(id));
+  // }, [id, dispatch]);
+
+  // if (loading) {
+  //   return (
+  //     <div className="mt-10 text-center text-xl font-semibold">Loading...</div>
+  //   );
+  // }
+
+  // if (!product) {
+  //   return (
+  //     <div className="mt-10 text-center text-xl font-semibold">
+  //       Product not found
+  //     </div>
+  //   );
+  // }
+
+  // const [selectedVariant, setSelectedVariant] = useState(product.variants[0]);
+  // const [selectedGsm, setSelectedGsm] = useState(
+  //   Object.keys(product.prices)[0],
+  // );
+  // const [mainImage, setMainImage] = useState(selectedVariant.previewImage);
+
+  // const allImages = [
+  //   selectedVariant.previewImage,
+  //   selectedVariant.frontImage,
+  //   selectedVariant.backImage,
+  //   ...(selectedVariant.otherImages || []),
+  // ].filter(Boolean);
+
+  // const originalPrice = product.prices[selectedGsm];
+  // const discountPrice = Math.round(
+  //   originalPrice * (1 - product.discountPercentage / 100),
+  // );
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedVariant, setSelectedVariant] = useState<any>(null);
+  const [selectedGsm, setSelectedGsm] = useState<string>("");
+  const [mainImage, setMainImage] = useState<string>("");
 
-  if (!product) {
-    return (
-      <div className="mt-10 text-center text-xl font-semibold">
-        Product not found
-      </div>
-    );
-  }
+  // Fetch product by ID
+  useEffect(() => {
+    if (id) dispatch(GET_PRODUCT_BY_ID(id));
+  }, [id, dispatch]);
 
-  const [selectedVariant, setSelectedVariant] = useState(product.variants[0]);
-  const [selectedGsm, setSelectedGsm] = useState(Object.keys(product.prices)[0]);
-  const [mainImage, setMainImage] = useState(selectedVariant.previewImage);
+  // Sync UI local state after product is loaded
+  useEffect(() => {
+    if (product) {
+      const firstVariant = product.variants?.[0];
+      const firstGsm = Object.keys(product.prices)?.[0];
+
+      setSelectedVariant(firstVariant);
+      setSelectedGsm(firstGsm);
+      setMainImage(firstVariant?.previewImage || "");
+    }
+  }, [product]);
+
+  if (loading) return <div className="mt-10 text-center">Loading...</div>;
+  if (error)
+    return <div className="mt-10 text-center text-red-500">{error}</div>;
+  if (!product)
+    return <div className="mt-10 text-center">Product not found</div>;
 
   const allImages = [
-    selectedVariant.previewImage,
-    selectedVariant.frontImage,
-    selectedVariant.backImage,
-    ...(selectedVariant.otherImages || []),
+    selectedVariant?.previewImage,
+    selectedVariant?.frontImage,
+    selectedVariant?.backImage,
+    ...(selectedVariant?.otherImages || []),
   ].filter(Boolean);
 
   const originalPrice = product.prices[selectedGsm];
-  const discountPrice = Math.round(originalPrice * (1 - product.discount / 100));
-
+  const discountPrice = Math.round(
+    originalPrice * (1 - product.discountPercentage / 100),
+  );
   const handleDelete = () => {
     console.log("Product deleted!");
     setIsModalOpen(false);
   };
 
   return (
-    <div className="flex flex-col items-center  justify-center gap-6 xl:flex-row">
+    <div className="flex flex-col items-center justify-center gap-6 xl:flex-row">
       {/* Left: Images */}
-      <div className="flex flex-col gap-4 sm:flex-row    ">
+      <div className="flex flex-col gap-4 sm:flex-row">
         {/* Thumbnails */}
         <div className="flex flex-row justify-center gap-2 pt-2 sm:flex-col sm:justify-start">
           {allImages.map((img, index) => (
@@ -68,9 +127,11 @@ export const ProductDetailComponent = () => {
       </div>
 
       {/* Right: Product Details */}
-      <div className="flex w-[340px] flex-col   justify-center gap-4 sm:w-[400px] md:gap-3 lg:gap-4">
+      <div className="flex w-[340px] flex-col justify-center gap-4 sm:w-[400px] md:gap-3 lg:gap-4">
         <h2 className="text-xl font-bold md:text-2xl">{product.title}</h2>
-        <p className="text-sm text-gray-600 md:text-base">{product.description}</p>
+        <p className="text-sm text-gray-600 md:text-base">
+          {product.description}
+        </p>
 
         {/* GSM Selection */}
         <div className="flex flex-wrap gap-2">
@@ -99,8 +160,8 @@ export const ProductDetailComponent = () => {
                 setMainImage(variant.previewImage);
               }}
               className={`h-6 w-6 rounded-full border transition-all duration-200 ${
-                selectedVariant.color.code === variant.color.code
-                  ? "border-2 border-secondary scale-110"
+                selectedVariant?.color?.code === variant.color.code
+                  ? "border-secondary scale-110 border-2"
                   : "border-gray-300"
               }`}
               style={{ backgroundColor: variant.color.code }}
@@ -131,7 +192,7 @@ export const ProductDetailComponent = () => {
             ₹{originalPrice}
           </span>
           <span className="ml-2 text-sm text-green-500 md:text-base">
-            {product.discount}% off
+            {product.discountPercentage}% off
           </span>
         </div>
 

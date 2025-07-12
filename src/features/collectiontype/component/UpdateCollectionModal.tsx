@@ -69,6 +69,7 @@ export const UpdateCollectionModal = () => {
         }),
       ).unwrap();
       showSuccess("Collection updated successfully!");
+      await dispatch(GET_COLLECTIONTYPE())
       handleClose();
     } catch (error) {
       console.error("Failed to update collection:", error);

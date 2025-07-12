@@ -1,11 +1,26 @@
 import { FC, useState } from "react";
 import { Link } from "react-router-dom";
 
-interface ColorOption {
-  name: string;
-  code: string;
-  image: string;
-}
+// interface ColorOption {
+//   name: string;
+//   code: string;
+//   image: string;
+// }
+
+// interface Variant {
+//   color: { name: string; code: string };
+//   previewImage: string;
+// }
+
+// interface ProductProps {
+//   id: string;
+//   title: string;
+//   discount: number;
+//   prices: { [gsm: string]: number }; // multiple GSM-based prices
+//   variants: Variant[];
+//   type?: string;
+//   defaultGSM?: string; // optional default gsm
+// }
 
 interface Variant {
   color: { name: string; code: string };
@@ -16,10 +31,10 @@ interface ProductProps {
   id: string;
   title: string;
   discount: number;
-  prices: { [gsm: string]: number }; // multiple GSM-based prices
+  prices: { [gsmId: string]: number };
   variants: Variant[];
   type?: string;
-  defaultGSM?: string; // optional default gsm
+  defaultGSM?: string;
 }
 
 export const ProductComponent: FC<ProductProps> = ({
@@ -29,23 +44,27 @@ export const ProductComponent: FC<ProductProps> = ({
   discount,
   variants,
   type = "",
-  defaultGSM = "120"
+  defaultGSM,
 }) => {
   const [selectedVariant, setSelectedVariant] = useState<Variant>(variants[0]);
-  const [selectedImage, setSelectedImage] = useState<string>(variants[0]?.previewImage || "");
-  const [selectedGsm, setSelectedGsm] = useState<string>(defaultGSM);
+  const [selectedImage, setSelectedImage] = useState<string>(
+    variants[0]?.previewImage || "",
+  );
+  const gsmKeys = Object.keys(prices);
+  const initialGSM = defaultGSM && prices[defaultGSM] ? defaultGSM : gsmKeys[0];
+  const [selectedGsm, setSelectedGsm] = useState<string>(initialGSM);
 
-  const originalPrice = prices[selectedGsm];
+  const originalPrice = prices[selectedGsm] ||0;
   const discountPrice = Math.round(originalPrice * (1 - discount / 100));
 
   const formattedPrice = new Intl.NumberFormat("en-IN", {
     style: "currency",
-    currency: "INR"
+    currency: "INR",
   }).format(originalPrice);
 
   const formattedDiscountPrice = new Intl.NumberFormat("en-IN", {
     style: "currency",
-    currency: "INR"
+    currency: "INR",
   }).format(discountPrice);
 
   const handleColorClick = (variant: Variant) => {

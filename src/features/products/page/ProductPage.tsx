@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { PlaceHolder } from "../../shared";
+import { Pagination, PlaceHolder } from "../../shared";
 import {
   AddProductBtn,
   FilterComponent,
@@ -7,24 +7,30 @@ import {
   ProductComponent,
   SearchComponent,
 } from "../component";
-import { ProductsData } from "../data/productData";
+
 import { TbAdjustmentsAlt } from "react-icons/tb";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../app";
+import { AppDispatch, RootState } from "../../../app";
 import { setProducts } from "../redux";
+import { GET_ALL_PRODUCTS } from "../service";
 
 export const ProductPage = () => {
   const [showFilter, setShowFilter] = useState(false);
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
-  const { allProducts, selectedCategories, selectedCollections, searchQuery } =
+  const { allProducts, selectedCategories, selectedCollections, searchQuery, pagination,loading } =
     useSelector((state: RootState) => state.product);
 
-  // useEffect(() => {
-  //   if (allProducts.length == 0) {
-  //     dispatch(setProducts(ProductsData));
-  //   }
-  // }, [allProducts.length,dispatch]);
+    const [currentPage, setCurrentPage] = useState(1);
+  useEffect(() => {
+    dispatch(GET_ALL_PRODUCTS(currentPage))
+     
+  }, [dispatch,currentPage]);
+
+  const handlePageChange = (page: number) => {
+    dispatch(GET_ALL_PRODUCTS(page))
+  }
+
 
   // ✅ Filter and search logic
   const filteredProducts = allProducts.filter((product) => {
@@ -67,7 +73,42 @@ export const ProductPage = () => {
 
         <div className="flex w-full flex-col">
           <SearchComponent />
-          {filteredProducts.length === 0 ? (
+          {loading ? (
+            <p className="py-6 text-center text-lg text-gray-500">
+              Loading products...
+            </p>
+          ) : filteredProducts.length === 0 ? (
+            <p className="py-6 text-center text-lg text-gray-600">
+              No products found.
+            </p>
+          ) : (
+            <>
+              <div className="grid justify-center gap-6 p-6 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+                {filteredProducts.map((product) => (
+                  <ProductComponent
+                    key={product.id}
+                    id={product.id}
+                    title={product.title}
+                    prices={product.prices}
+                    discount={product.discountPercentage}
+                    variants={product.variants}
+                    type={product.collectionType}
+                    defaultGSM={Object.keys(product.prices)[0]}
+                  />
+                ))}
+              </div>
+
+              {/* Pagination Component */}
+              { pagination?.totalPages > 1 && (
+                <Pagination
+                  current={pagination.currentPage}
+                  total={pagination.totalPages}
+                  onChange={handlePageChange}
+                />
+              )}
+            </>
+          )}
+          {/* {filteredProducts.length === 0 ? (
             <p className="py-6 text-center text-lg text-gray-600">
               No products found.
             </p>
@@ -85,7 +126,7 @@ export const ProductPage = () => {
                 />
               ))}
             </div>
-          )}
+          )} */}
           {/* <div className="grid justify-center gap-6 p-6 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
 
             {ProductsData.map((product) => (

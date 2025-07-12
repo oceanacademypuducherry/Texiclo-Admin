@@ -2,7 +2,7 @@ import { IoMdCloseCircle } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../app/store";
 import { setIsDelete } from "../redux";
-import { DELETE_CATEGORY } from "../service";
+import { DELETE_CATEGORY, GET_CATEGORY } from "../service";
 import { showError, showSuccess } from "../../../utils";
 
 export const DeleteConfirmationModal = ({}) => {
@@ -20,6 +20,7 @@ export const DeleteConfirmationModal = ({}) => {
       try {
         await dispatch(DELETE_CATEGORY(id)).unwrap();
         showSuccess("Category Deleted Successfully");
+        await dispatch(GET_CATEGORY());
         handleClose();
       } catch (error) {
         console.error("failed to delete category", error);
