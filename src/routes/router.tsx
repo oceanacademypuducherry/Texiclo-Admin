@@ -4,9 +4,7 @@ import {
   CategoryPage,
   CollectionTypePage,
   ColorPage,
-  Discounts,
   GsmPage,
-  HomePage,
   Login,
   SizePage,
 } from "../features";
@@ -39,26 +37,6 @@ export const router = createBrowserRouter([
     element: <ProtectedRoutes />,
     children: [
       {
-        path: "/home",
-        element: <HomePage />,
-      },
-      {
-        path: "/category",
-        element: <CategoryPage />,
-      },
-      {
-        path: "/discount",
-        element: <Discounts />,
-      },
-      {
-        path: "/banner",
-        element: <BannerPage />,
-      },
-      {
-        path: "/collectiontype",
-        element: <CollectionTypePage />,
-      },
-      {
         path: "/products",
         element: <ProductPage />,
       },
@@ -74,6 +52,19 @@ export const router = createBrowserRouter([
         path: "/updateproduct/:id",
         element: <ProductUpdatePage />,
       },
+      {
+        path: "/category",
+        element: <CategoryPage />,
+      },
+      {
+        path: "/banner",
+        element: <BannerPage />,
+      },
+      {
+        path: "/collectiontype",
+        element: <CollectionTypePage />,
+      },
+
       {
         path: "/gsm",
         element: <GsmPage />,

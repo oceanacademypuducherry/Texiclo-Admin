@@ -5,5 +5,5 @@ import { RootState } from "../app";
 
 export const PublicRoutes: FC = () => {
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
-  return isAuthenticated ? <Navigate to="/home" replace /> : <Outlet />;
+  return isAuthenticated ? <Navigate to="/products" replace /> : <Outlet />;
 };

@@ -52,20 +52,6 @@ export const NavBar = () => {
           <span className="text-base font-medium">Categories</span>
         </NavLink>
 
-        {/* <NavLink
-          to="/discount"
-          className={({ isActive }) =>
-            `flex cursor-pointer items-center gap-3 rounded-lg p-3 transition ${
-              isActive
-                ? "text-primary bg-black font-semibold"
-                : "text-black hover:bg-white/10"
-            }`
-          }
-        >
-          <TbRosetteDiscountFilled className="text-xl" />
-          <span className="text-base font-medium">Discount</span>
-        </NavLink> */}
-
         <NavLink
           to="/banner"
           className={({ isActive }) =>
@@ -105,20 +91,7 @@ export const NavBar = () => {
           <GiRolledCloth className="text-xl" />
           <span className="text-base font-medium">GSM</span>
         </NavLink>
-        {/* <NavLink
-          to="/color"
-          className={({ isActive }) =>
-            `flex cursor-pointer items-center gap-3 rounded-lg p-3 transition ${
-              isActive
-                ? "text-primary bg-black font-semibold"
-                : "text-black hover:bg-white/10"
-            }`
-          }
-        >
-          <IoColorPaletteSharp className="text-xl" />
 
-          <span className="text-base font-medium">Color</span>
-        </NavLink> */}
         <NavLink
           to="/size"
           className={({ isActive }) =>
