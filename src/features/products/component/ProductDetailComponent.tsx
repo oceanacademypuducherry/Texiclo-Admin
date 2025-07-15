@@ -4,6 +4,7 @@ import { DeleteModal } from "./DeleteModal";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../app";
 import { GET_PRODUCT_BY_ID } from "../service";
+import { ProductDetailSkeleton } from "./ProductDetailSkeleton";
 
 export const ProductDetailComponent = () => {
   const navigate = useNavigate();
@@ -36,7 +37,7 @@ export const ProductDetailComponent = () => {
     }
   }, [product]);
 
-  if (loading) return <div className="mt-10 text-center">Loading...</div>;
+  if (loading) return <ProductDetailSkeleton />;
   if (error)
     return <div className="mt-10 text-center text-red-500">{error}</div>;
   if (!product)

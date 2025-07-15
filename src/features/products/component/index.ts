@@ -12,3 +12,4 @@ export * from "./ProductDetails";
 export * from "./ProductVariants";
 export * from "./ProductSkeleton";
 export * from "./FilterSkeleton";
+export * from "./ProductDetailSkeleton";
