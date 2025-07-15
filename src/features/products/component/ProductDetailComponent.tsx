@@ -10,48 +10,10 @@ export const ProductDetailComponent = () => {
   const { id } = useParams();
   const dispatch = useDispatch<AppDispatch>();
 
-  const {
-    productDetail: product,
-    loading,
-    error,
-  } = useSelector((state: RootState) => state.product);
-  // const [isModalOpen, setIsModalOpen] = useState(false);
+  const { product, loading, error } = useSelector(
+    (state: RootState) => state.productDetial,
+  );
 
-  // useEffect(() => {
-  //   if (id) dispatch(GET_PRODUCT_BY_ID(id));
-  // }, [id, dispatch]);
-
-  // if (loading) {
-  //   return (
-  //     <div className="mt-10 text-center text-xl font-semibold">Loading...</div>
-  //   );
-  // }
-
-  // if (!product) {
-  //   return (
-  //     <div className="mt-10 text-center text-xl font-semibold">
-  //       Product not found
-  //     </div>
-  //   );
-  // }
-
-  // const [selectedVariant, setSelectedVariant] = useState(product.variants[0]);
-  // const [selectedGsm, setSelectedGsm] = useState(
-  //   Object.keys(product.prices)[0],
-  // );
-  // const [mainImage, setMainImage] = useState(selectedVariant.previewImage);
-
-  // const allImages = [
-  //   selectedVariant.previewImage,
-  //   selectedVariant.frontImage,
-  //   selectedVariant.backImage,
-  //   ...(selectedVariant.otherImages || []),
-  // ].filter(Boolean);
-
-  // const originalPrice = product.prices[selectedGsm];
-  // const discountPrice = Math.round(
-  //   originalPrice * (1 - product.discountPercentage / 100),
-  // );
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState<any>(null);
   const [selectedGsm, setSelectedGsm] = useState<string>("");
@@ -160,12 +122,14 @@ export const ProductDetailComponent = () => {
                 setMainImage(variant.previewImage);
               }}
               className={`h-6 w-6 rounded-full border transition-all duration-200 ${
-                selectedVariant?.color?.code === variant.color.code
+                selectedVariant?.color?.code === variant.color?.code
                   ? "border-secondary scale-110 border-2"
                   : "border-gray-300"
               }`}
-              style={{ backgroundColor: variant.color.code }}
-              title={variant.color.name}
+              style={{
+                backgroundColor: variant.color?.code || "#ccc", // fallback for safety
+              }}
+              title={variant.color?.name || "Color"}
             />
           ))}
         </div>

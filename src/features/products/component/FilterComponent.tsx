@@ -1,10 +1,12 @@
 import { TbAdjustmentsAlt } from "react-icons/tb";
-import { CategoriesData } from "../../category/data/CategoriesData";
-import { CollectionData } from "../../collectiontype/data/CollectionData";
 import { FC, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../app/store";
-import { resetFilters, toggleCategoryFilter, toggleCollectionFilter,  } from "../redux";
+import {
+  resetFilters,
+  toggleCategoryFilter,
+  toggleCollectionFilter,
+} from "../redux";
 import { Tooltip } from "react-tooltip";
 
 export const FilterComponent: FC<{
@@ -14,12 +16,12 @@ export const FilterComponent: FC<{
   const [isFiltervisible, setIsFilterVisisble] = useState(isVisible);
 
   const dispatch = useDispatch();
-  const {selectedCategories ,selectedCollections }= useSelector(
-    (state: RootState) => state.product
+  const { selectedCategories, selectedCollections } = useSelector(
+    (state: RootState) => state.productList,
   );
-  // const selectedCollections = useSelector(
-  //   (state: RootState) => state.filter.selectedCollections,
-  // );
+  const { categories, collections } = useSelector(
+    (state: RootState) => state.filteroptions,
+  );
 
   const toggleFilter = () => {
     setIsFilterVisisble(!isFiltervisible);
@@ -54,15 +56,15 @@ export const FilterComponent: FC<{
           <div className="flex flex-col">
             <h1 className="text-lg font-semibold">Category</h1>
             <div className="space-y-2">
-              {CategoriesData.map((category) => (
+              {categories.map((category) => (
                 <label
-                  key={category.id}
+                  key={category._id}
                   className="flex items-center gap-2 pl-2"
                 >
                   <input
                     type="checkbox"
-                    checked={selectedCategories.includes(category.name)}
-                    onChange={() => handleCategoryChange(category.name)}
+                    checked={selectedCategories.includes(category._id)}
+                    onChange={() => handleCategoryChange(category._id)}
                   />{" "}
                   {category.name}
                 </label>
@@ -74,15 +76,15 @@ export const FilterComponent: FC<{
           <div className="flex flex-col">
             <h1 className="text-lg font-semibold">Collection Type</h1>
             <div className="space-y-2">
-              {CollectionData.map((collection) => (
+              {collections.map((collection) => (
                 <label
-                  key={collection.id}
+                  key={collection._id}
                   className="flex items-center gap-2 pl-2"
                 >
                   <input
                     type="checkbox"
-                    checked={selectedCollections.includes(collection.name)}
-                    onChange={() => handleCollectionChange(collection.name)}
+                    checked={selectedCollections.includes(collection._id)}
+                    onChange={() => handleCollectionChange(collection._id)}
                   />{" "}
                   {collection.name}
                 </label>

@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { GET_CATEGORY } from "../../category";
+
 
 interface Color {
   name: string;

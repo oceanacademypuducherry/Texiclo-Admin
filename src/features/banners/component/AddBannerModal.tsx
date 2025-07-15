@@ -2,17 +2,25 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../app/store";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { addBanner, BannersData, setBanner, setBannerAdd } from "../redux";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { addBannerValidation } from "../validation";
 import { useDropzone } from "react-dropzone";
 import { IoMdCloseCircle } from "react-icons/io";
 import { MdClose } from "react-icons/md";
+import { closeAddModal } from "../redux";
+import { BannersData } from "../redux";
+import { ADD_BANNER } from "../service";
+import { fileToBase64Image } from "../../../utils";
 
 export const AddBannerModal = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { isAdd, banner } = useSelector((state: RootState) => state.banners);
-  const [image, setImage] = useState<File | string | null>(null);
+  const { modals, selectedBanner } = useSelector(
+    (state: RootState) => state.banners,
+  );
+
+  const [image, setImage] = useState<File | string | null>(
+    selectedBanner?.image ?? null,
+  );
 
   const {
     register,
@@ -21,38 +29,36 @@ export const AddBannerModal = () => {
     handleSubmit,
   } = useForm<BannersData>({
     resolver: yupResolver(addBannerValidation),
+    defaultValues: {
+      position: selectedBanner?.position || 1,
+      image: selectedBanner?.image || null,
+    },
   });
 
   const handleAdd: SubmitHandler<BannersData> = (newData) => {
-    console.log(newData);
-    const bannerToAdd = {
+    const bannerToAdd: BannersData = {
       id: newData.id,
       position: newData.position,
-      image: typeof image === "string" ? image : URL.createObjectURL(image),
+      image: image as File,
     };
-    dispatch(addBanner(bannerToAdd));
-    handleClose();
-  };
-  const handleClose = () => {
-    dispatch(setBannerAdd(false));
-    dispatch(setBanner(null));
+    dispatch(ADD_BANNER(bannerToAdd));
+    dispatch(closeAddModal());
     setImage(null);
   };
-  // Handle image upload with react-dropzone
+
   const onDrop = (acceptedFiles: File[]) => {
     const myImage = acceptedFiles[0];
-    setImage(URL.createObjectURL(myImage)); // store File locally
+    setImage(myImage);
     setValue("image", myImage);
   };
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
-    accept: {
-      "image/*": [],
-    },
+    accept: { "image/*": [] },
     maxFiles: 1,
   });
-  if (!isAdd) return null;
+
+  if (!modals.isAddOpen) return null;
 
   return (
     <div className="bg-opacity-30 fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
@@ -60,9 +66,8 @@ export const AddBannerModal = () => {
         onSubmit={handleSubmit(handleAdd)}
         className="relative w-4/5 rounded-lg bg-white p-6 shadow-lg sm:w-1/2 md:w-1/3"
       >
-        {/* Cancel Icon */}
         <button
-          onClick={handleClose}
+          onClick={() => dispatch(closeAddModal())}
           type="button"
           className="hover:text-secondary absolute top-2 right-2 text-xl text-red-400"
         >
@@ -71,59 +76,36 @@ export const AddBannerModal = () => {
 
         <h3 className="mb-4 text-center text-lg font-bold">Add Banner</h3>
 
-        <div className="mt-4">
-          {/* Category Name Input */}
-          {/* <div className="mb-4">
-            <label className="block text-sm font-medium">
-              Please Enter a postion
-            </label>
-            <input
-              type="number"
-              {...register("position")}
-              className="mt-3 w-full rounded-md border p-2"
-              placeholder="Enter position number"
-            />
-            {errors.position && (
-              <p className="text-left text-xs text-red-500">
-                {errors.position.message}
-              </p>
+        {/* Image Upload */}
+        <div className="mb-4">
+          <label className="mb-3 block text-sm font-medium">Banner Image</label>
+          <div
+            {...getRootProps()}
+            className="hover:border-primary flex w-full cursor-pointer flex-col items-center justify-center rounded-md border-2 border-dashed border-gray-400 p-4"
+          >
+            <input {...getInputProps()} />
+            {!image ? (
+              <div className="text-center text-gray-500">
+                <p>Drag & drop an image here, or click to select an image</p>
+                <p className="mt-2 text-sm text-gray-400">
+                  Max file size: 350kb
+                </p>
+              </div>
+            ) : (
+              <div className="relative h-40 w-full">
+                <img
+                  src={URL.createObjectURL(image as File)}
+                  alt="Preview"
+                  className="h-full w-full rounded-md object-cover"
+                />
+                <button
+                  onClick={() => setImage(null)}
+                  className="absolute top-2 right-2 rounded-full bg-red-500 p-1 text-white"
+                >
+                  <MdClose />
+                </button>
+              </div>
             )}
-          </div> */}
-
-          {/* Collection Image Upload with Dropzone */}
-          <div className="mb-4">
-            <label className="mb-3 block text-sm font-medium">
-              Banner Image
-            </label>
-
-            <div
-              {...getRootProps()}
-              className="hover:border-primary flex w-full cursor-pointer flex-col items-center justify-center rounded-md border-2 border-dashed border-gray-400 p-4"
-            >
-              <input {...getInputProps()} />
-              {!image ? (
-                <div className="text-center text-gray-500">
-                  <p>Drag & drop an image here, or click to select an image</p>
-                  <p className="mt-2 text-sm text-gray-400">
-                    Max file size: 350kb
-                  </p>
-                </div>
-              ) : (
-                <div className="relative h-40 w-full">
-                  <img
-                    src={image}
-                    alt="Preview"
-                    className="h-full w-full rounded-md object-cover"
-                  />
-                  <button
-                    onClick={() => setImage(null)} // Clear image preview
-                    className="absolute top-2 right-2 rounded-full bg-red-500 p-1 text-white"
-                  >
-                    <MdClose />
-                  </button>
-                </div>
-              )}
-            </div>
           </div>
         </div>
         {errors.image && (
@@ -140,8 +122,8 @@ export const AddBannerModal = () => {
             Add
           </button>
           <button
-            onClick={handleClose}
             type="button"
+            onClick={() => dispatch(closeAddModal())}
             className="bg-primary text-secondary hover:bg-secondary hover:text-primary w-full rounded-md px-6 py-3 font-medium sm:w-auto"
           >
             Cancel

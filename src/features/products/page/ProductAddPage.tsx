@@ -9,15 +9,9 @@ import { AppDispatch, RootState } from "../../../app";
 import { FormProvider, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { productSchema } from "../validation";
-import { addNewProduct, resetForm } from "../redux";
+import { resetForm } from "../redux";
 import { useEffect } from "react";
-
-import {
-  GET_OPTIONS_CATEGORY,
-  GET_OPTIONS_COLLECTIONTYPE,
-  GET_OPTIONS_GSM,
-  GET_OPTIONS_SIZE,
-} from "../service/productOptionsService";
+import { GET_OPTIONS_GSM } from "../service/productOptionsService";
 import { base64ToFile } from "../../../utils";
 import { ADD_PRODUCT } from "../service";
 import { useNavigate } from "react-router-dom";
@@ -26,6 +20,7 @@ export const ProductAddPage = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { formData } = useSelector((state: RootState) => state.productForm);
+  const { loading } = useSelector((state: RootState) => state.product);
   const methods = useForm({
     defaultValues: formData,
     resolver: yupResolver(productSchema as any),
@@ -34,9 +29,9 @@ export const ProductAddPage = () => {
 
   useEffect(() => {
     dispatch(GET_OPTIONS_GSM());
-    dispatch(GET_OPTIONS_SIZE());
-    dispatch(GET_OPTIONS_CATEGORY());
-    dispatch(GET_OPTIONS_COLLECTIONTYPE());
+    // dispatch(GET_OPTIONS_SIZE());
+    // dispatch(GET_OPTIONS_CATEGORY());
+    // dispatch(GET_OPTIONS_COLLECTIONTYPE());
   }, [dispatch]);
 
   const onSubmit = async (data: any) => {
@@ -110,7 +105,7 @@ export const ProductAddPage = () => {
               type="submit"
               className="hover:bg-opacity-80 bg-primary text-secondary hover:bg-secondary hover:text-primary rounded px-6 py-2 font-medium transition"
             >
-              Submit Product
+              {loading ? "Submitting..." : "Submit Product"}
             </button>
           </div>
         </form>

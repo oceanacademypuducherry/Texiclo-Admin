@@ -1,171 +1,171 @@
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../../app/store";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { useDropzone } from "react-dropzone";
-import { IoMdCloseCircle } from "react-icons/io";
-import { MdClose } from "react-icons/md";
+// import { useEffect, useState } from "react";
+// import { useDispatch, useSelector } from "react-redux";
+// import { AppDispatch, RootState } from "../../../app/store";
+// import { SubmitHandler, useForm } from "react-hook-form";
+// import { yupResolver } from "@hookform/resolvers/yup";
+// import { useDropzone } from "react-dropzone";
+// import { IoMdCloseCircle } from "react-icons/io";
+// import { MdClose } from "react-icons/md";
 
-import {
-  updateBanner,
-  setBannerUpdate,
-  setBanner,
-  BannersData,
-} from "../redux";
-import { addBannerValidation } from "../validation";
+// import {
+//   // updateBanner,
+//   // setBannerUpdate,
+//   // setBanner,
+//   BannersData,
+// } from "../redux";
+// import { addBannerValidation } from "../validation";
 
-export const UpdateBannerModal = () => {
-  const dispatch = useDispatch<AppDispatch>();
-  const { isUpdate, banner } = useSelector((state: RootState) => state.banners);
-  const [image, setImage] = useState<File | string | null>(null);
+// export const UpdateBannerModal = () => {
+//   const dispatch = useDispatch<AppDispatch>();
+//   // const { isUpdate, banner } = useSelector((state: RootState) => state.banners);
+//   const [image, setImage] = useState<File | string | null>(null);
 
-  const {
-    register,
-    setValue,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<BannersData>({
-    resolver: yupResolver(addBannerValidation),
-    defaultValues: {
-      position: banner?.position || 1,
-    },
-  });
+//   const {
+//     register,
+//     setValue,
+//     handleSubmit,
+//     formState: { errors },
+//   } = useForm<BannersData>({
+//     resolver: yupResolver(addBannerValidation),
+//     defaultValues: {
+//       // position: banner?.position || 1,
+//     },
+//   });
 
-  useEffect(() => {
-    if (banner?.image) {
-      setImage(banner.image);
-      setValue("position", banner.position);
-    }
-  }, [banner, setValue]);
+//   // useEffect(() => {
+//   //   if (banner?.image) {
+//   //     setImage(banner.image);
+//   //     setValue("position", banner.position);
+//   //   }
+//   // }, [banner, setValue]);
 
-  const onDrop = (acceptedFiles: File[]) => {
-    const file = acceptedFiles[0];
-    setImage(file);
-    setValue("image", file);
-  };
+//   const onDrop = (acceptedFiles: File[]) => {
+//     const file = acceptedFiles[0];
+//     setImage(file);
+//     setValue("image", file);
+//   };
 
-  const { getRootProps, getInputProps } = useDropzone({
-    onDrop,
-    accept: { "image/*": [] },
-    maxFiles: 1,
-  });
+//   const { getRootProps, getInputProps } = useDropzone({
+//     onDrop,
+//     accept: { "image/*": [] },
+//     maxFiles: 1,
+//   });
 
-  const handleClose = () => {
-    dispatch(setBannerUpdate(false));
-    dispatch(setBanner(null));
-    setImage(null);
-  };
+//   // const handleClose = () => {
+//   //   dispatch(setBannerUpdate(false));
+//   //   dispatch(setBanner(null));
+//   //   setImage(null);
+//   // };
 
-  const handleUpdate: SubmitHandler<BannersData> = (data) => {
-    if (!image) return;
-    const updatedBanner = {
-      id: banner?.id || "",
-      position: data.position,
-      image: image,
-    };
-    dispatch(updateBanner(updatedBanner));
-    handleClose();
-  };
+//   const handleUpdate: SubmitHandler<BannersData> = (data) => {
+//   //   if (!image) return;
+//   //   const updatedBanner = {
+//   //     id: banner?.id || "",
+//   //     position: data.position,
+//   //     image: image,
+//   //   };
+//   //   dispatch(updateBanner(updatedBanner));
+//   //   handleClose();
+//   // };
 
-  if (!isUpdate || !banner) return null;
+//   // if (!isUpdate || !banner) return null;
 
-  return (
-    <div className="bg-opacity-30 fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
-      <form
-        onSubmit={handleSubmit(handleUpdate)}
-        className="relative w-4/5 rounded-lg bg-white p-6 shadow-lg sm:w-1/2 md:w-1/3"
-      >
-        {/* Close icon */}
-        <button
-          onClick={handleClose}
-          type="button"
-          className="hover:text-secondary absolute top-2 right-2 text-xl text-red-400"
-        >
-          <IoMdCloseCircle />
-        </button>
+//   return (
+//     <div className="bg-opacity-30 fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
+//       <form
+//         // onSubmit={handleSubmit(handleUpdate)}
+//         className="relative w-4/5 rounded-lg bg-white p-6 shadow-lg sm:w-1/2 md:w-1/3"
+//       >
+//         {/* Close icon */}
+//         <button
+//           // onClick={handleClose}
+//           type="button"
+//           className="hover:text-secondary absolute top-2 right-2 text-xl text-red-400"
+//         >
+//           <IoMdCloseCircle />
+//         </button>
 
-        <h3 className="mb-4 text-center text-lg font-bold">Update Banner</h3>
+//         <h3 className="mb-4 text-center text-lg font-bold">Update Banner</h3>
 
-        <div className="mt-4">
-          {/* Position input */}
-          {/* <div className="mb-4">
-            <label className="block text-sm font-medium">Position</label>
-            <input
-              type="number"
-              {...register("position")}
-              className="mt-3 w-full rounded-md border p-2"
-              placeholder="Enter position number"
-            />
-            {errors.position && (
-              <p className="text-left text-xs text-red-500">
-                {errors.position.message}
-              </p>
-            )}
-          </div> */}
+//         <div className="mt-4">
+//           {/* Position input */}
+//           {/* <div className="mb-4">
+//             <label className="block text-sm font-medium">Position</label>
+//             <input
+//               type="number"
+//               {...register("position")}
+//               className="mt-3 w-full rounded-md border p-2"
+//               placeholder="Enter position number"
+//             />
+//             {errors.position && (
+//               <p className="text-left text-xs text-red-500">
+//                 {errors.position.message}
+//               </p>
+//             )}
+//           </div> */}
 
-          {/* Image upload with Dropzone */}
-          <div className="mb-4">
-            <label className="mb-3 block text-sm font-medium">
-              Update Banner Image
-            </label>
-            <div
-              {...getRootProps()}
-              className="hover:border-primary flex w-full cursor-pointer flex-col items-center justify-center rounded-md border-2 border-dashed border-gray-400 p-4"
-            >
-              <input {...getInputProps()} />
-              {!image ? (
-                <div className="text-center text-gray-500">
-                  <p>Drag & drop an image here, or click to select one</p>
-                  <p className="mt-2 text-sm text-gray-400">
-                    Max file size: 350kb
-                  </p>
-                </div>
-              ) : (
-                <div className="relative h-40 w-full">
-                  <img
-                    src={
-                      typeof image === "string"
-                        ? image
-                        : URL.createObjectURL(image)
-                    }
-                    alt="Preview"
-                    className="h-full w-full rounded-md object-cover"
-                  />
-                  <button
-                    onClick={() => setImage(null)}
-                    type="button"
-                    className="absolute top-2 right-2 rounded-full bg-red-500 p-1 text-white"
-                  >
-                    <MdClose />
-                  </button>
-                </div>
-              )}
-            </div>
-            {errors.image && (
-              <p className="text-left text-xs text-red-500">
-                {errors.image.message}
-              </p>
-            )}
-          </div>
-        </div>
+//           {/* Image upload with Dropzone */}
+//           <div className="mb-4">
+//             <label className="mb-3 block text-sm font-medium">
+//               Update Banner Image
+//             </label>
+//             <div
+//               {...getRootProps()}
+//               className="hover:border-primary flex w-full cursor-pointer flex-col items-center justify-center rounded-md border-2 border-dashed border-gray-400 p-4"
+//             >
+//               <input {...getInputProps()} />
+//               {!image ? (
+//                 <div className="text-center text-gray-500">
+//                   <p>Drag & drop an image here, or click to select one</p>
+//                   <p className="mt-2 text-sm text-gray-400">
+//                     Max file size: 350kb
+//                   </p>
+//                 </div>
+//               ) : (
+//                 <div className="relative h-40 w-full">
+//                   <img
+//                     src={
+//                       typeof image === "string"
+//                         ? image
+//                         : URL.createObjectURL(image)
+//                     }
+//                     alt="Preview"
+//                     className="h-full w-full rounded-md object-cover"
+//                   />
+//                   <button
+//                     onClick={() => setImage(null)}
+//                     type="button"
+//                     className="absolute top-2 right-2 rounded-full bg-red-500 p-1 text-white"
+//                   >
+//                     <MdClose />
+//                   </button>
+//                 </div>
+//               )}
+//             </div>
+//             {errors.image && (
+//               <p className="text-left text-xs text-red-500">
+//                 {errors.image.message}
+//               </p>
+//             )}
+//           </div>
+//         </div>
 
-        <div className="mt-4 flex justify-center gap-4">
-          <button
-            type="submit"
-            className="bg-primary text-secondary hover:bg-secondary hover:text-primary w-full rounded-md px-6 py-3 font-medium sm:w-auto"
-          >
-            Update
-          </button>
-          <button
-            onClick={handleClose}
-            type="button"
-            className="bg-primary text-secondary hover:bg-secondary hover:text-primary w-full rounded-md px-6 py-3 font-medium sm:w-auto"
-          >
-            Cancel
-          </button>
-        </div>
-      </form>
-    </div>
-  );
-};
+//         <div className="mt-4 flex justify-center gap-4">
+//           <button
+//             type="submit"
+//             className="bg-primary text-secondary hover:bg-secondary hover:text-primary w-full rounded-md px-6 py-3 font-medium sm:w-auto"
+//           >
+//             Update
+//           </button>
+//           <button
+//             // onClick={handleClose}
+//             type="button"
+//             className="bg-primary text-secondary hover:bg-secondary hover:text-primary w-full rounded-md px-6 py-3 font-medium sm:w-auto"
+//           >
+//             Cancel
+//           </button>
+//         </div>
+//       </form>
+//     </div>
+//   );
+// };

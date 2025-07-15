@@ -15,7 +15,7 @@ import { GET_SIZE } from "../service";
 
 export const SizePage = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { isAdd, isDelete, isUpdate, sizes ,loading } = useSelector(
+  const { isAdd, isDelete, isUpdate, sizes, loading } = useSelector(
     (state: RootState) => state.size,
   );
 
@@ -41,9 +41,8 @@ export const SizePage = () => {
 
       <div className="flex flex-wrap justify-center gap-4 p-4">
         {loading ? (
-          [...Array(4)].map((_,idx)=><SizeSkeleton key={idx}/>)
-        ):
-          sizes.length >0?(
+          [...Array(4)].map((_, idx) => <SizeSkeleton key={idx} />)
+        ) : sizes.length > 0 ? (
           sizes.map((item) => <SizeComponent key={item._id} size={item} />)
         ) : (
           <p className="text-center text-gray-500">No Size data available.</p>

@@ -1,8 +1,13 @@
 import { useFormContext, Controller } from "react-hook-form";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../app";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../../app";
 import { getErrorMessage } from "../../../utils";
 import Select from "react-select";
+import {
+  GET_OPTIONS_CATEGORY,
+  GET_OPTIONS_COLLECTIONTYPE,
+  GET_OPTIONS_SIZE,
+} from "../service";
 export const ProductDetails = () => {
   const {
     register,
@@ -13,6 +18,21 @@ export const ProductDetails = () => {
 
   // console.log(watch());
   // console.log(errors);
+  const dispatch = useDispatch<AppDispatch>();
+
+  const handleFetchCollections = () => {
+    if (!collections || collections.length === 0)
+      dispatch(GET_OPTIONS_COLLECTIONTYPE());
+  };
+
+  const handleFetchCategories = () => {
+    if (!categories || categories.length === 0)
+      dispatch(GET_OPTIONS_CATEGORY());
+  };
+
+  const handleFetchSizes = () => {
+    if (!sizes.length) dispatch(GET_OPTIONS_SIZE());
+  };
 
   const { sizes, gsms, collections, categories } = useSelector(
     (state: RootState) => state.productFormOptions,
@@ -40,6 +60,7 @@ export const ProductDetails = () => {
                 options={collections}
                 className="react-select-container"
                 classNamePrefix="react-select"
+                onFocus={handleFetchCollections}
               />
             )}
           />
@@ -59,6 +80,7 @@ export const ProductDetails = () => {
                 options={categories}
                 className="react-select-container"
                 classNamePrefix="react-select"
+                onFocus={handleFetchCategories}
               />
             )}
           />
@@ -159,6 +181,7 @@ export const ProductDetails = () => {
                 className="react-select-container"
                 classNamePrefix="react-select"
                 closeMenuOnSelect={false}
+                onFocus={handleFetchSizes}
               />
             )}
           />

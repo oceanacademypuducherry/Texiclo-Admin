@@ -1,7 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { AdminAPI } from "../../../services";
 
-
 export const GET_COLLECTIONTYPE = createAsyncThunk<
   {
     data: any[];
@@ -13,11 +12,11 @@ export const GET_COLLECTIONTYPE = createAsyncThunk<
     };
     message: string;
   },
-  number, 
+  number,
   { rejectValue: { message: string } }
->("collectionType/get", async (page = 1, thunkAPI) => {
+>("collectionType/getall", async (page = 1, thunkAPI) => {
   try {
-    const response = await AdminAPI.get(`collectionType/get/?page=${page}`);
+    const response = await AdminAPI.get(`collectionType/getall/?page=${page}`);
     const rawData = response.data.data || [];
 
     const formattedData = rawData.map((item: any) => ({

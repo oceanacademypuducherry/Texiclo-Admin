@@ -1,43 +1,41 @@
-// import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
+import { GET_FILTER_OPTIONS } from "../service";
 
+interface FilterState {
+  categories: { _id: string; name: string }[];
+  collections: { _id: string; name: string }[];
+  Filterloading: boolean;
+  error: string | null;
+}
 
-// interface FilterState{
-//     selectedCategories: string[]
-//     selectedCollections:string[]
-// }
-// const initialState: FilterState = {
-//   selectedCategories: [],
-//   selectedCollections: [],
-// };
+const initialState: FilterState = {
+  categories: [],
+  collections: [],
+  Filterloading: false,
+  error: null,
+};
 
-// const filterSlice = createSlice({
-//     name: "filter",
-//     initialState,
-//     reducers: {
-//         setFilterCategory(state, action: PayloadAction<string>) {
-//             const category = action.payload;
-//             if (state.selectedCategories.includes(category)) {
-//               state.selectedCategories = state.selectedCategories.filter((c) => c !== category);
-//             } else {
-//               state.selectedCategories.push(category);
-//             }
-//           },
-//           setFilterCollection(state, action: PayloadAction<string>) {
-//             const collection = action.payload;
-//             if (state.selectedCollections.includes(collection)) {
-//               state.selectedCollections = state.selectedCollections.filter((c) => c !== collection);
-//             } else {
-//               state.selectedCollections.push(collection);
-//             }
-//           },
-//           resetFilters(state) {
-//             state.selectedCategories = [];
-//             state.selectedCollections = [];
-//           }
-//         },
-//     }
-// )
+const filterSlice = createSlice({
+  name: "filters",
+  initialState,
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(GET_FILTER_OPTIONS.pending, (state) => {
+        state.Filterloading = true;
+        state.error = null;
+      })
+      .addCase(GET_FILTER_OPTIONS.fulfilled, (state, action) => {
+        state.Filterloading = false;
+        state.categories = action.payload.categoryData || [];
+        state.collections = action.payload.collection || [];
+      })
+      .addCase(GET_FILTER_OPTIONS.rejected, (state, action: any) => {
+        state.Filterloading = false;
+        state.error =
+          action.payload?.message || "Failed to fetch filter options";
+      });
+  },
+});
 
-// export const { setFilterCategory, setFilterCollection, resetFilters } = filterSlice.actions
-
-// export const FilterReducer=filterSlice.reducer
+export const filterReducer = filterSlice.reducer;

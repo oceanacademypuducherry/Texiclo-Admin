@@ -6,57 +6,60 @@ import {
   Banner,
   BulkEditModal,
   DeleteBannerModal,
-  UpdateBannerModal,
+  // UpdateBannerModal,
 } from "../component";
-import { BannerData } from "../data/bannerdata";
 import { AppDispatch, RootState } from "../../../app/store";
-import {
-  BannersData,
-  setBanner,
-  setBannerAdd,
-  setBannerData,
-  setBannerDelete,
-  setBannerId,
-  setBannerUpdate,
-  setBulkEdit,
-} from "../redux";
 import { useEffect } from "react";
+import {
+  openAddModal,
+  openBulkEditModal,
+  openDeleteModal,
+  openUpdateModal,
+} from "../redux";
+import { GET_BANNERS } from "../service";
 
 export const BannerPage = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { isAdd, isBulkEdit, isUpdate, isDelete } = useSelector(
-    (state: RootState) => state.banners,
-  );
+  const {
+    loading,
+    error,
+    data: banners,
+    modals,
+  } = useSelector((state: RootState) => state.banners);
+
   useEffect(() => {
-    dispatch(setBannerData(BannerData)); // ✅ initialize Redux store
+    dispatch(GET_BANNERS());
   }, [dispatch]);
 
   const handleDelete = (id: string) => {
-    dispatch(setBannerDelete(true));
-    dispatch(setBannerId(id));
-  };
-  const handleUpdate = (banner: BannersData) => {
-    dispatch(setBanner(banner));
-    dispatch(setBannerUpdate(true));
-  };
-  const handleAdd = () => {
-    dispatch(setBannerAdd(true));
-    const newPosition = BannerData.length + 1;
-    dispatch(setBanner({ id: "", image: null, position: newPosition }));
+    dispatch(openDeleteModal(id));
   };
 
-  const sortedBanners = [...BannerData].sort((a, b) => a.position - b.position);
+  const handleUpdate = (banner: any) => {
+    dispatch(openUpdateModal(banner));
+  };
+
+  const handleAdd = () => {
+    dispatch(openAddModal());
+  };
+
+  const sortedBanners = [...banners].sort((a, b) => a.position - b.position);
+
+  if (loading)
+    return <p className="text-center text-gray-500">Loading banners...</p>;
+  if (error) return <p className="text-center text-red-500">Error: {error}</p>;
 
   return (
     <PlaceHolder>
-      {isDelete && <DeleteBannerModal />}
-      {isUpdate && <UpdateBannerModal />}
-      {isAdd && <AddBannerModal />}
-      {isBulkEdit && <BulkEditModal />}
+      {modals.isDeleteOpen && <DeleteBannerModal />}
+      {/* {modals.isUpdateOpen && <UpdateBannerModal />} */}
+      {modals.isAddOpen && <AddBannerModal />}
+      {modals.isBulkEditOpen && <BulkEditModal />}
+
       <div className="flex flex-col items-center">
         <div className="flex w-full justify-end p-4">
           <button
-            onClick={() => dispatch(setBulkEdit(true))}
+            onClick={() => dispatch(openBulkEditModal())}
             className="bg-primary text-secondary hover:bg-secondary hover:text-primary w-full rounded-md px-6 py-3 font-medium sm:w-auto"
           >
             Edit Banners
@@ -67,14 +70,13 @@ export const BannerPage = () => {
             <Banner
               key={banner.id}
               image={banner.image}
-              title={banner.title}
               onUpdate={() => handleUpdate(banner)}
-              onDelete={() => handleDelete(banner.id)}
+              onDelete={() => handleDelete(banner.id!)}
             />
           ))}
         </div>
         <div>
-          <AddBannerBtn />
+          <AddBannerBtn onClick={handleAdd} />
         </div>
       </div>
     </PlaceHolder>

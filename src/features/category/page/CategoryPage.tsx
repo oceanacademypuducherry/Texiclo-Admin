@@ -28,7 +28,6 @@ export const CategoryPage = () => {
     dispatch(GET_CATEGORY(currentPage));
   }, [dispatch, currentPage]);
 
-
   useEffect(() => {
     if (!isLoading && categorys.length === 0 && currentPage > 1) {
       setCurrentPage((prev) => prev - 1);

@@ -1,99 +1,125 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { ADD_BANNER, GET_BANNERS } from "../service";
 
-// Single banner interface
 export interface BannersData {
   id?: string;
   position: number;
   image: string | File | null;
 }
 
-// Redux state interface
 interface BannerState {
-  isAdd: boolean;
-  isDelete: boolean;
-  isUpdate: boolean;
-  isBulkEdit: boolean;
-  id?: string;
-  banner?: BannersData;
-  banners: BannersData[];
+  data: BannersData[];
+  loading: boolean;
+  error: string | null;
+  selectedBanner?: BannersData;
+  selectedId?: string;
+  modals: {
+    isAddOpen: boolean;
+    isUpdateOpen: boolean;
+    isDeleteOpen: boolean;
+    isBulkEditOpen: boolean;
+  };
 }
 
 const initialState: BannerState = {
-  isAdd: false,
-  isDelete: false,
-  isUpdate: false,
-  isBulkEdit: false,
-  banners: [],
+  data: [],
+  loading: false,
+  error: null,
+  selectedBanner: undefined,
+  selectedId: undefined,
+  modals: {
+    isAddOpen: false,
+    isUpdateOpen: false,
+    isDeleteOpen: false,
+    isBulkEditOpen: false,
+  },
 };
 
 const bannerSlice = createSlice({
   name: "banner",
   initialState,
   reducers: {
-    // Control Add Modal visibility
-    setBannerAdd: (state, action: PayloadAction<boolean>) => {
-      state.isAdd = action.payload;
+    openAddModal: (state) => {
+      state.modals.isAddOpen = true;
     },
-    // Control Delete Modal visibility
-    setBannerDelete: (state, action: PayloadAction<boolean>) => {
-      state.isDelete = action.payload;
+    closeAddModal: (state) => {
+      state.modals.isAddOpen = false;
+      state.selectedBanner = undefined;
     },
-    setBannerUpdate: (state, action: PayloadAction<boolean>) => {
-      state.isUpdate = action.payload;
+    openUpdateModal: (state, action: PayloadAction<BannersData>) => {
+      state.modals.isUpdateOpen = true;
+      state.selectedBanner = action.payload;
     },
-    setBulkEdit: (state, action: PayloadAction<boolean>) => {
-      state.isBulkEdit = action.payload;
+    closeUpdateModal: (state) => {
+      state.modals.isUpdateOpen = false;
+      state.selectedBanner = undefined;
     },
-    // Set the ID for deletion
-    setBannerId: (state, action: PayloadAction<string>) => {
-      state.id = action.payload;
+    openDeleteModal: (state, action: PayloadAction<string>) => {
+      state.modals.isDeleteOpen = true;
+      state.selectedId = action.payload;
     },
-    setBanner: (state, action: PayloadAction<BannersData>) => {
-      state.banner = action.payload;
+    closeDeleteModal: (state) => {
+      state.modals.isDeleteOpen = false;
+      state.selectedId = undefined;
     },
-    // Add new banner
-    addBanner: (state, action: PayloadAction<BannersData>) => {
-      const exists = state.banners.some((col) => col.id === action.payload.id);
-      if (!exists) {
-        state.banners.push(action.payload);
-      }
+    openBulkEditModal: (state) => {
+      state.modals.isBulkEditOpen = true;
     },
-
-    updateBanner: (state, action: PayloadAction<BannersData>) => {
-      state.banners = state.banners.map((b) =>
-        b.id === action.payload.id ? action.payload : b,
-      );
+    closeBulkEditModal: (state) => {
+      state.modals.isBulkEditOpen = false;
     },
-
-    // Delete banner by ID
-    deleteBanner: (state, action: PayloadAction<BannersData>) => {
-      state.banners = state.banners.filter(
-        (col) => col.id !== action.payload.id,
-      );
-    },
-    updateMany: (state, action: PayloadAction<BannersData[]>) => {
-      state.banners = action.payload
-        .slice()
-        .sort((x, y) => x.position - y.position);
-    },
-    setBannerData: (state, action: PayloadAction<BannersData[]>) => {
-      state.banners = action.payload;
-    },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(GET_BANNERS.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(GET_BANNERS.fulfilled, (state, action) => {
+        state.loading = false;
+        state.data = action.payload.data.map((item: any) => ({
+          id: item._id,
+          position: item.position,
+          image: item.imageUrl,
+        }));
+      })
+      .addCase(GET_BANNERS.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          typeof action.payload === "string"
+            ? action.payload
+            : (action.payload as any)?.message || "Something went wrong";
+      })
+      .addCase(ADD_BANNER.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(ADD_BANNER.fulfilled, (state, action) => {
+        state.loading = false;
+        const exists = state.data.some((b) => b.id === action.payload.id);
+        if (!exists) {
+          state.data.push(action.payload);
+        }
+      })
+      .addCase(ADD_BANNER.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          typeof action.payload === "string"
+            ? action.payload
+            : (action.payload as any)?.message || "Something went wrong";
+      });
   },
 });
 
 export const {
-  setBannerAdd,
-  setBannerDelete,
-  setBannerId,
-  setBanner,
-  addBanner,
-  deleteBanner,
-  setBannerUpdate,
-  setBulkEdit,
-  updateBanner,
-  updateMany,
-  setBannerData,
+  openAddModal,
+  closeAddModal,
+  openUpdateModal,
+  closeUpdateModal,
+  openDeleteModal,
+  closeDeleteModal,
+  openBulkEditModal,
+  closeBulkEditModal,
 } = bannerSlice.actions;
 
 export const BannerReducer = bannerSlice.reducer;

@@ -4,7 +4,7 @@ import { useForm, useFieldArray } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { IoMdCloseCircle } from "react-icons/io";
 import { RootState, AppDispatch } from "../../../app/store";
-import { setBulkEdit, updateMany } from "../redux";
+// import { setBulkEdit, updateMany } from "../redux";
 import { bulkEditValidation } from "../validation";
 import { DropzoneField } from "./DropzoneField";
 
@@ -16,9 +16,9 @@ type BannerFormData = {
 
 export const BulkEditModal = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { isBulkEdit, banners } = useSelector(
-    (state: RootState) => state.banners,
-  );
+  // const { isBulkEdit, banners } = useSelector(
+  //   (state: RootState) => state.banners,
+  // );
 
   const {
     control,
@@ -36,12 +36,12 @@ export const BulkEditModal = () => {
     name: "banners",
   });
 
-  useEffect(() => {
-    if (isBulkEdit) {
-      replace(banners);
-      reset({ banners });
-    }
-  }, [isBulkEdit]);
+  // useEffect(() => {
+  //   if (isBulkEdit) {
+  //     replace(banners);
+  //     reset({ banners });
+  //   }
+  // }, [isBulkEdit]);
 
   const handleDrop = (index: number) => (files: File[]) => {
     if (files[0]) {
@@ -54,20 +54,20 @@ export const BulkEditModal = () => {
   };
 
   const handleSave = (data: { banners: BannerFormData[] }) => {
-    dispatch(updateMany(data.banners));
-    dispatch(setBulkEdit(false));
+    // dispatch(updateMany(data.banners));
+    // dispatch(setBulkEdit(false));
   };
 
-  if (!isBulkEdit) return null;
+  // if (!isBulkEdit) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
       <form
-        onSubmit={handleSubmit(handleSave)}
+        // onSubmit={handleSubmit(handleSave)}
         className="relative w-full max-w-md rounded-xl bg-white p-6 shadow-xl sm:max-w-2xl"
       >
         <button
-          onClick={() => dispatch(setBulkEdit(false))}
+          // onClick={() => dispatch(setBulkEdit(false))}
           type="button"
           className="absolute top-4 right-4 text-2xl text-red-500 hover:text-red-700"
         >
@@ -138,7 +138,7 @@ export const BulkEditModal = () => {
           </button>
           <button
             type="button"
-            onClick={() => dispatch(setBulkEdit(false))}
+            // onClick={() => dispatch(setBulkEdit(false))}
             className="bg-primary text-secondary hover:bg-secondary hover:text-primary w-full rounded-md px-6 py-3 font-medium sm:w-auto"
           >
             Cancel

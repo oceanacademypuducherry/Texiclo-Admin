@@ -21,8 +21,8 @@ export interface GsmsData {
 export interface OptionState {
   sizes: SizesData[];
   gsms: GsmsData[];
-  categories: any[]; // Replace `any` with actual type if known
-  collections: any[]; // Replace `any` with actual type if known
+  categories: any[];
+  collections: any[];
   loading: boolean;
   error: string | null;
 }
