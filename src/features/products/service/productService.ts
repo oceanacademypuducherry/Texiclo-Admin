@@ -139,3 +139,18 @@ export const ADD_PRODUCT = createAsyncThunk(
     }
   },
 );
+
+export const DELETE_PRODUCT = createAsyncThunk<
+  any,
+  string,
+  { rejectValue: { message: string } }
+>("product/delete", async (id, thunkAPI) => {
+  try {
+    const response = await AdminAPI.delete(`/product/${id}`);
+    return response.data;
+  } catch (error: any) {
+    return thunkAPI.rejectWithValue(
+      error.response?.data || { message: "Failed to delete product" },
+    );
+  }
+});

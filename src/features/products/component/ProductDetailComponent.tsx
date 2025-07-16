@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { DeleteModal } from "./DeleteModal";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../app";
-import { GET_PRODUCT_BY_ID } from "../service";
+import { DELETE_PRODUCT, GET_PRODUCT_BY_ID } from "../service";
 import { ProductDetailSkeleton } from "./ProductDetailSkeleton";
 
 export const ProductDetailComponent = () => {
@@ -54,11 +54,18 @@ export const ProductDetailComponent = () => {
   const discountPrice = Math.round(
     originalPrice * (1 - product.discountPercentage / 100),
   );
-  const handleDelete = () => {
-    console.log("Product deleted!");
-    setIsModalOpen(false);
-  };
+  const handleDelete = async () => {
+    if (!id) return;
 
+    try {
+      await dispatch(DELETE_PRODUCT(id)).unwrap(); 
+      setIsModalOpen(false); 
+      navigate("/products"); 
+    } catch (error: any) {
+      console.error("Failed to delete product:", error);
+      setIsModalOpen(false);
+    }
+  };
   return (
     <div className="flex flex-col items-center justify-center gap-6 xl:flex-row">
       {/* Left: Images */}

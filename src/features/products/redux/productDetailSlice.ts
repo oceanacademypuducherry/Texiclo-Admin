@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { GET_PRODUCT_BY_ID } from "../service";
+import { DELETE_PRODUCT, GET_PRODUCT_BY_ID } from "../service";
 
 interface Variant {
   color: { name: string; code: string };
@@ -25,18 +25,24 @@ interface ProductDetailState {
   product: ProductDetail | null;
   loading: boolean;
   error: string | null;
+  deleteSuccess: boolean;
 }
 
 const initialState: ProductDetailState = {
   product: null,
   loading: false,
   error: null,
+  deleteSuccess: false,
 };
 
 const productDetailSlice = createSlice({
   name: "productDetail",
   initialState,
-  reducers: {},
+  reducers: {
+    resetDeleteStatus: (state) => {
+      state.deleteSuccess = false;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(GET_PRODUCT_BY_ID.pending, (state) => {
@@ -76,8 +82,24 @@ const productDetailSlice = createSlice({
           typeof action.payload === "string"
             ? action.payload
             : action.payload?.message || "Failed to fetch product";
+      })
+      .addCase(DELETE_PRODUCT.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(DELETE_PRODUCT.fulfilled, (state) => {
+        state.loading = false;
+        state.deleteSuccess = true;
+        state.product = null;
+      })
+      .addCase(DELETE_PRODUCT.rejected, (state, action: any) => {
+        state.loading = false;
+        state.error =
+          typeof action.payload === "string"
+            ? action.payload
+            : action.payload?.message || "Failed to delete product";
       });
   },
 });
-
+export const { resetDeleteStatus } = productDetailSlice.actions;
 export const productDetailReducer = productDetailSlice.reducer;
