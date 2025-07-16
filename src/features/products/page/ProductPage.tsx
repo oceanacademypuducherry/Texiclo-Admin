@@ -44,7 +44,6 @@ export const ProductPage = () => {
     dispatch(GET_FILTER_OPTIONS());
   }, []);
 
-
   useEffect(() => {
     dispatch(GET_ALL_PRODUCTS(currentPage));
   }, [
@@ -88,7 +87,11 @@ export const ProductPage = () => {
         <div className="flex w-full flex-col">
           <SearchComponent />
           {loading ? (
-            <ProductSkeleton />
+            <div className="grid justify-center gap-6 p-6 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+              {Array.from({ length: 6 }).map((_, index) => (
+                <ProductSkeleton key={index} />
+              ))}
+            </div>
           ) : products.length === 0 ? (
             <p className="py-6 text-center text-lg text-gray-600">
               No products found.

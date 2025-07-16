@@ -9,12 +9,12 @@ import { IoMdCloseCircle } from "react-icons/io";
 import { MdClose } from "react-icons/md";
 import { closeAddModal } from "../redux";
 import { BannersData } from "../redux";
-import { ADD_BANNER } from "../service";
-import { fileToBase64Image } from "../../../utils";
+import { ADD_BANNER, GET_BANNERS } from "../service";
+import { fileToBase64Image, showError, showSuccess } from "../../../utils";
 
 export const AddBannerModal = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { modals, selectedBanner } = useSelector(
+  const { modals, selectedBanner, loading } = useSelector(
     (state: RootState) => state.banners,
   );
 
@@ -35,15 +35,22 @@ export const AddBannerModal = () => {
     },
   });
 
-  const handleAdd: SubmitHandler<BannersData> = (newData) => {
-    const bannerToAdd: BannersData = {
-      id: newData.id,
-      position: newData.position,
-      image: image as File,
-    };
-    dispatch(ADD_BANNER(bannerToAdd));
-    dispatch(closeAddModal());
-    setImage(null);
+  const handleAdd: SubmitHandler<BannersData> = async (newData) => {
+    try {
+      const bannerToAdd: BannersData = {
+        id: newData.id,
+        position: newData.position,
+        image: image as File,
+      };
+      await dispatch(ADD_BANNER(bannerToAdd)).unwrap();
+      dispatch(GET_BANNERS());
+      showSuccess("Banner added Sucessfully");
+      dispatch(closeAddModal());
+      setImage(null);
+    } catch (error) {
+      console.error("Failed to add");
+      showError("Failed to Banner");
+    }
   };
 
   const onDrop = (acceptedFiles: File[]) => {
@@ -119,7 +126,7 @@ export const AddBannerModal = () => {
             type="submit"
             className="bg-primary text-secondary hover:bg-secondary hover:text-primary w-full rounded-md px-6 py-3 font-medium sm:w-auto"
           >
-            Add
+            {loading ? "Adding" : "Add"}
           </button>
           <button
             type="button"

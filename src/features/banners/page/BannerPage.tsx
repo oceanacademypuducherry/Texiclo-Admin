@@ -4,9 +4,10 @@ import {
   AddBannerBtn,
   AddBannerModal,
   Banner,
+  BannerSkeleton,
   BulkEditModal,
   DeleteBannerModal,
-  // UpdateBannerModal,
+  UpdateBannerModal,
 } from "../component";
 import { AppDispatch, RootState } from "../../../app/store";
 import { useEffect } from "react";
@@ -45,14 +46,10 @@ export const BannerPage = () => {
 
   const sortedBanners = [...banners].sort((a, b) => a.position - b.position);
 
-  if (loading)
-    return <p className="text-center text-gray-500">Loading banners...</p>;
-  if (error) return <p className="text-center text-red-500">Error: {error}</p>;
-
   return (
     <PlaceHolder>
       {modals.isDeleteOpen && <DeleteBannerModal />}
-      {/* {modals.isUpdateOpen && <UpdateBannerModal />} */}
+      {modals.isUpdateOpen && <UpdateBannerModal />}
       {modals.isAddOpen && <AddBannerModal />}
       {modals.isBulkEditOpen && <BulkEditModal />}
 
@@ -65,16 +62,25 @@ export const BannerPage = () => {
             Edit Banners
           </button>
         </div>
-        <div className="p-6">
-          {sortedBanners.map((banner) => (
-            <Banner
-              key={banner.id}
-              image={banner.image}
-              onUpdate={() => handleUpdate(banner)}
-              onDelete={() => handleDelete(banner.id!)}
-            />
-          ))}
+        <div className="flex w-full flex-col items-center p-6">
+          {loading ? (
+            Array.from({ length: 3 }).map((_, index) => (
+              <BannerSkeleton key={index} />
+            ))
+          ) : sortedBanners.length === 0 ? (
+            <p className="text-center text-gray-500">No banners found.</p>
+          ) : (
+            sortedBanners.map((banner) => (
+              <Banner
+                key={banner.id}
+                image={banner.image}
+                onUpdate={() => handleUpdate(banner)}
+                onDelete={() => handleDelete(banner.id!)}
+              />
+            ))
+          )}
         </div>
+
         <div>
           <AddBannerBtn onClick={handleAdd} />
         </div>

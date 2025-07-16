@@ -5,3 +5,4 @@ export * from "./DeleteBannerModal";
 export * from "./BulkEditModal";
 export * from "./UpdateBannerModal";
 export * from "./DropzoneField";
+export * from "./BannerSkeleton";

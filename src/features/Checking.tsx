@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { DeleteModal, ProductComponent, ProductFormInputs } from "./products";
+// import { DeleteModal, ProductComponent, ProductFormInputs } from "./products";
 import { ProductForm } from "./products/component/ProductForm";
 import { Pagination } from "./shared";
 import { ProductsData } from "./products/data/productData";
+import { BannerSkeleton } from "./banners";
 
 export const Checking = () => {
   const existingProductData = {
@@ -33,6 +34,7 @@ export const Checking = () => {
 
   return (
     <div>
+      <BannerSkeleton />
       {/* <Pagination current={1} onChange={setPage} total={10} />
       {/* <DeleteModal /> */}
       {/* <ProductForm onSubmit={handleAddProduct} /> */}
@@ -40,7 +42,7 @@ export const Checking = () => {
         onSubmit={handleUpdateProduct}
         existingProductData={existingProductData}
       /> */}
-      {ProductsData.map((product) => (
+      {/* {ProductsData.map((product) => (
         <ProductComponent
           key={product.id}
           id={product.id}
@@ -52,7 +54,7 @@ export const Checking = () => {
           colors={product.colors}
           type={`Polo | ${product.types?.join(", ")}`}
         />
-      ))}
+      ))} */}
     </div>
   );
 };
