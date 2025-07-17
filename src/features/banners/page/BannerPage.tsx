@@ -72,10 +72,10 @@ export const BannerPage = () => {
           ) : (
             sortedBanners.map((banner) => (
               <Banner
-                key={banner.id}
+                key={banner._id}
                 image={banner.image}
                 onUpdate={() => handleUpdate(banner)}
-                onDelete={() => handleDelete(banner.id!)}
+                onDelete={() => handleDelete(banner._id!)}
               />
             ))
           )}

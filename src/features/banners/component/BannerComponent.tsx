@@ -17,7 +17,7 @@ export const Banner: FC<BannerProps> = ({
 }) => {
   return (
     <div className="group relative w-full p-2">
-      <div className="relative h-[200px] w-full overflow-hidden rounded-md">
+      <div className="m relative h-[200px] w-full overflow-hidden rounded-md">
         <img src={image} className="h-full w-full object-cover" />
 
         {/* Hover buttons with backdrop blur */}

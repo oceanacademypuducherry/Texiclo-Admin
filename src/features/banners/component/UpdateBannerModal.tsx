@@ -7,9 +7,10 @@ import { useDropzone } from "react-dropzone";
 import { IoMdCloseCircle } from "react-icons/io";
 import { MdClose } from "react-icons/md";
 
-import { UPDATE_BANNER } from "../service";
+import { GET_BANNERS, UPDATE_BANNER } from "../service";
 import { BannersData, closeUpdateModal } from "../redux";
 import { addBannerValidation } from "../validation";
+import { showError, showSuccess } from "../../../utils";
 
 export const UpdateBannerModal = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -54,17 +55,29 @@ export const UpdateBannerModal = () => {
     setImage(null);
   };
 
-  const handleUpdate: SubmitHandler<BannersData> = (data) => {
-    if (!image || !selectedBanner?.id) return;
+  const handleUpdate: SubmitHandler<BannersData> = async (data) => {
+    if (!image || !selectedBanner?._id) return;
 
-    dispatch(
-      UPDATE_BANNER({
-        id: selectedBanner.id,
-        position: data.position,
-        image: image,
-      }),
-    );
-    handleClose();
+    try {
+      // First update the banner
+      await dispatch(
+        UPDATE_BANNER({
+          _id: selectedBanner._id,
+          position: data.position,
+          image: image,
+        }),
+      ).unwrap();
+
+      // Then fetch the updated list
+      await dispatch(GET_BANNERS()).unwrap();
+      showSuccess("Banners updated successfully");
+      // Close modal or form
+      handleClose();
+    } catch (error) {
+      console.error("Failed to update and fetch banners:", error);
+      showError("Failed  to Update Banner ");
+      // Optional: show error toast here
+    }
   };
 
   if (!modals.isUpdateOpen || !selectedBanner) return null;

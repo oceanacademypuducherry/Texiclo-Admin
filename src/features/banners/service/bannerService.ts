@@ -63,7 +63,7 @@ export const UPDATE_BANNER = createAsyncThunk(
         formData.append("imageUrl", bannerData.image);
       }
 
-      const res = await AdminAPI.put(`/banner/${bannerData.id}`, formData, {
+      const res = await AdminAPI.put(`/banner/${bannerData._id}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
@@ -90,6 +90,48 @@ export const DELETE_BANNER = createAsyncThunk(
     } catch (error: any) {
       return thunkAPI.rejectWithValue(
         error.response?.data || { message: "Failed to delete banner" },
+      );
+    }
+  },
+);
+export const UPDATE_ALL_BANNERS = createAsyncThunk(
+  "banners/updateAll",
+  async (banners: BannersData[], thunkAPI) => {
+    try {
+      const formData = new FormData();
+
+      // Step 1: Prepare plain JSON (id and position only)
+      const bannersPayload = banners.map((banner) => ({
+        _id: banner._id,
+        position: banner.position,
+      }));
+
+      // Step 2: Append JSON string for banners
+      formData.append("banners", JSON.stringify(bannersPayload));
+
+      // Step 3: Append images with fieldname as image-<id>
+      banners.forEach((banner) => {
+        if (banner.image instanceof File) {
+          formData.append(`image-${banner._id}`, banner.image); // 👈 must match backend expectation
+        }
+      });
+
+      // Step 4: Send request
+      const response = await AdminAPI.put("/banner/update-all", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (response.data.success) {
+        return response.data;
+      } else {
+        throw new Error(response.data.message || "Banner update failed");
+      }
+    } catch (error: any) {
+      console.error("UPDATE_ALL_BANNERS error:", error);
+      return thunkAPI.rejectWithValue(
+        error.response?.data || { message: "Failed to update banners" },
       );
     }
   },

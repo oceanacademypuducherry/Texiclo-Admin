@@ -38,7 +38,7 @@ export const AddBannerModal = () => {
   const handleAdd: SubmitHandler<BannersData> = async (newData) => {
     try {
       const bannerToAdd: BannersData = {
-        id: newData.id,
+        _id: newData._id,
         position: newData.position,
         image: image as File,
       };

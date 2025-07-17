@@ -4,9 +4,11 @@ import { useForm, useFieldArray } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { IoMdCloseCircle } from "react-icons/io";
 import { RootState, AppDispatch } from "../../../app/store";
-// import { setBulkEdit, updateMany } from "../redux";
 import { bulkEditValidation } from "../validation";
 import { DropzoneField } from "./DropzoneField";
+import { GET_BANNERS, UPDATE_ALL_BANNERS } from "../service";
+import { closeBulkEditModal } from "../redux";
+import { showError, showSuccess } from "../../../utils";
 
 type BannerFormData = {
   id: string;
@@ -16,9 +18,10 @@ type BannerFormData = {
 
 export const BulkEditModal = () => {
   const dispatch = useDispatch<AppDispatch>();
-  // const { isBulkEdit, banners } = useSelector(
-  //   (state: RootState) => state.banners,
-  // );
+
+  const { modals, data: banners } = useSelector(
+    (state: RootState) => state.banners,
+  );
 
   const {
     control,
@@ -36,12 +39,13 @@ export const BulkEditModal = () => {
     name: "banners",
   });
 
-  // useEffect(() => {
-  //   if (isBulkEdit) {
-  //     replace(banners);
-  //     reset({ banners });
-  //   }
-  // }, [isBulkEdit]);
+  // Load banner data when modal opens
+  useEffect(() => {
+    if (modals.isBulkEditOpen) {
+      replace(banners); // update the fields array
+      reset({ banners }); // update form values
+    }
+  }, [modals.isBulkEditOpen, banners, replace, reset]);
 
   const handleDrop = (index: number) => (files: File[]) => {
     if (files[0]) {
@@ -53,21 +57,33 @@ export const BulkEditModal = () => {
     update(index, { ...fields[index], image: null });
   };
 
-  const handleSave = (data: { banners: BannerFormData[] }) => {
-    // dispatch(updateMany(data.banners));
-    // dispatch(setBulkEdit(false));
+  const handleClose = () => {
+    dispatch(closeBulkEditModal());
+    reset({ banners: [] });
   };
 
-  // if (!isBulkEdit) return null;
+  const handleSave = async (data: { banners: BannerFormData[] }) => {
+    try {
+      await dispatch(UPDATE_ALL_BANNERS(data.banners)).unwrap();
+      await dispatch(GET_BANNERS()).unwrap();
+      showSuccess("All banners updated successfully");
+      handleClose();
+    } catch (error) {
+      console.error("Bulk update failed:", error);
+      showError("Failed to update banners");
+    }
+  };
+
+  if (!modals.isBulkEditOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
       <form
-        // onSubmit={handleSubmit(handleSave)}
+        onSubmit={handleSubmit(handleSave)}
         className="relative w-full max-w-md rounded-xl bg-white p-6 shadow-xl sm:max-w-2xl"
       >
         <button
-          // onClick={() => dispatch(setBulkEdit(false))}
+          onClick={handleClose}
           type="button"
           className="absolute top-4 right-4 text-2xl text-red-500 hover:text-red-700"
         >
@@ -76,7 +92,6 @@ export const BulkEditModal = () => {
 
         <h2 className="mb-6 text-center text-xl font-bold">Edit Banners</h2>
 
-        {/* Global array-level error (like sequential/unique) */}
         {errors.banners?.root?.message && (
           <p className="mb-4 text-center text-sm font-semibold text-red-600">
             {errors.banners.root.message}
@@ -138,7 +153,7 @@ export const BulkEditModal = () => {
           </button>
           <button
             type="button"
-            // onClick={() => dispatch(setBulkEdit(false))}
+            onClick={handleClose}
             className="bg-primary text-secondary hover:bg-secondary hover:text-primary w-full rounded-md px-6 py-3 font-medium sm:w-auto"
           >
             Cancel

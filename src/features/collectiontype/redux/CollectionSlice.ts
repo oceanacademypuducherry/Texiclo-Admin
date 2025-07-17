@@ -65,7 +65,6 @@ const CollectionSlice = createSlice({
     setCollection: (state, action: PayloadAction<CollectionsData | null>) => {
       state.collection = action.payload;
     },
-
     resetCollectionState: (state) => {
       state.isError = false;
       state.message = "";
@@ -83,7 +82,12 @@ const CollectionSlice = createSlice({
         state.success = true;
         state.isError = false;
         state.message = action.payload.message;
-        state.collections = action.payload.data;
+        // Fix: Convert id to _id for consistency
+        state.collections = action.payload.data.map((item: any) => ({
+          _id: item.id,
+          name: item.name,
+          image: item.image,
+        }));
         state.pagination = {
           totalPages: action.payload.pagination.totalPages,
           currentPage: action.payload.pagination.currentPage,
@@ -106,7 +110,12 @@ const CollectionSlice = createSlice({
         state.isLoading = false;
         state.success = true;
         state.isAdd = false;
-        state.collections.push(action.payload.data);
+        // Fix: Convert id to _id
+        state.collections.push({
+          _id: action.payload.data.id,
+          name: action.payload.data.name,
+          image: action.payload.data.image,
+        });
         state.message = action.payload.message;
       })
       .addCase(ADD_COLLECTION.rejected, (state, action) => {
@@ -115,7 +124,6 @@ const CollectionSlice = createSlice({
         state.message =
           (action.payload as any)?.message || "Failed to add collection";
       })
-
       // UPDATE_COLLECTION
       .addCase(UPDATE_COLLECTION.pending, (state) => {
         state.isLoading = true;
@@ -123,14 +131,12 @@ const CollectionSlice = createSlice({
       })
       .addCase(UPDATE_COLLECTION.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.success = true;
-        const index = state.collections.findIndex(
-          (col) => col._id === action.payload.data.id,
+        const updated = action.payload.data;
+        state.collections = state.collections.map((item) =>
+          item._id === updated._id ? updated : item,
         );
-        if (index !== -1) {
-          state.collections[index] = action.payload.data;
-        }
-        state.message = "Collection updated successfully!";
+        state.isUpdate = false; // close modal after update
+        state.collection = null;
       })
       .addCase(UPDATE_COLLECTION.rejected, (state, action) => {
         state.isLoading = false;
@@ -138,7 +144,6 @@ const CollectionSlice = createSlice({
         state.message =
           (action.payload as any)?.message || "Failed to update collection";
       })
-
       // DELETE_COLLECTION
       .addCase(DELETE_COLLECTION.pending, (state) => {
         state.isLoading = true;

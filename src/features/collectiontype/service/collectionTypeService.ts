@@ -92,7 +92,7 @@ export const UPDATE_COLLECTION = createAsyncThunk(
 
       return {
         data: {
-          id: response.data.data._id,
+          _id: response.data.data._id,
           name: response.data.data.name,
           image: response.data.data.imageUrl,
         },

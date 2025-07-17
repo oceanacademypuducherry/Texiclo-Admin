@@ -19,8 +19,9 @@ export const DeleteBannerModal = () => {
     try {
       if (selectedId) {
         await dispatch(DELETE_BANNER(selectedId)).unwrap();
-        await dispatch(GET_BANNERS());
         dispatch(closeDeleteModal());
+        await dispatch(GET_BANNERS());
+
         showSuccess("Banner Deleted Successfully");
       }
     } catch (error) {

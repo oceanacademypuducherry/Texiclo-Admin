@@ -49,7 +49,7 @@ export const CollectionTypePage = () => {
   };
   const handleAdd = () => {
     dispatch(setCollectionAddMode(true));
-    dispatch(setCollection({ id: "", image: null, name: "" }));
+    dispatch(setCollection({ _id: "", image: null, name: "" }));
   };
 
   return (
@@ -88,11 +88,11 @@ export const CollectionTypePage = () => {
             {collections && collections?.length > 0 ? (
               collections.map((collection) => (
                 <CollectionComponent
-                  key={collection.id}
+                  key={collection._id}
                   image={collection.image}
                   title={collection.name}
                   onDelete={() => {
-                    if (collection.id) handleDelete(collection.id);
+                    if (collection._id) handleDelete(collection._id);
                   }}
                   onUpdate={() => handleUpdate(collection)}
                 />
