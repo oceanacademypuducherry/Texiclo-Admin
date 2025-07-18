@@ -13,5 +13,5 @@ export const otpValidationSchema = yup.object().shape({
         .matches(/^\d$/, "Each OTP digit must be a number")
         .required("OTP digit is required"),
     )
-    .length(4, "OTP must be exactly 4 digits"),
+    .length(6, "OTP must be exactly 6 digits"),
 });

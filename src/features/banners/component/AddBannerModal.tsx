@@ -126,7 +126,7 @@ export const AddBannerModal = () => {
             type="submit"
             className="bg-primary text-secondary hover:bg-secondary hover:text-primary w-full rounded-md px-6 py-3 font-medium sm:w-auto"
           >
-            {loading ? "Adding" : "Add"}
+            {loading ? "Adding..." : "Add"}
           </button>
           <button
             type="button"

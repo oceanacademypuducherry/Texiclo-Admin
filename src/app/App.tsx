@@ -5,12 +5,14 @@ import { persistor, store } from "./store";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 import { PersistGate } from "redux-persist/integration/react";
+import { TokenRestorer } from "../features";
 
 export function App() {
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <RouterProvider router={router} />
+        <TokenRestorer />
         <ToastContainer
           position="top-center"
           autoClose={2000}
