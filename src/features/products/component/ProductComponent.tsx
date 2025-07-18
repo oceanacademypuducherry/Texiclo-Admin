@@ -45,7 +45,7 @@ export const ProductComponent: FC<ProductProps> = ({
   }).format(discountPrice);
 
   return (
-    <Link to={`/products/${id}`}>
+    <Link to={`/products/${id}`} className="flex items-center justify-center">
       <div className="w-[220px] rounded-xl border border-gray-200 p-3 shadow transition hover:shadow-md">
         {/* Image */}
         <div className="mx-auto mb-2 h-[160px] w-[160px]">

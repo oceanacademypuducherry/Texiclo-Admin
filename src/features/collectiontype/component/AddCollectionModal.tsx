@@ -117,7 +117,7 @@ export const AddCollectionModal = () => {
 
             <div
               {...getRootProps()}
-              className="hover:border-primary flex w-full cursor-pointer flex-col items-center justify-center rounded-md border-2 border-dashed border-gray-400 p-4"
+              className="hover:border-primary flex h-64 w-full cursor-pointer flex-col items-center justify-center rounded-md border-2 border-dashed border-gray-400 p-4"
             >
               <input {...getInputProps()} disabled={isLoading} />
               {!image ? (
@@ -128,11 +128,11 @@ export const AddCollectionModal = () => {
                   </p>
                 </div>
               ) : (
-                <div className="relative h-40 w-full">
+                <div className="relative h-64 w-full">
                   <img
                     src={URL.createObjectURL(image)}
                     alt="Preview"
-                    className="h-full w-full rounded-md object-cover"
+                    className="h-full w-full rounded-md object-contain"
                   />
                   <button
                     onClick={() => {
