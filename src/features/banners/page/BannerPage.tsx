@@ -13,7 +13,7 @@ import { AppDispatch, RootState } from "../../../app/store";
 import { useEffect } from "react";
 import {
   openAddModal,
-  openBulkEditModal,
+  // openBulkEditModal,
   openDeleteModal,
   openUpdateModal,
 } from "../redux";
@@ -51,18 +51,18 @@ export const BannerPage = () => {
       {modals.isDeleteOpen && <DeleteBannerModal />}
       {modals.isUpdateOpen && <UpdateBannerModal />}
       {modals.isAddOpen && <AddBannerModal />}
-      {modals.isBulkEditOpen && <BulkEditModal />}
+      {/* {modals.isBulkEditOpen && <BulkEditModal />} */}
 
       <div className="flex flex-col items-center">
-        <div className="flex w-full justify-end p-4">
+        {/* <div className="flex w-full justify-end p-4">
           <button
             onClick={() => dispatch(openBulkEditModal())}
             className="bg-primary text-secondary hover:bg-secondary hover:text-primary w-full rounded-md px-6 py-3 font-medium sm:w-auto"
           >
             Edit Banners
           </button>
-        </div>
-        <div className="flex w-full flex-col items-center p-6">
+        </div> */}
+        <div className="flex w-full flex-col items-center justify-center p-6">
           {loading ? (
             Array.from({ length: 3 }).map((_, index) => (
               <BannerSkeleton key={index} />

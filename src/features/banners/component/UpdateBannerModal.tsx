@@ -14,7 +14,7 @@ import { showError, showSuccess } from "../../../utils";
 
 export const UpdateBannerModal = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { modals, selectedBanner } = useSelector(
+  const { modals, selectedBanner, loading } = useSelector(
     (state: RootState) => state.banners,
   );
   const [image, setImage] = useState<File | string | null>(null);
@@ -159,7 +159,7 @@ export const UpdateBannerModal = () => {
             type="submit"
             className="bg-primary text-secondary hover:bg-secondary hover:text-primary w-full rounded-md px-6 py-3 font-medium sm:w-auto"
           >
-            Update
+            {loading ? "Updating..." : " Update"}
           </button>
           <button
             onClick={handleClose}
