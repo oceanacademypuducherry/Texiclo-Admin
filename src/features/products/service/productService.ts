@@ -140,6 +140,75 @@ export const ADD_PRODUCT = createAsyncThunk(
   },
 );
 
+export const UPDATE_PRODUCT = createAsyncThunk(
+  "product/update",
+  async (
+    { id, productData }: { id: string; productData: any },
+    { rejectWithValue },
+  ) => {
+    try {
+      const formData = new FormData();
+
+      // Core product fields
+      formData.append("productName", productData.name);
+      formData.append("collectionId", productData.collectionId);
+      formData.append("categoryId", productData.categoryId);
+      formData.append("description", productData.description);
+      formData.append(
+        "discountPercentage",
+        productData.discountPercentage?.toString() || "0",
+      );
+      formData.append("sizeIds", JSON.stringify(productData.sizeIds));
+
+      // Prices
+      const prices = productData.prices.map((p: any) => ({
+        gsmId: p.gsmId,
+        amount: parseFloat(p.amount),
+      }));
+      formData.append("prices", JSON.stringify(prices));
+
+      // Variants
+      formData.append("variants", JSON.stringify(productData.variants));
+
+      productData.variants.forEach((variant: any, i: number) => {
+        formData.append(`variants[${i}].color`, variant.color);
+
+        if (variant._id) {
+          formData.append(`variants[${i}]._id`, variant._id);
+        }
+
+        if (variant.variantImage instanceof File)
+          formData.append(`variants[${i}].variantImage`, variant.variantImage);
+        if (variant.frontImage instanceof File)
+          formData.append(`variants[${i}].frontImage`, variant.frontImage);
+        if (variant.backImage instanceof File)
+          formData.append(`variants[${i}].backImage`, variant.backImage);
+
+        if (variant.otherImages?.length) {
+          variant.otherImages.forEach((img: File, j: number) => {
+            if (img instanceof File) {
+              formData.append(`variants[${i}].otherImage[${j}]`, img);
+            }
+          });
+        }
+      });
+
+      const response = await AdminAPI.put(`/product/${id}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      return response.data;
+    } catch (error: any) {
+      console.error("❌ UPDATE_PRODUCT error:", error);
+      return rejectWithValue(
+        error.response?.data || "Failed to update product",
+      );
+    }
+  },
+);
+
 export const DELETE_PRODUCT = createAsyncThunk<
   any,
   string,

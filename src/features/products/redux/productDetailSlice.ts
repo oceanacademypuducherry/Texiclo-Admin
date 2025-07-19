@@ -65,6 +65,7 @@ const productDetailSlice = createSlice({
           sizes: p.sizesData?.map((s: any) => s.label) || [],
           discountPercentage: p.discountPercentage || 0,
           variants: p.variantData.map((variant: any) => ({
+            _id: variant._id,
             color: {
               name: variant.color?.name,
               code: variant.color?.code,
