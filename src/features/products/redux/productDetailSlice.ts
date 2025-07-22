@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { DELETE_PRODUCT, GET_PRODUCT_BY_ID } from "../service";
 
 interface Variant {
+  _id:string
   color: { name: string; code: string };
   variantImage: string;
   frontImage: string;
@@ -73,7 +74,7 @@ const productDetailSlice = createSlice({
             variantImage: variant.variantImage,
             frontImage: variant.frontImage,
             backImage: variant.backImage,
-            otherImages: variant.otherImage || [],
+            otherImages: variant.otherImages || [],
           })),
         };
       })

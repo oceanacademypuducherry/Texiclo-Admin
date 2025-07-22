@@ -83,7 +83,7 @@ export const ProductUpdatePage = () => {
 
     const transformedVariants = await Promise.all(
       variants.map(async (variant: any) => ({
-        _id: variant._id,
+        _id: variant._id || variant?.id || "",
         color: variant.color,
         variantImage: await transformImage(variant.variantImage),
         frontImage: await transformImage(variant.frontImage),
@@ -101,7 +101,10 @@ export const ProductUpdatePage = () => {
       name: productName,
       discountPercentage: discount,
       variants: transformedVariants,
-      ...rest,
+      prices: Object.entries(data.prices).map(([gsmName, amount]) => ({
+        gsmName,
+        amount: Number(amount),
+      })),
     };
 
     console.log("Transformed data:", transformedData);

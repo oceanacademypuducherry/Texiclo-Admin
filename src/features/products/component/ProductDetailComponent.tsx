@@ -19,7 +19,7 @@ export const ProductDetailComponent = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState<any>(null);
   const [selectedGsm, setSelectedGsm] = useState<string>("");
-  const [mainImage, setMainImage] = useState<string>("");
+  const [mainImage, setMainImage] = useState<string | null>(null);
 
   // Fetch product by ID
   useEffect(() => {
@@ -34,15 +34,18 @@ export const ProductDetailComponent = () => {
 
       setSelectedVariant(firstVariant);
       setSelectedGsm(firstGsm);
-      setMainImage(firstVariant?.variantImage || "");
+      setMainImage(firstVariant?.variantImage || null);
     }
   }, [product]);
 
   if (loading) return <ProductDetailSkeleton />;
-  if (error)
-    return <div className="mt-10 text-center text-red-500">{error}</div>;
-  if (!product)
-    return <div className="mt-10 text-center">Product not found</div>;
+  if (!loading && (error || !product)) {
+    return (
+      <div className="mt-10 text-center text-red-500">
+        {error || "Product not found"}
+      </div>
+    );
+  }
 
   const allImages = [
     selectedVariant?.variantImage,
@@ -93,19 +96,21 @@ export const ProductDetailComponent = () => {
 
         {/* Main Image */}
         <div className="h-80 w-80 rounded-md sm:w-96 md:h-96">
-          <img
-            src={mainImage}
-            alt={product.title}
-            className="h-full w-full object-contain"
-          />
+          {mainImage && (
+            <img
+              src={mainImage}
+              alt={product?.title}
+              className="h-full w-full object-contain"
+            />
+          )}
         </div>
       </div>
 
       {/* Right: Product Details */}
       <div className="flex w-[340px] flex-col justify-center gap-4 sm:w-[400px] md:gap-3 lg:gap-4">
-        <h2 className="text-xl font-bold md:text-2xl">{product.title}</h2>
+        <h2 className="text-xl font-bold md:text-2xl">{product?.title}</h2>
         <p className="text-sm text-gray-600 md:text-base">
-          {product.description}
+          {product?.description}
         </p>
 
         {/* GSM Selection */}
