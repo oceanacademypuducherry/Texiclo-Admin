@@ -305,7 +305,7 @@ export const UPDATE_PRODUCT = createAsyncThunk(
       console.log("clicked..........");
       console.log("productData before processing:", productData);
       console.log("productData.variants:", productData.variants);
-      
+
       const formData = new FormData();
 
       // Core product fields
@@ -327,24 +327,33 @@ export const UPDATE_PRODUCT = createAsyncThunk(
 
       // Variants - append as JSON string
       console.log("Variants before JSON.stringify:", productData.variants);
-      formData.append("variants", JSON.stringify(productData.variants));
+      formData.append(
+        "variantsLength",
+        JSON.stringify(productData.variants.length),
+      );
 
       // Process each variant individually
       for (let i = 0; i < productData.variants.length; i++) {
         const variant = productData.variants[i];
-        
+
         // Append color as JSON string (not object)
         if (variant.color) {
-          formData.append(`variants[${i}].color`, JSON.stringify(variant.color));
+          formData.append(
+            `variants[${i}].color`,
+            JSON.stringify(variant.color),
+          );
         }
 
         // Append variant ID if it exists (for updates) - ensure it's a string
         if (variant._id) {
-          const variantId = typeof variant._id === 'object' ? variant._id.toString() : variant._id;
+          const variantId =
+            typeof variant._id === "object"
+              ? variant._id.toString()
+              : variant._id;
           formData.append(`variants[${i}]._id`, variantId);
           console.log(`Appending variant ${i} ID:`, variantId);
         } else {
-          console.log(`No ID for variant ${i} - will create new`);
+          formData.append(`variants[${i}]._id`, "null");
         }
 
         // Handle image files

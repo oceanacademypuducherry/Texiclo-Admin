@@ -101,10 +101,7 @@ export const ProductUpdatePage = () => {
       name: productName,
       discountPercentage: discount,
       variants: transformedVariants,
-      prices: Object.entries(data.prices).map(([gsmName, amount]) => ({
-        gsmName,
-        amount: Number(amount),
-      })),
+     ...rest,
     };
 
     console.log("Transformed data:", transformedData);
