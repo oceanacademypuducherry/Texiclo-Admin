@@ -22,7 +22,7 @@ export const ProductVariants = () => {
   const handleAddVariant = () => {
     append({
       color: { name: "", code: "" },
-      previewImage: null,
+      variantImage: null,
       frontImage: null,
       backImage: null,
       otherImages: [],
@@ -82,7 +82,7 @@ export const ProductVariants = () => {
               <label className="mb-1 block font-semibold">Preview Image</label>
               <div className="pr-10">
                 <Controller
-                  name={`variants.${index}.previewImage`}
+                  name={`variants.${index}.variantImage`}
                   control={control}
                   render={({ field }) => (
                     <ImageCropUpload
@@ -93,7 +93,7 @@ export const ProductVariants = () => {
                   )}
                 />
                 <p className="mt-1 text-sm text-red-500">
-                  {getVariantFieldError(errors, index, "previewImage")}
+                  {getVariantFieldError(errors, index, "variantImage")}
                 </p>
               </div>
             </div>

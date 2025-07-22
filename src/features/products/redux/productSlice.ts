@@ -8,7 +8,7 @@ import {
 
 interface Variant {
   color: { name: string; code: string };
-  previewImage: string;
+  variantImage: string;
   frontImage: string;
   backImage: string;
   otherImages: string[];

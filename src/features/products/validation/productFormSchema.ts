@@ -37,7 +37,7 @@ import * as yup from "yup";
 //             .matches(/^#([0-9A-F]{3}){1,2}$/i, "Invalid color code")
 //             .required("Color code is required"),
 //         }),
-//         previewImage: yup
+//         variantImage: yup
 //           .mixed<File>()
 //           .required("Preview image is required")
 //           .test("filePresent", "Preview image is required", (file) => !!file),
@@ -108,7 +108,7 @@ export const productSchema = yup.object().shape({
             .matches(/^#([0-9A-F]{3}){1,2}$/i, "Invalid color code")
             .required("Color code is required"),
         }),
-        previewImage: yup
+        variantImage: yup
           .mixed<File>()
           .required("Preview image is required")
           .test("filePresent", "Preview image is required", (file) => !!file),

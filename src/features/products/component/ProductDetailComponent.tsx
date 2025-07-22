@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../app";
 import { DELETE_PRODUCT, GET_PRODUCT_BY_ID } from "../service";
 import { ProductDetailSkeleton } from "./ProductDetailSkeleton";
+import { resetForm } from "../redux";
 
 export const ProductDetailComponent = () => {
   const navigate = useNavigate();
@@ -33,7 +34,7 @@ export const ProductDetailComponent = () => {
 
       setSelectedVariant(firstVariant);
       setSelectedGsm(firstGsm);
-      setMainImage(firstVariant?.previewImage || "");
+      setMainImage(firstVariant?.variantImage || "");
     }
   }, [product]);
 
@@ -44,7 +45,7 @@ export const ProductDetailComponent = () => {
     return <div className="mt-10 text-center">Product not found</div>;
 
   const allImages = [
-    selectedVariant?.previewImage,
+    selectedVariant?.variantImage,
     selectedVariant?.frontImage,
     selectedVariant?.backImage,
     ...(selectedVariant?.otherImages || []),
@@ -54,13 +55,17 @@ export const ProductDetailComponent = () => {
   const discountPrice = Math.round(
     originalPrice * (1 - product.discountPercentage / 100),
   );
+
+  const handleUpdate = (id: string) => {
+    navigate(`/updateproduct/${id}`);
+  };
   const handleDelete = async () => {
     if (!id) return;
 
     try {
-      await dispatch(DELETE_PRODUCT(id)).unwrap(); 
-      setIsModalOpen(false); 
-      navigate("/products"); 
+      await dispatch(DELETE_PRODUCT(id)).unwrap();
+      setIsModalOpen(false);
+      navigate("/products");
     } catch (error: any) {
       console.error("Failed to delete product:", error);
       setIsModalOpen(false);
@@ -127,7 +132,7 @@ export const ProductDetailComponent = () => {
               key={i}
               onClick={() => {
                 setSelectedVariant(variant);
-                setMainImage(variant.previewImage);
+                setMainImage(variant.variantImage);
               }}
               className={`h-6 w-6 rounded-full border transition-all duration-200 ${
                 selectedVariant?.color?.code === variant.color?.code
@@ -172,7 +177,7 @@ export const ProductDetailComponent = () => {
         <div className="flex gap-4">
           <button
             className="bg-primary text-secondary rounded px-6 py-2 text-sm font-medium md:text-base"
-            onClick={() => navigate(`/updateproduct/${id}`)}
+            onClick={() => handleUpdate(id)}
           >
             Edit
           </button>

@@ -25,28 +25,28 @@ export const ProductsData = [
     variants: [
       {
         color: { name: "Black", code: "#000000" },
-        previewImage: TSHIRT,
+        variantImage: TSHIRT,
         frontImage: POLO_BLACK_FRONT,
         backImage: POLO_BLACK_BACK,
         otherImages: [],
       },
       {
         color: { name: "Red", code: "#FF0000" },
-        previewImage: PRODUCT1,
+        variantImage: PRODUCT1,
         frontImage: POLO_RED_FRONT,
         backImage: POLO_RED_BACK,
         otherImages: [PRODUCT2],
       },
       {
         color: { name: "Violet", code: "#9432d1" },
-        previewImage: PRODUCT2,
+        variantImage: PRODUCT2,
         frontImage: POLO_LAVENDAR_FRONT,
         backImage: POLO_LAVENDAR_BACK,
         otherImages: [PRODUCT1],
       },
       {
         color: { name: "Green", code: "#52d918" },
-        previewImage: PRODUCT2,
+        variantImage: PRODUCT2,
         frontImage: POLO_GREEN_FRONT,
         backImage: POLO_GREEN_BACK,
         otherImages: [PRODUCT1],
@@ -65,14 +65,14 @@ export const ProductsData = [
     variants: [
       {
         color: { name: "Blue", code: "#0000FF" },
-        previewImage: TSHIRT,
+        variantImage: TSHIRT,
         frontImage: PRODUCT1,
         backImage: PRODUCT2,
         otherImages: [PRODUCT1],
       },
       {
         color: { name: "Gray", code: "#808080" },
-        previewImage: TSHIRT,
+        variantImage: TSHIRT,
         frontImage: PRODUCT1,
         backImage: PRODUCT2,
         otherImages: [PRODUCT1],
@@ -91,7 +91,7 @@ export const ProductsData = [
     variants: [
       {
         color: { name: "Green", code: "#00FF00" },
-        previewImage: TSHIRT,
+        variantImage: TSHIRT,
         frontImage: PRODUCT1,
         backImage: PRODUCT2,
         otherImages: [PRODUCT1],
@@ -110,7 +110,7 @@ export const ProductsData = [
     variants: [
       {
         color: { name: "White", code: "#FFFFFF" },
-        previewImage: TSHIRT,
+        variantImage: TSHIRT,
         frontImage: PRODUCT1,
         backImage: PRODUCT2,
         otherImages: [PRODUCT1],
@@ -118,7 +118,7 @@ export const ProductsData = [
       {
         color: { name: "Yellow", code: "#FFFF00" },
 
-        previewImage: TSHIRT,
+        variantImage: TSHIRT,
         frontImage: PRODUCT1,
         backImage: PRODUCT2,
         otherImages: [PRODUCT1],
@@ -137,7 +137,7 @@ export const ProductsData = [
     variants: [
       {
         color: { name: "Beige", code: "#F5F5DC" },
-        previewImage: TSHIRT,
+        variantImage: TSHIRT,
         frontImage: PRODUCT1,
         backImage: PRODUCT2,
         otherImages: [],

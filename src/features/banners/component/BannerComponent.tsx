@@ -11,7 +11,7 @@ interface BannerProps {
 export const Banner: FC<BannerProps> = ({ image, onDelete, onUpdate }) => {
   return (
     <div className="group relative w-full p-2">
-      <div className="relative mx-auto h-[200px] max-w-[600px] overflow-hidden rounded-md">
+      <div className="relative mx-auto h-[200px] max-w-full overflow-hidden rounded-md">
         <img
           src={typeof image === "string" ? image : ""}
           className="h-full w-full rounded-md object-cover"

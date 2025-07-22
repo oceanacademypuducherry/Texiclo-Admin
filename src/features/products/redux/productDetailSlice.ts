@@ -3,7 +3,7 @@ import { DELETE_PRODUCT, GET_PRODUCT_BY_ID } from "../service";
 
 interface Variant {
   color: { name: string; code: string };
-  previewImage: string;
+  variantImage: string;
   frontImage: string;
   backImage: string;
   otherImages: string[];
@@ -70,7 +70,7 @@ const productDetailSlice = createSlice({
               name: variant.color?.name,
               code: variant.color?.code,
             },
-            previewImage: variant.variantImage,
+            variantImage: variant.variantImage,
             frontImage: variant.frontImage,
             backImage: variant.backImage,
             otherImages: variant.otherImage || [],

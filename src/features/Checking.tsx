@@ -11,7 +11,7 @@ export const Checking = () => {
     collectionType: "Winter Collection",
     category: "Clothing",
     description: "A nice winter jacket.",
-    previewImage: [],
+    variantImage: [],
     products: [
       {
         productImage: [],
@@ -46,7 +46,7 @@ export const Checking = () => {
         <ProductComponent
           key={product.id}
           id={product.id}
-          previewImage={product.previewImage}
+          variantImage={product.variantImage}
           title={product.name}
           price={product.price}
           discount={product.discount}

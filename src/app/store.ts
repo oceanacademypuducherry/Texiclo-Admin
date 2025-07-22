@@ -43,7 +43,7 @@ const rootReducer = combineReducers({
   productFormOptions: productOptionsReducer,
   productList: productListReducer,
   productDetial: productDetailReducer,
-  filteroptions:filterReducer
+  filteroptions: filterReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -63,7 +63,7 @@ export const store = configureStore({
     ],
     stateSanitizer: (state) => ({
       ...state,
-      productForm: "[REDACTED]", // optional: sanitize entire productForm slice
+      // productForm: "[REDACTED]", // optional: sanitize entire productForm slice
     }),
     actionSanitizer: (action) =>
       action.type.startsWith("productForm/")

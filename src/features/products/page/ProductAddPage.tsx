@@ -52,7 +52,7 @@ export const ProductAddPage = () => {
     const transformedVariants = await Promise.all(
       variants.map(async (variant: any) => ({
         color: variant.color,
-        variantImage: await base64ToFile(variant.previewImage),
+        variantImage: await base64ToFile(variant.variantImage),
         frontImage: await base64ToFile(variant.frontImage),
         backImage: await base64ToFile(variant.backImage),
         otherImages: await Promise.all(

@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-
+import { GET_UPDATE_PRODUCT_BY_ID } from "../service";
 
 interface Color {
   name: string;
@@ -14,7 +14,7 @@ export type ImageSource = File | Base64Image | string; // URL string
 
 interface Variant {
   color: Color;
-  previewImage: ImageSource | null;
+  variantImage: ImageSource | null;
   frontImage: ImageSource | null;
   backImage: ImageSource | null;
   otherImages?: ImageSource[];
@@ -31,7 +31,13 @@ export interface ProductForm {
   variants: Variant[];
 }
 
-const initialState: { formData: ProductForm } = {
+interface ProductFormData {
+  formData: ProductForm;
+  isLoading: boolean;
+  success: boolean;
+}
+
+const initialState: ProductFormData = {
   formData: {
     productName: "",
     collectionType: "",
@@ -43,13 +49,15 @@ const initialState: { formData: ProductForm } = {
     variants: [
       {
         color: { name: "", code: "" },
-        previewImage: null,
+        variantImage: null,
         frontImage: null,
         backImage: null,
         otherImages: [],
       },
     ],
   },
+  isLoading: false,
+  success: false,
 };
 
 const productFormSlice = createSlice({
@@ -65,7 +73,7 @@ const productFormSlice = createSlice({
     addLocalVariant: (state) => {
       state.formData.variants.push({
         color: { name: "", code: "" },
-        previewImage: null,
+        variantImage: null,
         frontImage: null,
         backImage: null,
         otherImages: [],
@@ -93,6 +101,23 @@ const productFormSlice = createSlice({
     resetForm: (state) => {
       state.formData = initialState.formData;
     },
+  },
+  extraReducers(builder) {
+    builder
+      .addCase(GET_UPDATE_PRODUCT_BY_ID.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(GET_UPDATE_PRODUCT_BY_ID.fulfilled, (state, action) => {
+        const { data, success } = action.payload;
+        state.formData = data;
+        state.success = success || true;
+        state.isLoading = false;
+      })
+      .addCase(GET_UPDATE_PRODUCT_BY_ID.rejected, (state) => {
+        state.formData = initialState.formData;
+        state.isLoading = false;
+        state.success = false;
+      });
   },
 });
 

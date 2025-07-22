@@ -9,109 +9,50 @@ import { AppDispatch, RootState } from "../../../app";
 import { FormProvider, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { productSchema } from "../validation";
+import { resetForm } from "../redux";
 import { useEffect } from "react";
-import {
-  GET_OPTIONS_GSM,
-  GET_OPTIONS_SIZE,
-  GET_OPTIONS_CATEGORY,
-  GET_OPTIONS_COLLECTIONTYPE,
-} from "../service/productOptionsService";
+import { GET_OPTIONS_GSM } from "../service/productOptionsService";
 import { base64ToFile } from "../../../utils";
-import { UPDATE_PRODUCT, GET_PRODUCT_BY_ID } from "../service";
+import { GET_UPDATE_PRODUCT_BY_ID, UPDATE_PRODUCT } from "../service";
 import { useNavigate, useParams } from "react-router-dom";
-import { resetUpdateStatus } from "../redux/productSlice";
 
 export const ProductUpdatePage = () => {
+  const { id } = useParams();
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const { id } = useParams<{ id: string }>();
-
-  const { loading, updateSuccess } = useSelector(
-    (state: RootState) => state.product,
+  const { formData, isLoading, success } = useSelector(
+    (state: RootState) => state.productForm,
   );
-  const { product } = useSelector((state: RootState) => state.productDetial);
-  const { categories, collections, sizes, gsms } = useSelector(
-    (state: RootState) => state.productFormOptions || {},
-  );
+  const { loading } = useSelector((state: RootState) => state.product);
 
   const methods = useForm({
-    resolver: yupResolver(productSchema),
+    defaultValues: formData,
+    resolver: yupResolver(productSchema as any),
     mode: "onBlur",
   });
 
-  // Fetch data on mount
+  // Reset form when data is loaded from API
   useEffect(() => {
-    if (id) dispatch(GET_PRODUCT_BY_ID(id));
-    dispatch(GET_OPTIONS_GSM());
-    dispatch(GET_OPTIONS_SIZE());
-    dispatch(GET_OPTIONS_CATEGORY());
-    dispatch(GET_OPTIONS_COLLECTIONTYPE());
-  }, [dispatch, id]);
-
-  // Reset form with product data
-  useEffect(() => {
-    if (product && categories && collections && sizes && gsms) {
-      const categoryOption = categories.find(
-        (cat: any) => cat.value === product.category,
-      );
-      const collectionOption = collections.find(
-        (col: any) => col.value === product.collectionType,
-      );
-      const sizeOptions = product.sizes
-        .map((s: any) => sizes.find((size: any) => size.label === s))
-        .filter(Boolean);
-
-      const pricesData = product.prices
-        ? product.prices.map((price: any) => {
-            const gsmMatch = gsms.find(
-              (gsm: any) => String(gsm.name) === String(price.gsmName),
-            );
-            return {
-              gsmId: gsmMatch?.value || price.gsmId || "", // fallback to gsmId if exists
-              amount: price.amount,
-            };
-          })
-        : [];
-
-      const formData = {
-        productName: product.title,
-        category: categoryOption || {
-          value: product.category,
-          label: product.category,
-        },
-        collectionType: collectionOption || {
-          value: product.collectionType,
-          label: product.collectionType,
-        },
-        description: product.description,
-        discount: product.discountPercentage,
-        sizes: sizeOptions,
-        prices: pricesData,
-        variants: product.variants.map((variant: any, i: number) => ({
-          id: `variant-${i}`,
-          color: variant.color,
-          previewImage: variant.previewImage,
-          frontImage: variant.frontImage,
-          backImage: variant.backImage,
-          otherImages: variant.otherImages || [],
-          _id: variant._id,
-        })),
-      };
-
+    if (!isLoading) {
+      console.log("Resetting form with fetched data:", formData);
       methods.reset(formData);
     }
-  }, [product, categories, collections, sizes, gsms, methods]);
+  }, [isLoading]);
 
+  // Fetch data on component mount
   useEffect(() => {
-    if (updateSuccess) {
-      dispatch(resetUpdateStatus());
-      navigate("/products");
+    if (!id) {
+      return;
     }
-  }, [updateSuccess, dispatch, navigate]);
+    console.log("Fetching product data for ID:", id);
+    dispatch(GET_UPDATE_PRODUCT_BY_ID(id));
+    dispatch(GET_OPTIONS_GSM());
+    // dispatch(GET_OPTIONS_SIZE());
+    // dispatch(GET_OPTIONS_CATEGORY());
+  }, [dispatch, id]);
 
   const onSubmit = async (data: any) => {
     if (!id) return;
-
     const {
       variants,
       category,
@@ -119,58 +60,76 @@ export const ProductUpdatePage = () => {
       productName,
       discount,
       sizes,
-      description,
-      prices,
+      ...rest
     } = data;
+    console.log("Submitting variants:", variants);
+    const transformImage = async (img: any) => {
+      console.log(img);
+      if (!img) return null;
 
-    const processImage = async (image: any) => {
-      if (image instanceof File) return image;
-      if (typeof image === "string" && image.startsWith("data:")) {
-        return await base64ToFile(image);
+      // Firebase URL or external image URL
+      if (typeof img === "string" && img.startsWith("https")) {
+        return img;
       }
-      return image;
+
+      // Base64 input object
+      if (img?.base64 && img?.name && img?.type) {
+        console.log("base 64 converted");
+        return await base64ToFile(img); // convert to File
+      }
+
+      return null; // fallback for invalid input
     };
 
     const transformedVariants = await Promise.all(
       variants.map(async (variant: any) => ({
+        _id: variant._id,
         color: variant.color,
-        variantImage: await processImage(variant.previewImage),
-        frontImage: await processImage(variant.frontImage),
-        backImage: await processImage(variant.backImage),
-        otherImages: variant.otherImages
-          ? await Promise.all(variant.otherImages.map(processImage))
-          : [],
-        ...(variant._id && { _id: variant._id }),
+        variantImage: await transformImage(variant.variantImage),
+        frontImage: await transformImage(variant.frontImage),
+        backImage: await transformImage(variant.backImage),
+        otherImages: await Promise.all(
+          variant.otherImages.map((img: any) => transformImage(img)),
+        ),
       })),
     );
-
-    const formattedPrices = prices.map((price: any) => ({
-      gsmId: price.gsmId, // assuming this is already the correct ID
-      amount: price.amount,
-    }));
 
     const transformedData = {
       categoryId: category.value,
       collectionId: collectionType.value,
-      sizeIds: sizes.map((s: any) => s.value),
+      sizeIds: sizes.map((size: any) => size.value),
       name: productName,
       discountPercentage: discount,
       variants: transformedVariants,
-      prices: formattedPrices,
-      description,
+      ...rest,
     };
 
+    console.log("Transformed data:", transformedData);
     const { payload } = await dispatch(
       UPDATE_PRODUCT({ id, productData: transformedData }),
     );
-
-    console.log(payload, "🛺🛺🛺🛺🛺 UPDATE RESULT");
+    const { success } = payload;
+    if (success) {
+      dispatch(resetForm());
+      navigate("/products");
+    }
+    console.log("API Response:", payload);
   };
 
-  if (!product && loading) {
+  // Show loading while fetching initial data
+  if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-lg">Loading product data...</div>
+      </div>
+    );
+  }
+
+  // Show error if no data after loading
+  if (!isLoading && !success && id) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-lg text-red-600">Failed to load product data</div>
       </div>
     );
   }
@@ -182,7 +141,7 @@ export const ProductUpdatePage = () => {
       </div>
       <div className="flex flex-col items-center gap-4 p-4">
         <h1 className="text-secondary text-center text-2xl font-bold">
-          Update Product
+          Update Products
         </h1>
       </div>
 
@@ -197,10 +156,10 @@ export const ProductUpdatePage = () => {
           <div className="pt-4 text-center">
             <button
               type="submit"
-              className="bg-primary text-secondary hover:bg-secondary hover:text-primary hover:bg-opacity-80 rounded px-6 py-2 font-medium transition"
               disabled={loading}
+              className="hover:bg-opacity-80 bg-primary text-secondary hover:bg-secondary hover:text-primary rounded px-6 py-2 font-medium transition disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {loading ? "Updating..." : "Update Product"}
+              {loading ? "Submitting..." : "Update Product"}
             </button>
           </div>
         </form>

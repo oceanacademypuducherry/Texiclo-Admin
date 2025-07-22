@@ -1,10 +1,9 @@
-import { useEffect, useRef } from 'react';
-import { debounce } from 'lodash';
-import { useWatch, useFormContext } from 'react-hook-form';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../../../app';
-import { setFormData } from '../redux';
-
+import { useEffect, useRef } from "react";
+import { debounce } from "lodash";
+import { useWatch, useFormContext } from "react-hook-form";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../../../app";
+import { setFormData } from "../redux";
 
 export const FormSyncWatcher = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -14,7 +13,7 @@ export const FormSyncWatcher = () => {
   const debouncedDispatch = useRef(
     debounce((data) => {
       dispatch(setFormData(data));
-    }, 500) // 500ms debounce
+    }, 500), // 500ms debounce
   ).current;
 
   useEffect(() => {
