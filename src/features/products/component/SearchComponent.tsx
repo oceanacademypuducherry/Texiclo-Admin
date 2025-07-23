@@ -12,7 +12,7 @@ export const SearchComponent = () => {
   };
 
   const currentPage = pagination.currentPage || 1;
-  const limit = 5; // Assuming you're showing 12 products per page
+  const limit = 6; // Assuming you're showing 12 products per page
   const total = pagination.totalRecords || 0;
 
   const start = total === 0 ? 0 : (currentPage - 1) * limit + 1;
