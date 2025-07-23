@@ -5,7 +5,7 @@ import { Dispatcher, RootState } from "../app";
 export const ProtectedRoutes = () => {
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
 
-  return true ? (
+  return isAuthenticated ? (
     <Dispatcher>
       <Outlet />
     </Dispatcher>

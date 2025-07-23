@@ -70,7 +70,9 @@ const productOptionsSlice = createSlice({
               return { label: size.label, value: size._id };
             });
           else if (action.type === GET_OPTIONS_GSM.fulfilled.type)
-            state.gsms = action.payload;
+            state.gsms = action.payload.map((d: any) => {
+              return { ...d, amount: 0 };
+            });
           else if (action.type === GET_OPTIONS_CATEGORY.fulfilled.type)
             state.categories = action.payload.data.map((cat: CategoryData) => {
               return { value: cat._id, label: cat.name };

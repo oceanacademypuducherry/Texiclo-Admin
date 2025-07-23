@@ -9,14 +9,13 @@ interface AuthState {
   isAuthenticated: boolean;
   loading: boolean;
   error: string | null;
-  
 }
 
 const initialState: AuthState = {
   email: "",
-  token: undefined,
+  token: Cookies.get("token") || undefined,
   isOtpVerified: false,
-  isAuthenticated: false,
+  isAuthenticated: Cookies.get("token") ? true : false,
   loading: false,
   error: null,
 };

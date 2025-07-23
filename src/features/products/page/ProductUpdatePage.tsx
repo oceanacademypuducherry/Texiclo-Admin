@@ -30,6 +30,7 @@ export const ProductUpdatePage = () => {
     resolver: yupResolver(productSchema as any),
     mode: "onBlur",
   });
+  console.log(methods.watch());
 
   // Reset form when data is loaded from API
   useEffect(() => {
@@ -101,7 +102,7 @@ export const ProductUpdatePage = () => {
       name: productName,
       discountPercentage: discount,
       variants: transformedVariants,
-     ...rest,
+      ...rest,
     };
 
     console.log("Transformed data:", transformedData);
