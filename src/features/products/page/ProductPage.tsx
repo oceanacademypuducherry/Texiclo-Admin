@@ -87,7 +87,7 @@ export const ProductPage = () => {
         <div className="flex w-full flex-col">
           <SearchComponent />
           {loading ? (
-            <div className="grid justify-center gap-6 p-6 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+            <div className="grid justify-center gap-6 p-6 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3">
               {Array.from({ length: 6 }).map((_, index) => (
                 <ProductSkeleton key={index} />
               ))}
@@ -98,7 +98,7 @@ export const ProductPage = () => {
             </p>
           ) : (
             <>
-              <div className="grid content-center justify-center gap-6 p-6 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+              <div className="grid content-center justify-center gap-6 p-6 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3">
                 {products.map((product) => (
                   <ProductComponent
                     key={product.id}
