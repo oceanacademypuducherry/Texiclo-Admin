@@ -38,6 +38,8 @@ export const ProductDetails = () => {
     (state: RootState) => state.productFormOptions,
   );
 
+  console.log(gsms);
+
   return (
     <section className="max-w-xl rounded-lg bg-white p-6 shadow-md">
       <div className="flex flex-col">

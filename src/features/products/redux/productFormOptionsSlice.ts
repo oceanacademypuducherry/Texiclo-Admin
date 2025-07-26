@@ -71,7 +71,7 @@ const productOptionsSlice = createSlice({
             });
           else if (action.type === GET_OPTIONS_GSM.fulfilled.type)
             state.gsms = action.payload.map((d: any) => {
-              return { ...d, amount: 0 };
+              return { ...d,gsmId: d._id, amount: undefined };
             });
           else if (action.type === GET_OPTIONS_CATEGORY.fulfilled.type)
             state.categories = action.payload.data.map((cat: CategoryData) => {

@@ -12,7 +12,7 @@ import { productSchema } from "../validation";
 import { resetForm } from "../redux";
 import { useEffect } from "react";
 import { GET_OPTIONS_GSM } from "../service/productOptionsService";
-import { base64ToFile } from "../../../utils";
+import { base64ToFile, showError, showSuccess } from "../../../utils";
 import { ADD_PRODUCT } from "../service";
 import { useNavigate } from "react-router-dom";
 
@@ -74,10 +74,13 @@ export const ProductAddPage = () => {
     const { payload } = await dispatch(ADD_PRODUCT(transformedData));
     const { success } = payload;
     if (success) {
+      showSuccess("product Added Successfully");
       dispatch(resetForm());
       navigate("/products");
+    } else {
+      showError("Failed to Add Product");
     }
-    console.log(payload, "🛺🛺🛺🛺🛺");
+    // console.log(payload, "🛺🛺🛺🛺🛺");
   };
 
   return (

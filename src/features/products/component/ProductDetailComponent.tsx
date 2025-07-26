@@ -6,6 +6,7 @@ import { AppDispatch, RootState } from "../../../app";
 import { DELETE_PRODUCT, GET_PRODUCT_BY_ID } from "../service";
 import { ProductDetailSkeleton } from "./ProductDetailSkeleton";
 import { resetForm } from "../redux";
+import { showError, showSuccess } from "../../../utils";
 
 export const ProductDetailComponent = () => {
   const navigate = useNavigate();
@@ -67,9 +68,11 @@ export const ProductDetailComponent = () => {
 
     try {
       await dispatch(DELETE_PRODUCT(id)).unwrap();
+      showSuccess("product deleted successfully");
       setIsModalOpen(false);
       navigate("/products");
     } catch (error: any) {
+      showError("failed to delete product");
       console.error("Failed to delete product:", error);
       setIsModalOpen(false);
     }

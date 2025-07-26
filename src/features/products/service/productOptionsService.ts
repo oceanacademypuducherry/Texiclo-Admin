@@ -38,26 +38,32 @@ export const GET_OPTIONS_GSM = createAsyncThunk<
   }
 });
 
-export const GET_OPTIONS_CATEGORY = createAsyncThunk("category/get", async (_, thunkAPI) => {
-  try {
-    const response = await AdminAPI.get(`category/get/`);
-  
-    return response.data
-  } catch (error: any) {
-    return thunkAPI.rejectWithValue(
-      error.response?.data || { message: "Failed to fetch category" },
-    );
-  }
-});
+export const GET_OPTIONS_CATEGORY = createAsyncThunk(
+  "category/get",
+  async (_, thunkAPI) => {
+    try {
+      const response = await AdminAPI.get(`category/get/`);
 
-export const GET_OPTIONS_COLLECTIONTYPE = createAsyncThunk("collectionType/get", async (_, thunkAPI) => {
-  try {
-    const response = await AdminAPI.get(`collectionType/get/`);
+      return response.data;
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data || { message: "Failed to fetch category" },
+      );
+    }
+  },
+);
 
-    return  response.data
-  } catch (error: any) {
-    return thunkAPI.rejectWithValue(
-      error.response?.data || { message: "Failed to fetch collections" },
-    );
-  }
-});
+export const GET_OPTIONS_COLLECTIONTYPE = createAsyncThunk(
+  "collectionType/get",
+  async (_, thunkAPI) => {
+    try {
+      const response = await AdminAPI.get(`collectionType/get/`);
+
+      return response.data;
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data || { message: "Failed to fetch collections" },
+      );
+    }
+  },
+);

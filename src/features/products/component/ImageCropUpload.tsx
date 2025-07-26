@@ -102,7 +102,15 @@ export const ImageCropUpload: React.FC<Props> = ({
     if (!file) return null;
 
     const files = isMultiple ? (file as ImageSource[]) : [file as ImageSource];
-
+    const handleRemove = (index: number) => {
+      if (isMultiple) {
+        const updated = [...files];
+        updated.splice(index, 1);
+        onChange(updated);
+      } else {
+        onChange(null as any); // clear single image
+      }
+    };
     return (
       <div className="mt-2 flex flex-wrap gap-4">
         {files.map((f, idx) => {
@@ -111,12 +119,26 @@ export const ImageCropUpload: React.FC<Props> = ({
           else if ("base64" in f) src = f.base64;
           else src = URL.createObjectURL(f);
           return (
-            <img
-              key={idx}
-              src={src}
-              alt="preview"
-              className="h-24 w-24 rounded border object-cover"
-            />
+            // <img
+            //   key={idx}
+            //   src={src}
+            //   alt="preview"
+            //   className="h-24 w-24 rounded border object-cover"
+            // />
+            <div key={idx} className="relative">
+              <img
+                src={src}
+                alt="preview"
+                className="h-24 w-24 rounded border object-cover"
+              />
+              <button
+                type="button"
+                onClick={() => handleRemove(idx)}
+                className="absolute top-0 right-0 rounded-full bg-black/60 px-1 text-white"
+              >
+                ×
+              </button>
+            </div>
           );
         })}
       </div>

@@ -12,7 +12,7 @@ import { productSchema } from "../validation";
 import { resetForm } from "../redux";
 import { useEffect } from "react";
 import { GET_OPTIONS_GSM } from "../service/productOptionsService";
-import { base64ToFile } from "../../../utils";
+import { base64ToFile, showError, showSuccess } from "../../../utils";
 import { GET_UPDATE_PRODUCT_BY_ID, UPDATE_PRODUCT } from "../service";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -34,11 +34,11 @@ export const ProductUpdatePage = () => {
 
   // Reset form when data is loaded from API
   useEffect(() => {
-    if (!isLoading) {
+    if (!isLoading || !loading) {
       console.log("Resetting form with fetched data:", formData);
       methods.reset(formData);
     }
-  }, [isLoading]);
+  }, [isLoading, loading]);
 
   // Fetch data on component mount
   useEffect(() => {
@@ -46,13 +46,15 @@ export const ProductUpdatePage = () => {
       return;
     }
     console.log("Fetching product data for ID:", id);
-    dispatch(GET_UPDATE_PRODUCT_BY_ID(id));
     dispatch(GET_OPTIONS_GSM());
+    dispatch(GET_UPDATE_PRODUCT_BY_ID(id));
+
     // dispatch(GET_OPTIONS_SIZE());
     // dispatch(GET_OPTIONS_CATEGORY());
   }, [dispatch, id]);
 
   const onSubmit = async (data: any) => {
+    console.log(data, "..............");
     if (!id) return;
     const {
       variants,
@@ -110,15 +112,19 @@ export const ProductUpdatePage = () => {
       UPDATE_PRODUCT({ id, productData: transformedData }),
     );
     const { success } = payload;
+
     if (success) {
+      showSuccess("product updated successfully");
       dispatch(resetForm());
       navigate("/products");
+    } else {
+      showError("failed to update product");
     }
-    console.log("API Response:", payload);
+    // console.log("API Response:", payload);
   };
 
   // Show loading while fetching initial data
-  if (isLoading) {
+  if (isLoading || loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-lg">Loading product data...</div>

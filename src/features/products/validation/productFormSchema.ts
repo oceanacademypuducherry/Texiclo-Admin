@@ -61,14 +61,32 @@ export const productSchema = yup.object().shape({
       label: yup.string().required("Collection label is required"),
       value: yup.string().required("Collection value is required"),
     })
-    .required("Collection type is required"),
+    .nullable()
+    .required("Collection type is required")
+    .typeError("Collection type is required"),
 
+  // collectionType: yup
+  //   .object({
+  //     label: yup.string().required("Collection label is required"),
+  //     value: yup.string().required("Collection value is required"),
+  //   })
+  //   .required("Collection type is required"),
+
+  // category: yup
+  //   .object({
+  //     label: yup.string().required("Category label is required"),
+  //     value: yup.string().required("Category value is required"),
+  //   })
+  //   .required("Category is required"),
   category: yup
     .object({
       label: yup.string().required("Category label is required"),
       value: yup.string().required("Category value is required"),
     })
-    .required("Category is required"),
+    .nullable()
+    .required("Category is required")
+    .typeError("Category is required"),
+
   description: yup.string().required("Description is required"),
   discount: yup
     .number()
