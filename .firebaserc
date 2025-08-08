@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "texiclo-8b211"
+  },
+  "targets": {
+    "texiclo-8b211": {
+      "hosting": {
+        "texiclo-admin": [
+          "texiclo-admin"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}
